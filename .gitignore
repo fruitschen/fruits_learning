@@ -1,0 +1,35 @@
+*.pyc
+*.pyo
+.DS_Store
+*.swp
+.coverage
+
+django_cache/*
+!django_cache/.keepme
+sqlbackups/*
+media/*
+!media/.htaccess
+static/*
+!static/.htaccess
+search_index/*
+logs/*
+bower_components/
+db.sqlite3
+
+django_project/settings/settings_local.py
+local_test_settings.py
+
+# Always exclude this as it's used for secrets and importing
+# the specific settings for this install
+fruits_learning/settings/__init__.py
+thumbnail_kvstore
+thumbnail_kvstore.db
+thumbnail_kvstore.lock
+.idea/*
+.cache/
+.vault_pass
+# local ropeproject cache for vim
+.ropeproject
+.env.sh
+.runserver.sh
+
