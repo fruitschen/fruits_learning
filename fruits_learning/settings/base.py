@@ -133,6 +133,17 @@ STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
+CACHES = {
+    'default': {
+        'BACKEND': 'diskcache.DjangoCache',
+        'LOCATION': os.path.join(BASE_DIR, '.cache'),
+        'SHARDS': 4,
+        'DATABASE_TIMEOUT': 1.0,
+        'OPTIONS': {
+            'size_limit': 2 ** 32  # 4 gigabytes
+        },
+    },
+}
 
 # Wagtail settings
 
