@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',  # Using WhiteNoise in development
     'django.contrib.staticfiles',
+
+    'feedreader',
 ]
 
 MIDDLEWARE = [
@@ -156,3 +158,5 @@ WAGTAIL_SITE_NAME = "fruits_learning"
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 BASE_URL = 'http://example.com'
+
+LOGOUT_URL = '/admin/logout/'
