@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'django_extensions',
+    "django_rq",
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -160,3 +161,16 @@ WAGTAIL_SITE_NAME = "fruits_learning"
 BASE_URL = 'http://example.com'
 
 LOGOUT_URL = '/admin/logout/'
+
+# rq settings
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+        'PASSWORD': '',
+        'DEFAULT_TIMEOUT': 360,
+    },
+}
+
+

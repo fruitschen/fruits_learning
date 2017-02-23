@@ -2,5 +2,9 @@ Django>=1.10,<1.11
 wagtail>=1.9,<1.10
 pytest-django
 django-extensions
+ipython
 whitenoise
+redis
+django-rq
+rq-scheduler
 git+https://github.com/fruitschen/django-feedreader.git#egg=django-feedreader
