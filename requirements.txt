@@ -8,3 +8,4 @@ redis
 django-rq
 rq-scheduler
 git+https://github.com/fruitschen/django-feedreader.git#egg=django-feedreader
+BeautifulSoup==3.2.1
