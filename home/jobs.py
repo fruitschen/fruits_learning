@@ -11,7 +11,8 @@ def run_crawlers():
         crawlers.TechQQCrawler(),
     )
     for crawler in info_crawlers:
-        crawler.run()
+        if crawler.should_fetch():
+            crawler.run()
 
 
 cron_jobs = [
