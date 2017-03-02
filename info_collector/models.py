@@ -52,7 +52,7 @@ class Info(models.Model):
     url = models.URLField(max_length=2000, null=True, blank=True)
     content = models.OneToOneField('Content', null=True, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
-    original_timestamp = models.DateTimeField(auto_now_add=True, blank=True, null=True)
+    original_timestamp = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=1, default=NEW, choices=STATUS)
 
     class Meta:

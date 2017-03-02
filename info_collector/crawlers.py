@@ -3,7 +3,9 @@
 import logging
 import json
 import requests
+from datetime import datetime, timedelta
 from BeautifulSoup import BeautifulSoup as BS
+
 
 from django.utils import timezone
 
@@ -116,6 +118,9 @@ class XueqiuHomeCrawler(AbstractBaseCrawler):
             identifier = data['id']
             title = data['title'] or data['topic_title']
             url = '{}{}/{}'.format(self.info_source.url, data['user']['id'], identifier)
+            created_at = int(data['created_at']) / 1000
+            created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60*8)
+
             if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
                 info = Info.objects.create(
                     url=url,
@@ -123,4 +128,5 @@ class XueqiuHomeCrawler(AbstractBaseCrawler):
                     info_source=self.info_source,
                     title=title,
                     identifier=identifier,
+                    original_timestamp = created,
                 )
