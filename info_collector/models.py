@@ -1,6 +1,7 @@
 # coding: utf-8
 from __future__ import unicode_literals
-from datetime import datetime, timedelta
+from datetime import timedelta
+from django.utils import timezone
 from django.db import models
 
 
@@ -29,7 +30,7 @@ class InfoSource(models.Model):
     def should_fetch(self):
         if not self.last_fetched:
             return True
-        now = datetime.now()
+        now = timezone.now()
         return self.last_fetched + timedelta(seconds=self.interval) < now
 
     def __unicode__(self):
