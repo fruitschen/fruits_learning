@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('identifier', models.CharField(max_length=255)),
                 ('url', models.URLField(blank=True, max_length=2000, null=True)),
                 ('timestamp', models.DateTimeField(auto_now_add=True, db_index=True)),
-                ('original_timestamp', models.DateTimeField(auto_now_add=True, null=True)),
+                ('original_timestamp', models.DateTimeField(null=True)),
                 ('content', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to='info_collector.Content')),
             ],
             options={
