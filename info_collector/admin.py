@@ -9,7 +9,7 @@ class InfoSourceAdmin(admin.ModelAdmin):
 
 
 class InfoAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['info_source', ]
 
 admin.site.register(InfoSource, InfoSourceAdmin)
 admin.site.register(Info, InfoAdmin)

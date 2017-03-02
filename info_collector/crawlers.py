@@ -1,12 +1,16 @@
 # coding: utf-8
 
 import logging
+import json
 import requests
 from BeautifulSoup import BeautifulSoup as BS
 
 from django.utils import timezone
 
 from info_collector.models import InfoSource, Info
+
+import urllib3.contrib.pyopenssl
+urllib3.contrib.pyopenssl.inject_into_urllib3()
 
 
 class AbstractBaseCrawler(object):
@@ -18,9 +22,9 @@ class AbstractBaseCrawler(object):
     def run(self):
         try:
             self.info_source.status = InfoSource.CRAWLING
-            self.info_source.last_fetched = timezone.now()
             self.info_source.save()
             self.update_info()
+            self.info_source.last_fetched = timezone.now()
             self.info_source.status = InfoSource.GOOD
             self.info_source.save()
         except Exception, e:
@@ -34,6 +38,17 @@ class AbstractBaseCrawler(object):
                 pass
 
 
+def get_response(req, url, timeout, headers):
+    response = None
+    retry = 0
+    while not response and retry < 3:
+        try:
+            response = req.get(url, timeout=timeout, headers=headers)
+        except requests.exceptions.ConnectTimeout:
+            pass
+        retry += 1
+    return response
+
 class TechQQCrawler(AbstractBaseCrawler):
     """
     from info_collector.crawlers import TechQQCrawler
@@ -45,13 +60,9 @@ class TechQQCrawler(AbstractBaseCrawler):
         super(TechQQCrawler, self).__init__('tech_qq')
 
     def update_info(self):
-        response = None
-        retry = 0
-        while not response and retry < 3:
-            try:
-                response = requests.get(self.info_source.url, timeout=3, headers=self.headers)
-            except requests.exceptions.ConnectTimeout:
-                retry += 1
+        response = get_response(requests, self.info_source.url, timeout=3, headers=self.headers)
+        if not response:
+            return
         soup = BS(response.text)
         list_zone = soup.find('div', {'id': 'listZone'})
         headings = list_zone.findAll('h3')
@@ -70,3 +81,46 @@ class TechQQCrawler(AbstractBaseCrawler):
                     identifier=identifier,
                 )
 
+
+class XueqiuHomeCrawler(AbstractBaseCrawler):
+    """
+    from info_collector.crawlers import XueqiuHomeCrawler
+    crawler = XueqiuHomeCrawler()
+    crawler.update_info()
+    """
+
+    def __init__(self):
+        super(XueqiuHomeCrawler, self).__init__('xueqiu_home')
+        self.headers = {
+            'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Upgrade - Insecure - Requests': '1',
+            'Accept-Encoding': 'gzip, deflate, sdch',
+            'Accept-Language': 'en,zh-CN;q=0.8,zh;q=0.6,zh-TW;q=0.4',
+        }
+
+    def update_info(self):
+        session = requests.Session()
+        # load home page and get cookies
+        response = get_response(session, self.info_source.url, timeout=3, headers=self.headers)
+        if not response:
+            return
+
+        json_url = 'https://xueqiu.com/v4/statuses/public_timeline_by_category.json?since_id=-1&max_id=-1&count=20&category=-1'
+        json_response = get_response(session, json_url, timeout=3, headers=self.headers)
+        res = json_response.json()
+        posts = res['list']
+        posts.reverse()
+        for post in posts:
+            data = json.loads(post['data'])
+            identifier = data['id']
+            title = data['title'] or data['topic_title']
+            url = '{}{}/{}'.format(self.info_source.url, data['user']['id'], identifier)
+            if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
+                info = Info.objects.create(
+                    url=url,
+                    status=Info.NEW,
+                    info_source=self.info_source,
+                    title=title,
+                    identifier=identifier,
+                )

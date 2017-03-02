@@ -9,9 +9,10 @@ def run_crawlers():
     from info_collector import crawlers
     info_crawlers = (
         crawlers.TechQQCrawler(),
+        crawlers.XueqiuHomeCrawler(),
     )
     for crawler in info_crawlers:
-        if crawler.should_fetch():
+        if crawler.info_source.should_fetch():
             crawler.run()
 
 
