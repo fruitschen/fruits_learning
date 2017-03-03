@@ -56,6 +56,7 @@ INSTALLED_APPS = [
 
     'feedreader',
     'info_collector',
+    'investing',
 ]
 
 MIDDLEWARE = [

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block content %}
+    <h1>分级基金价值估算</h1>
+    <table>
+        <tr>
+            <th>净值</th>
+            <th>动用资金</th>
+            <th>净值杠杆</th>
+            <th>净资产</th>
+            <th>利润</th>
+            <th>手续费</th>
+            <th>利息</th>
+            <th>实际利润</th>
+            <th>基金PE</th>
+            <th>基金ROE</th>
+        </tr>
+
+
+        <tr>
+            <td>{{ fund_value|floatformat:2 }}</td>
+            <td>{{ money|floatformat:2 }}</td>
+            <td>{{ leverage|floatformat:2 }}</td>
+            <td>{{ asset|floatformat:2 }}</td>
+            <td>{{ profit|floatformat:2 }}</td>
+            <td>{{ total_fee|floatformat:2 }}</td>
+            <td>{{ interest|floatformat:2 }}</td>
+            <td>{{ real_profit|floatformat:2 }}</td>
+            <td>{{ fund_pe|floatformat:2 }}</td>
+            <td>{{ fund_roe|floatformat:2 }}</td>
+        </tr>
+    </table>
+{% endblock %}
