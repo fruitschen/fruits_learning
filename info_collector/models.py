@@ -61,7 +61,7 @@ class Info(models.Model):
         ordering = ('-timestamp',)
 
     def __unicode__(self):
-        return self.title
+        return self.title or ''
 
 
 class Content(models.Model):
