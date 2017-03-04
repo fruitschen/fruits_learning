@@ -10,6 +10,7 @@ def run_crawlers():
     info_crawlers = (
         crawlers.TechQQCrawler(),
         crawlers.XueqiuHomeCrawler(),
+        crawlers.DoubanBookCrawler(),
     )
     for crawler in info_crawlers:
         if crawler.info_source.should_fetch():

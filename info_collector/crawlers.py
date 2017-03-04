@@ -130,3 +130,47 @@ class XueqiuHomeCrawler(AbstractBaseCrawler):
                     identifier=identifier,
                     original_timestamp = created,
                 )
+
+
+class DoubanBookCrawler(AbstractBaseCrawler):
+    """
+    from info_collector.crawlers import DoubanBookCrawler
+    crawler = DoubanBookCrawler()
+    crawler.update_info()
+    """
+
+    def __init__(self):
+        super(DoubanBookCrawler, self).__init__('douban_book')
+
+    def update_info(self):
+        count = 50
+        start = 0
+        total = 0
+        while (not start) or (start < total - count):  # haven't got all the books yet
+            api_url = 'https://api.douban.com/v2/book/search?q=python&count={}&start={}'.format(count, start)
+            json_response = get_response(requests, api_url , timeout=3, headers=self.headers)
+            json_result = json_response.json()
+            if not total:
+                total = json_result['total']
+            start += count
+            books = json_result['books']
+
+            for book in books:
+                identifier = book['id']
+                title = book['title']
+                url = '{}subject/{}'.format(self.info_source.url, identifier)
+                try:
+                    created = timezone.datetime.strptime(book['pubdate'], '%Y-%m-%d')
+                except:
+                    created = None
+                if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
+                    info = Info.objects.create(
+                        url=url,
+                        status=Info.NEW,
+                        info_source=self.info_source,
+                        title=title,
+                        identifier=identifier,
+                        original_timestamp = created,
+                    )
+                else:
+                    print u'Book exists {}'.format(book['title'])
