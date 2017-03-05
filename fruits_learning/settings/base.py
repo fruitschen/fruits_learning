@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'modelcluster',
     'taggit',
     'django_extensions',
-    "django_rq",
+    'django_rq',
+    'webpack_loader',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -134,6 +135,7 @@ STATICFILES_FINDERS = [
 
 STATICFILES_DIRS = [
     os.path.join(PROJECT_DIR, 'static'),
+    os.path.join(BASE_DIR, 'assets'),
 ]
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -174,5 +176,4 @@ RQ_QUEUES = {
         'DEFAULT_TIMEOUT': 360,
     },
 }
-
 

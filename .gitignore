@@ -16,6 +16,11 @@ logs/*
 bower_components/
 db.sqlite3
 
+node_modules
+assets/bundles
+assets/dist
+
+
 django_project/settings/settings_local.py
 local_test_settings.py
 
@@ -32,4 +37,3 @@ thumbnail_kvstore.lock
 .ropeproject
 .env.sh
 .runserver.sh
-
