@@ -11,3 +11,8 @@ git+https://github.com/fruitschen/django-feedreader.git#egg=django-feedreader
 BeautifulSoup==3.2.1
 urllib3[secure]
 django-webpack-loader
+
+djangorestframework
+markdown       # Markdown support for the browsable API.
+django-filter  # Filtering support
+
