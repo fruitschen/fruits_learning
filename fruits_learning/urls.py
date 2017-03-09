@@ -11,9 +11,11 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 
 from rest_framework import routers
-from info_collector.urls import InfoViewSet
+from info_collector.urls import InfoViewSet, InfoSourceViewSet
 router = routers.DefaultRouter()
 router.register(r'info', InfoViewSet)
+router.register(r'info-source', InfoSourceViewSet)
+
 
 urlpatterns = [
     url(r'^django-admin/', include(admin.site.urls)),

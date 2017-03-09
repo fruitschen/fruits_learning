@@ -172,7 +172,7 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
             {'name': u'处镜如初', 'uid': '9226205191'},
         ]
         for user in users:
-            print user['name']
+            # print user['name']
             page = 1
             json_url = 'https://xueqiu.com/v4/statuses/user_timeline.json?user_id={}&page={}&type=&_=1488637{}'.\
                 format(user['uid'], page, random.randint(1, 1000000))
@@ -231,7 +231,7 @@ class DoubanBookCrawler(AbstractBaseCrawler):
                 json_result = json_response.json()
                 if not total:
                     total = json_result['total']
-                    print 'Total {}'.format(total)
+                    # print 'Total {}'.format(total)
                 start += count
                 books = json_result['books']
 
@@ -255,4 +255,5 @@ class DoubanBookCrawler(AbstractBaseCrawler):
                             original_timestamp = created,
                         )
                     else:
-                        print u'Book exists {}'.format(book['title'])
+                        pass
+                        # print u'Book exists {}'.format(book['title'])

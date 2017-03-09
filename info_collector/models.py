@@ -55,6 +55,8 @@ class Info(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
     original_timestamp = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=1, default=NEW, choices=STATUS)
+    read_at = models.DateTimeField(null=True, blank=True)
+    is_read = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (('info_source', 'identifier'),)
