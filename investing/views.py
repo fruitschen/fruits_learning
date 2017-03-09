@@ -15,9 +15,10 @@ def fund_value_estimation(request):
     initial_pb = 1
     initial_leverage = leverage = (1 + fund_value) / fund_value
     groups = [
-        {'roe': Decimal('5'), },
+        {'roe': Decimal('15'), },
         {'roe': Decimal('10'), },
         {'roe': Decimal('18'), },
+        {'roe': Decimal('5'), },
         {'roe': Decimal('20'), },
     ]
     for group in groups:

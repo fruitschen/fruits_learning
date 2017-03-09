@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from info_collector.models import Info, InfoSource
-
+from info_collector.views import info_reader
 
 class InfoSerializer(serializers.HyperlinkedModelSerializer):
     absolute_url = serializers.HyperlinkedIdentityField(view_name='info-detail', read_only=True)
@@ -63,3 +63,7 @@ class InfoSourceViewSet(viewsets.ModelViewSet):
     queryset = InfoSource.objects.all()
     serializer_class = InfoSourceSerializer
 
+
+urlpatterns = [
+    url(r'^reader/$', info_reader, name='info_reader'),
+]

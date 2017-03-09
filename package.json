@@ -30,7 +30,8 @@
     "webpack-bundle-tracker": "^0.2.0"
   },
   "scripts": {
-    "build": "webpack --config webpack.dev.config.js --progress --colors --watch",
-    "build-production": "webpack --config webpack.prod.config.js --progress --colors --watch",
+    "build": "./node_modules/.bin/webpack --config webpack.dev.config.js --progress --colors",
+    "watch": "./node_modules/.bin/webpack --config webpack.dev.config.js --progress --colors --watch",
+    "build-production": "./node_modules/.bin/webpack --config webpack.prod.config.js --progress --colors --watch"
   }
 }

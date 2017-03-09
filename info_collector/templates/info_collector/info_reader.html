@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+{% load render_bundle from webpack_loader %}
+
+{% block body_class %}info-reader{% endblock %}
+
+{% block content %}
+    <h1>Info Reader</h1>
+    <div id="react-app"></div>
+    {% render_bundle 'main' %}
+{% endblock %}
