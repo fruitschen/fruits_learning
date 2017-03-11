@@ -25,14 +25,5 @@ config.plugins = config.plugins.concat([
   })
 ])
 
-config.module.loaders.push(
-  {
-    test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader',
-    query:{
-      presets:['react']
-    }
-  }
-)
-
 module.exports = config
 

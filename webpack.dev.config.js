@@ -9,14 +9,4 @@ config.plugins = [
     new BundleTracker({filename: './webpack-stats.json'}),
 ],
 
-// Add a loader for JSX files with react-hot enabled
-config.module.loaders.push(
-  {
-    test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader',
-    query:{
-      presets:['react']
-    }
-  }
-)
-
 module.exports = config

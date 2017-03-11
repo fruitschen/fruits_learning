@@ -17,11 +17,19 @@ module.exports = {
   ],
 
   module: {
-    loaders: [] // add all common loaders here
+    loaders: [
+      {
+        test: /\.jsx?$/, exclude: /node_modules/, loader: 'babel-loader',
+        query:{
+          presets:['react']
+        }
+      },
+      { test: /\.css$/, loader: "style-loader!css-loader" },
+    ]
   },
 
   resolve: {
     modules: ['node_modules', 'bower_components'],
-    extensions: ['.js', '.jsx']
+    extensions: ['.js', '.jsx', '.css']
   },
 }

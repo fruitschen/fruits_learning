@@ -38,7 +38,8 @@ class InfoViewSet(viewsets.ModelViewSet):
     # filter_fields = ('read_at', )
     filter_class = InfoFilter
 
-    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer], url_path='mark-as-read')
+    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer], url_path='mark-as-read',
+                  methods=['post'])
     def mark_as_read(self, request, *args, **kwargs):
         info = self.get_object()
         if not info.read_at:
