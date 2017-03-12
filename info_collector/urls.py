@@ -13,13 +13,15 @@ from info_collector.views import info_reader
 class InfoSerializer(serializers.HyperlinkedModelSerializer):
     absolute_url = serializers.HyperlinkedIdentityField(view_name='info-detail', read_only=True)
     mark_as_read = serializers.HyperlinkedIdentityField(view_name='info-mark-as-read', read_only=True)
+    star_url = serializers.HyperlinkedIdentityField(view_name='info-star', read_only=True)
+    unstar_url = serializers.HyperlinkedIdentityField(view_name='info-unstar', read_only=True)
     source_name = serializers.EmailField(source='info_source.name')
 
     class Meta:
         model = Info
         fields = (
             'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at',
-            'mark_as_read', 'source_name',
+            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred',
         )
 
 
@@ -49,6 +51,33 @@ class InfoViewSet(viewsets.ModelViewSet):
             info.save()
 
         detail_url = reverse('info-detail', args=(), kwargs={'pk':info.pk})
+        return redirect(detail_url)
+        return Response(InfoSerializer(info, context={'request': request}).data)
+
+    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer],
+                  url_path='star',
+                  methods=['post'])
+    def star(self, request, *args, **kwargs):
+        info = self.get_object()
+        if not info.starred:
+            info.starred_at = timezone.now()
+            info.starred = True
+            info.save()
+
+        detail_url = reverse('info-detail', args=(), kwargs={'pk': info.pk})
+        return redirect(detail_url)
+        return Response(InfoSerializer(info, context={'request': request}).data)
+
+    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer],
+                  url_path='unstar',
+                  methods=['post'])
+    def unstar(self, request, *args, **kwargs):
+        info = self.get_object()
+        if info.starred:
+            info.starred_at = None
+            info.starred = False
+            info.save()
+        detail_url = reverse('info-detail', args=(), kwargs={'pk': info.pk})
         return redirect(detail_url)
         return Response(InfoSerializer(info, context={'request': request}).data)
 

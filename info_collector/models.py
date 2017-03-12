@@ -57,6 +57,8 @@ class Info(models.Model):
     status = models.CharField(max_length=1, default=NEW, choices=STATUS)
     read_at = models.DateTimeField(null=True, blank=True)
     is_read = models.BooleanField(default=False)
+    starred_at = models.DateTimeField(null=True, blank=True)
+    starred = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (('info_source', 'identifier'),)

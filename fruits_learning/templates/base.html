@@ -34,10 +34,10 @@
         {% block content %}{% endblock %}
 
         {# Global javascript #}
-        <script type="text/javascript" src="{% static 'js/fruits_learning.js' %}"></script>
 
         {% block extra_js %}
             {# Override this in templates to add extra javascript #}
         {% endblock %}
+        <script type="text/javascript" src="{% static 'js/jquery_ajax_csrf.js' %}"></script>
     </body>
 </html>

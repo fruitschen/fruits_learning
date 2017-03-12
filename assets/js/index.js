@@ -7,7 +7,7 @@ const RadioGroup = Radio.Group;
 var InfoItem = React.createClass({
   getInitialState: function() {
     return {
-      read: this.props.info_item.read_at,
+      starred: this.props.info_item.starred,
     };
   },
 
@@ -24,26 +24,48 @@ var InfoItem = React.createClass({
     });
   },
 
+  star: function() {
+    var url = this.props.info_item.star_url;
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      url: url,
+      data: {},
+      success: function(data){
+        this.setState({'starred': true})
+      }.bind(this)
+    });
+  },
+
+  unstar: function() {
+    var url = this.props.info_item.unstar_url;
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      url: url,
+      data: {},
+      success: function(data){
+        this.setState({'starred': false})
+      }.bind(this)
+    });
+  },
+
   render: function() {
     if (this.state.read){
       return(
-        <Card title={this.props.info_item.title} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
-          <Icon type="check" />
-        </Card>
+        <Icon type="check" />
       )
     }
-    var show_mark_as_read = ! this.state.read;
-    if (show_mark_as_read){
-      var mark_button = <Button onClick={this.markAsRead} >Mark as Read</Button>
+    if (!this.state.starred){
+      var star_button = <Button style={{ marginRight:10 }} type="primary" onClick={this.star} >Star<Icon type="star-o" /></Button>
     }else{
-      var mark_button = null
+      var star_button = <Button style={{ marginRight:10 }} type="primary" onClick={this.unstar} >Star<Icon type="star" /></Button>
     }
     return (
-      <Card title={this.props.info_item.title} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
+      <Card title={<a href={this.props.info_item.url} target="_blank">{this.props.info_item.title} <Icon type="link" /></a>} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
         <p>
-          <Button style={{ marginRight:10 }}><a href={this.props.info_item.url} target="_blank">Go to info</a></Button>
-          <Button style={{ marginRight:10 }}><a href={this.props.info_item.absolute_url} target="_blank">Info Details</a></Button>
-          {mark_button}
+          {star_button}
+          <Button type="primary" style={{ marginRight:10 }} onClick={this.markAsRead} >Mark as Read<Icon type="check" /></Button>
         </p>
       </Card>
     );
