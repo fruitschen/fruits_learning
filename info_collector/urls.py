@@ -13,12 +13,13 @@ from info_collector.views import info_reader
 class InfoSerializer(serializers.HyperlinkedModelSerializer):
     absolute_url = serializers.HyperlinkedIdentityField(view_name='info-detail', read_only=True)
     mark_as_read = serializers.HyperlinkedIdentityField(view_name='info-mark-as-read', read_only=True)
+    source_name = serializers.EmailField(source='info_source.name')
 
     class Meta:
         model = Info
         fields = (
             'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at',
-            'mark_as_read',
+            'mark_as_read', 'source_name',
         )
 
 
@@ -57,7 +58,7 @@ class InfoSourceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = InfoSource
-        fields = ('absolute_url', 'name', 'status', 'url', )
+        fields = ('absolute_url', 'id','name', 'status', 'url', )
 
 
 class InfoSourceViewSet(viewsets.ModelViewSet):

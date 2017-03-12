@@ -1,7 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Pagination, Card, Button, Icon } from 'antd';
+import { Pagination, Card, Button, Icon, Row, Col, Radio } from 'antd';
 import 'antd/dist/antd.css';  // or 'antd/dist/antd.less'
+const RadioGroup = Radio.Group;
 
 var InfoItem = React.createClass({
   getInitialState: function() {
@@ -26,7 +27,7 @@ var InfoItem = React.createClass({
   render: function() {
     if (this.state.read){
       return(
-        <Card title={this.props.info_item.title} style={{ width: 800 }}>
+        <Card title={this.props.info_item.title} extra={this.props.info_item.source_name}>
           <Icon type="check" />
         </Card>
       )
@@ -38,61 +39,13 @@ var InfoItem = React.createClass({
       var mark_button = null
     }
     return (
-      <Card title={this.props.info_item.title} style={{ width: 800 }}>
+      <Card title={this.props.info_item.title} extra={this.props.info_item.source_name}>
         <p>
           <Button><a href={this.props.info_item.url} target="_blank">Go to info</a></Button>
           <Button><a href={this.props.info_item.absolute_url} target="_blank">Info Details</a></Button>
           {mark_button}
         </p>
       </Card>
-    );
-  }
-});
-
-var InfoItemBox = React.createClass({
-  changePage: function(page, pageSize){
-    this.loadInfo(page);
-  },
-  loadInfo: function(page) {
-    $.ajax({
-      url: this.props.url,
-      data: {
-        page: (page || 1),
-        is_read: false
-      },
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        let count = data.count;
-        this.setState({
-          info_items: data.results,
-          previous: data.previous,
-          next: data.next,
-          total: data.count,
-        });
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(url, status, err.toString());
-      }.bind(this)
-    });
-  },
-  getInitialState: function() {
-    return {
-      info_items: [],
-      previous: null,
-      next: null,
-      show_read_items: false
-    };
-  },
-  componentDidMount: function() {
-    this.loadInfo();
-  },
-  render: function() {
-    return (
-      <div className="infoBox">
-        <Pagination defaultCurrent={1} total={this.state.total} pageSize={50} onChange={this.changePage} />
-        <InfoItemList info_items={this.state.info_items} />
-      </div>
     );
   }
 });
@@ -113,7 +66,115 @@ var InfoItemList = React.createClass({
   }
 });
 
+
+var InfoSourceList = React.createClass({
+  getInitialState: function() {
+    return {
+      value: 1,
+    };
+  },
+  render: function() {
+    var infoSourceNodes = this.props.info_sources.map(function(info_source) {
+      return (
+        <Radio value={info_source.id} key={info_source.id}>{info_source.name}</Radio>
+      );
+    });
+    return (
+      <div className="infoSourceList">
+        <RadioGroup onChange={this.props.onChange} defaultValue={this.state.value}>
+          {infoSourceNodes}
+        </RadioGroup>
+      </div>
+    );
+  }
+});
+
+
+var InfoReader = React.createClass({
+  changePage: function(page, pageSize){
+    this.setState({page: page}, function(){
+      this.loadInfo();
+    })
+  },
+  selectSource: function(e){
+    this.setState({info_source: e.target.value}, function(){
+      this.loadInfo();
+    })
+  },
+  loadInfo: function() {
+    $.ajax({
+      url: this.props.url,
+      data: {
+        page: this.state.page,
+        is_read: false,
+        info_source: this.state.info_source
+      },
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        let count = data.count;
+        this.setState({
+          info_items: data.results,
+          previous: data.previous,
+          next: data.next,
+          total: data.count,
+        });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  loadSources: function(){
+    $.ajax({
+      url: '/api/info-source/',
+      data: {},
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        this.setState({
+          info_sources: data.results,
+        });
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }.bind(this)
+    });
+  },
+  getInitialState: function() {
+    return {
+      page: 1,
+      info_items: [],
+      info_sources: [],
+      previous: null,
+      next: null,
+      info_source: null,
+      show_read_items: false
+    };
+  },
+  componentDidMount: function() {
+    this.loadInfo();
+    this.loadSources();
+  },
+  render: function() {
+    return (
+      <div className="infoReader">
+        <Row gutter={16}>
+          <Col className="gutter-row" span={16}>
+            <Pagination defaultCurrent={this.state.page} total={this.state.total} pageSize={50} onChange={this.changePage} current={this.state.page} />
+            <InfoItemList info_items={this.state.info_items} />
+          </Col>
+          <Col className="gutter-row" span={8}>
+            <InfoSourceList info_sources={this.state.info_sources} onChange={this.selectSource} />
+          </Col>
+        </Row>
+      </div>
+    );
+  }
+});
+
+
 ReactDOM.render(
-  <InfoItemBox url="/api/info/" />,
+  <InfoReader url="/api/info/" />,
   document.getElementById('react-app')
 );
