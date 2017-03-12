@@ -27,7 +27,7 @@ var InfoItem = React.createClass({
   render: function() {
     if (this.state.read){
       return(
-        <Card title={this.props.info_item.title} extra={this.props.info_item.source_name}>
+        <Card title={this.props.info_item.title} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
           <Icon type="check" />
         </Card>
       )
@@ -39,10 +39,10 @@ var InfoItem = React.createClass({
       var mark_button = null
     }
     return (
-      <Card title={this.props.info_item.title} extra={this.props.info_item.source_name}>
+      <Card title={this.props.info_item.title} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
         <p>
-          <Button><a href={this.props.info_item.url} target="_blank">Go to info</a></Button>
-          <Button><a href={this.props.info_item.absolute_url} target="_blank">Info Details</a></Button>
+          <Button style={{ marginRight:10 }}><a href={this.props.info_item.url} target="_blank">Go to info</a></Button>
+          <Button style={{ marginRight:10 }}><a href={this.props.info_item.absolute_url} target="_blank">Info Details</a></Button>
           {mark_button}
         </p>
       </Card>
@@ -70,18 +70,24 @@ var InfoItemList = React.createClass({
 var InfoSourceList = React.createClass({
   getInitialState: function() {
     return {
-      value: 1,
+      value: null,
     };
   },
   render: function() {
+    const radioStyle = {
+      display: 'block',
+      height: '30px',
+      lineHeight: '30px',
+    };
     var infoSourceNodes = this.props.info_sources.map(function(info_source) {
       return (
-        <Radio value={info_source.id} key={info_source.id}>{info_source.name}</Radio>
+        <Radio style={radioStyle}  value={info_source.id} key={info_source.id}>{info_source.name}</Radio>
       );
     });
     return (
       <div className="infoSourceList">
         <RadioGroup onChange={this.props.onChange} defaultValue={this.state.value}>
+          <Radio style={radioStyle}  value={null} key={0}>全部</Radio>
           {infoSourceNodes}
         </RadioGroup>
       </div>
@@ -158,14 +164,15 @@ var InfoReader = React.createClass({
   },
   render: function() {
     return (
-      <div className="infoReader">
+      <div className="infoReader" style={{ margin:'12px 48px' }}>
+        <h1>Info Reader</h1>
         <Row gutter={16}>
-          <Col className="gutter-row" span={16}>
+          <Col className="gutter-row" span={4}>
+            <InfoSourceList info_sources={this.state.info_sources} onChange={this.selectSource} />
+          </Col>
+          <Col className="gutter-row" span={20}>
             <Pagination defaultCurrent={this.state.page} total={this.state.total} pageSize={50} onChange={this.changePage} current={this.state.page} />
             <InfoItemList info_items={this.state.info_items} />
-          </Col>
-          <Col className="gutter-row" span={8}>
-            <InfoSourceList info_sources={this.state.info_sources} onChange={this.selectSource} />
           </Col>
         </Row>
       </div>
