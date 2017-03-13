@@ -17,12 +17,15 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
     unstar_url = serializers.HyperlinkedIdentityField(view_name='info-unstar', read_only=True)
     source_name = serializers.EmailField(source='info_source.name')
     content = serializers.CharField(source='content.content')
+    author_name = serializers.CharField(source='author.name')
+    author_avatar = serializers.CharField(source='author.avatar_url')
 
     class Meta:
         model = Info
         fields = (
             'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at',
-            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read', 'content'
+            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read', 'content',
+            'author_name', 'author_avatar',
         )
 
 
@@ -37,7 +40,7 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
 
 
 class InfoViewSet(viewsets.ModelViewSet):
-    queryset = Info.objects.all()
+    queryset = Info.objects.all().select_related('author')
     serializer_class = InfoSerializer
     # filter_fields = ('read_at', )
     filter_class = InfoFilter

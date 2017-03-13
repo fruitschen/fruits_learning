@@ -37,6 +37,17 @@ class InfoSource(models.Model):
         return self.name
 
 
+class Author(models.Model):
+    user_id = models.CharField(max_length=256, blank=True)
+    name = models.CharField(max_length=128, blank=True)
+    url = models.CharField(max_length=1000, blank=True)
+    avatar_url = models.CharField(max_length=1000, blank=True)
+    raw = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.name or u'[no name]'
+
+
 class Info(models.Model):
     NEW = 'N'
     OK = 'O'
@@ -49,6 +60,7 @@ class Info(models.Model):
 
     info_source = models.ForeignKey(InfoSource, related_name='stories')
     title = models.CharField(max_length=500, null=True, blank=True)
+    author = models.ForeignKey('Author', null=True, blank=True, on_delete=models.SET_NULL)
     identifier = models.CharField(max_length=255)
     url = models.URLField(max_length=2000, null=True, blank=True)
     content = models.OneToOneField('Content', null=True, blank=True)

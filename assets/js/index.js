@@ -83,6 +83,7 @@ var InfoItem = React.createClass({
           {star_button}
           {mark_as_read_button}
         </p>
+        <p style={{marginTop:10}}><img src={this.props.info_item.author_avatar} /> {this.props.info_item.author_name}</p>
         {content}
       </Card>
     );

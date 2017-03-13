@@ -11,7 +11,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.utils.html import strip_tags
 
-from info_collector.models import InfoSource, Info, Content
+from info_collector.models import InfoSource, Info, Content, Author
 
 import urllib3.contrib.pyopenssl
 urllib3.contrib.pyopenssl.inject_into_urllib3()
@@ -97,6 +97,25 @@ class XueqiuBaseCrawler(AbstractBaseCrawler):
             'Accept-Language': 'en,zh-CN;q=0.8,zh;q=0.6,zh-TW;q=0.4',
         }
 
+    def save_author(self, user_info, info):
+        user_id = user_info['id']
+        author_query = Author.objects.filter(user_id=user_id)
+        if not author_query.exists():
+            img = user_info.get('profile_image_url', '')
+            if img:
+                img = user_info.get('photo_domain', '') + img.split(',')[-1]
+            author = Author.objects.create(
+                user_id=user_id,
+                name=user_info.get('screen_name', ''),
+                avatar_url=img,
+                raw=json.dumps(user_info),
+            )
+        else:
+            author = author_query[0]
+        info.author = author
+        info.save()
+        return author
+
 class XueqiuHomeCrawler(XueqiuBaseCrawler):
     """
     from info_collector.crawlers import XueqiuHomeCrawler
@@ -123,11 +142,11 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
             data = json.loads(post['data'])
             identifier = data['id']
             title = data['title'] or data['topic_title']
-            url = '{}{}/{}'.format(self.info_source.url, data['user']['id'], identifier)
+            url = '{}{}/{}'.format(self.info_source.url, data['user']['id'], identifier).replace('//', '/')
             created_at = int(data['created_at']) / 1000
             created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60*8)
-
-            if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
+            info_query = Info.objects.filter(info_source=self.info_source, identifier=identifier)
+            if not info_query.exists():
                 info = Info.objects.create(
                     url=url,
                     status=Info.NEW,
@@ -136,7 +155,11 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
                     identifier=identifier,
                     original_timestamp = created,
                 )
-
+                self.save_author(data['user'], info)
+            else:
+                info = info_query[0]
+                if not info.author:
+                    author = self.save_author(data['user'], info)
 
 
 class XueqiuPeopleCrawler(XueqiuBaseCrawler):
@@ -185,13 +208,14 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
             for post in posts:
                 identifier = post['target']
                 title = post['title'] or post['topic_title']
-                url = '{}{}'.format(self.info_source.url, post['target'])
+                url = '{}{}'.format(self.info_source.url, post['target']).replace('//', '/')
                 text = post['text']
                 if not title:
                     title = u'[无标题]{}...'.format(strip_tags(text)[:64])
                 created_at = int(post['created_at']) / 1000
                 created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60*8)
-                if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
+                info_query = Info.objects.filter(info_source=self.info_source, identifier=identifier)
+                if not info_query.exists():
                     content = Content.objects.create(content=text)
                     info = Info.objects.create(
                         url=url,
@@ -203,6 +227,12 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                         content = content,
                     )
                     info.save()
+                    author = self.save_author(post['user'], info)
+                else:
+                    info = info_query[0]
+                    if not info.author:
+                        author = self.save_author(post['user'], info)
+
             time.sleep(3)
 
 class DoubanBookCrawler(AbstractBaseCrawler):
