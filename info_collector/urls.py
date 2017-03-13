@@ -21,7 +21,7 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
         model = Info
         fields = (
             'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at',
-            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred',
+            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read',
         )
 
 

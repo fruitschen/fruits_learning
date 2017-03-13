@@ -1,8 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Pagination, Card, Button, Icon, Row, Col, Radio } from 'antd';
+import { Pagination, Card, Button, Icon, Row, Col, Radio, Switch } from 'antd';
 import 'antd/dist/antd.css';  // or 'antd/dist/antd.less'
 const RadioGroup = Radio.Group;
+const radioStyle = {
+  display: 'block',
+  height: '30px',
+  lineHeight: '30px',
+};
 
 var InfoItem = React.createClass({
   getInitialState: function() {
@@ -61,11 +66,18 @@ var InfoItem = React.createClass({
     }else{
       var star_button = <Button style={{ marginRight:10 }} type="primary" onClick={this.unstar} >Star<Icon type="star" /></Button>
     }
+    if (!this.props.info_item.is_read){
+      var mark_as_read_button = <Button type="primary" style={{ marginRight:10 }} onClick={this.markAsRead} >Mark as Read<Icon type="check" /></Button>
+    }else{
+      var mark_as_read_button = <Icon type="check" />
+    }
+
+
     return (
       <Card title={<a href={this.props.info_item.url} target="_blank">{this.props.info_item.title} <Icon type="link" /></a>} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
         <p>
           {star_button}
-          <Button type="primary" style={{ marginRight:10 }} onClick={this.markAsRead} >Mark as Read<Icon type="check" /></Button>
+          {mark_as_read_button}
         </p>
       </Card>
     );
@@ -96,11 +108,6 @@ var InfoSourceList = React.createClass({
     };
   },
   render: function() {
-    const radioStyle = {
-      display: 'block',
-      height: '30px',
-      lineHeight: '30px',
-    };
     var infoSourceNodes = this.props.info_sources.map(function(info_source) {
       return (
         <Radio style={radioStyle}  value={info_source.id} key={info_source.id}>{info_source.name}</Radio>
@@ -117,7 +124,6 @@ var InfoSourceList = React.createClass({
   }
 });
 
-
 var InfoReader = React.createClass({
   changePage: function(page, pageSize){
     this.setState({page: page}, function(){
@@ -125,7 +131,16 @@ var InfoReader = React.createClass({
     })
   },
   selectSource: function(e){
-    this.setState({info_source: e.target.value}, function(){
+    this.setState({info_source: e.target.value, page:1}, function(){
+      this.loadInfo();
+    })
+  },
+  showReadItems: function(checked){
+    var show_read_items=false;
+    if (checked){
+      show_read_items=null;
+    }
+    this.setState({show_read_items: show_read_items, page:1}, function(){
       this.loadInfo();
     })
   },
@@ -134,7 +149,7 @@ var InfoReader = React.createClass({
       url: this.props.url,
       data: {
         page: this.state.page,
-        is_read: false,
+        is_read: this.state.show_read_items,
         info_source: this.state.info_source
       },
       dataType: 'json',
@@ -191,6 +206,9 @@ var InfoReader = React.createClass({
         <Row gutter={16}>
           <Col className="gutter-row" span={4}>
             <InfoSourceList info_sources={this.state.info_sources} onChange={this.selectSource} />
+            <Switch checkedChildren={'显示已读'} unCheckedChildren={'隐藏已读'} onChange={this.showReadItems}
+              style={{marginTop:'10px'}}
+            />
           </Col>
           <Col className="gutter-row" span={20}>
             <Pagination defaultCurrent={this.state.page} total={this.state.total} pageSize={50} onChange={this.changePage} current={this.state.page} />
