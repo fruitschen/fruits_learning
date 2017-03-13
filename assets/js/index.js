@@ -72,6 +72,10 @@ var InfoItem = React.createClass({
       var mark_as_read_button = <Icon type="check" />
     }
 
+    var content = '';
+    if (this.props.info_item.content){
+      var content = <div dangerouslySetInnerHTML={{__html: this.props.info_item.content}}></div>;
+    }
 
     return (
       <Card title={<a href={this.props.info_item.url} target="_blank">{this.props.info_item.title} <Icon type="link" /></a>} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
@@ -79,6 +83,7 @@ var InfoItem = React.createClass({
           {star_button}
           {mark_as_read_button}
         </p>
+        {content}
       </Card>
     );
   }

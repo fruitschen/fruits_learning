@@ -16,12 +16,13 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
     star_url = serializers.HyperlinkedIdentityField(view_name='info-star', read_only=True)
     unstar_url = serializers.HyperlinkedIdentityField(view_name='info-unstar', read_only=True)
     source_name = serializers.EmailField(source='info_source.name')
+    content = serializers.CharField(source='content.content')
 
     class Meta:
         model = Info
         fields = (
             'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at',
-            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read',
+            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read', 'content'
         )
 
 
