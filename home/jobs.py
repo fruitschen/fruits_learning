@@ -4,6 +4,8 @@ from django.core.management import call_command
 def poll_feeds():
     call_command('poll_feeds')
 
+def delete_old_info():
+    call_command('delete_old_info')
 
 def run_crawlers():
     from info_collector import crawlers
@@ -33,6 +35,14 @@ cron_jobs = [
         args=[],
         kwargs={},
         repeat=None,  # Repeat forever
+        queue_name='default'
+    ),
+    dict(
+        cron_string='1 * * * *',
+        func=delete_old_info,
+        args=[],
+        kwargs={},
+        repeat=None,
         queue_name='default'
     ),
 ]

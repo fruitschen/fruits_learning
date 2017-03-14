@@ -40,7 +40,7 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
 
 
 class InfoViewSet(viewsets.ModelViewSet):
-    queryset = Info.objects.all().select_related('author')
+    queryset = Info.objects.all().filter(is_deleted=False).select_related('author')
     serializer_class = InfoSerializer
     # filter_fields = ('read_at', )
     filter_class = InfoFilter

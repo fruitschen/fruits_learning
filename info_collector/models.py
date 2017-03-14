@@ -71,6 +71,7 @@ class Info(models.Model):
     is_read = models.BooleanField(default=False)
     starred_at = models.DateTimeField(null=True, blank=True)
     starred = models.BooleanField(default=False)
+    is_deleted = models.BooleanField(default=False)
 
     class Meta:
         unique_together = (('info_source', 'identifier'),)
@@ -78,6 +79,10 @@ class Info(models.Model):
 
     def __unicode__(self):
         return self.title or ''
+
+    def delete_me(self):
+        self.is_deleted = True
+        self.save()
 
 
 class Content(models.Model):
