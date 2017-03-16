@@ -6,15 +6,19 @@ from django.contrib import admin
 
 from search import views as search_views
 from investing import views as investing_views
+from my_feedreader.views import my_feedreader
 from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 
 from rest_framework import routers
 from info_collector.urls import InfoViewSet, InfoSourceViewSet
+from my_feedreader.api import FeedViewSet, EntryViewSet
 router = routers.DefaultRouter()
 router.register(r'info', InfoViewSet)
 router.register(r'info-source', InfoSourceViewSet)
+router.register(r'feed', FeedViewSet)
+router.register(r'entry', EntryViewSet)
 
 
 urlpatterns = [
@@ -26,9 +30,12 @@ urlpatterns = [
     url(r'^search/$', search_views.search, name='search'),
     url(r'^api/', include(router.urls)),
     url(r'^info/', include('info_collector.urls')),
+
     url(r'^fund_value_estimation/$', investing_views.fund_value_estimation, name='fund_value_estimation'),
+    url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),
 
     url(r'^django-rq/', include('django_rq.urls')),
+
     url(r'^feedreader/', include('feedreader.urls', namespace='feedreader')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # For anything not caught by a more specific rule above, hand over to

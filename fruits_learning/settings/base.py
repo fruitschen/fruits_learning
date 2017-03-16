@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'feedreader',
+    'my_feedreader',
     'info_collector',
     'investing',
 ]
