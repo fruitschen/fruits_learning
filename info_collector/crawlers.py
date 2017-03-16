@@ -142,7 +142,7 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
             data = json.loads(post['data'])
             identifier = data['id']
             title = data['title'] or data['topic_title']
-            url = '{}{}/{}'.format(self.info_source.url, data['user']['id'], identifier).replace('//', '/')
+            url = '{}{}/{}'.format(self.info_source.url, data['user']['id'], identifier)
             created_at = int(data['created_at']) / 1000
             created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60*8)
             info_query = Info.objects.filter(info_source=self.info_source, identifier=identifier)
@@ -160,6 +160,21 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
                 info = info_query[0]
                 if not info.author:
                     author = self.save_author(data['user'], info)
+        self.get_starred_info_content(session)
+
+    def get_starred_info_content(self, session):
+        info_items = Info.objects.filter(info_source=self.info_source, starred=True, status=Info.NEW)
+        for info in info_items:
+            response = get_response(session, info.url, timeout=3, headers=self.headers)
+            if not response:
+                continue
+            soup = BS(response.text)
+            status_content = soup.find('div', {'class': 'status-content'})
+            status_content = unicode(status_content)
+            content = Content.objects.create(content=status_content)
+            info.content = content
+            info.status = Info.OK
+            info.save()
 
 
 class XueqiuPeopleCrawler(XueqiuBaseCrawler):
@@ -208,7 +223,10 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
             for post in posts:
                 identifier = post['target']
                 title = post['title'] or post['topic_title']
-                url = '{}{}'.format(self.info_source.url, post['target']).replace('//', '/')
+                target = post['target']
+                if target[0] == '/':
+                    target = target[1:]
+                url = '{}{}'.format(self.info_source.url, target)
                 text = post['text']
                 if not title:
                     title = u'[无标题]{}...'.format(strip_tags(text)[:64])
@@ -219,7 +237,7 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                     content = Content.objects.create(content=text)
                     info = Info.objects.create(
                         url=url,
-                        status=Info.NEW,
+                        status=Info.OK,
                         info_source=self.info_source,
                         title=title,
                         identifier=identifier,
