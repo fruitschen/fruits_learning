@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^search/$', search_views.search, name='search'),
     url(r'^api/', include(router.urls)),
     url(r'^info/', include('info_collector.urls')),
+    url(r'^stocks/', include('stocks.urls')),
 
     url(r'^fund_value_estimation/$', investing_views.fund_value_estimation, name='fund_value_estimation'),
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),

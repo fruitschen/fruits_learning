@@ -1,0 +1,183 @@
+{% extends "stocks/stocks_base.html" %}
+{% load static %}
+
+{% block content %}
+<section class="content-wrap container" id="stock_container">
+    <h1>{{ account }}</h1>
+    <ul>
+        <li><a href="{% url 'stocks' %}">股票首页</a></li>
+    </ul>
+
+    <h3>概览
+        <a class="btn btn-primary" role="button" data-toggle="collapse" href="#summary" aria-expanded="{% if account.display_summary %}true{% else %}false{% endif %}" aria-controls="summary">
+            显示/隐藏
+        </a>
+    </h3>
+    <div class="collapse{% if account.display_summary %} in{% endif %}" id="summary">
+        <table class="table">
+            <tr>
+                <th>科目</th>
+                <th>数值</th>
+            </tr>
+            <tr>
+                <td>起始资金</td>
+                <td>{{ account.initial_investment }}</td>
+            </tr>
+            <tr>
+                <td>当前净资产</td>
+                <td>{{ account.net }}</td>
+            </tr>
+            {% if account.debt %}
+                <tr>
+                    <td>负债</td>
+                    <td>{{ account.debt }}</td>
+                </tr>
+                <tr>
+                    <td>担保比</td>
+                    <td>{{ account.ratio|floatformat:2 }}%</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>总收益率</td>
+                <td>{{ account.total_yield_percent|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td>年化收益率</td>
+                <td>{{ account.yearly_yield_percent|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td>账户年龄</td>
+                <td>{{ account.years|floatformat:2 }}年</td>
+            </tr>
+        </table>
+        <table class="table">
+            <tr>
+                <th>名称</th>
+                <th>数量</th>
+                <th>总价</th>
+                <th>占比</th>
+            </tr>
+            {% for stock in account.stocks.all %}
+                <tr>
+                    <td>{{ stock.stock }}</td>
+                    <td>{{ stock.amount }}</td>
+                    <td>{{ stock.total }}</td>
+                    <td>{{ stock.percent|floatformat:2 }}%</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <h3>构成
+        <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_chart_container" aria-expanded="true" aria-controls="account_chart_container">
+            显示/隐藏
+        </a>
+    </h3>
+    <div id="account_chart_container" class="collapse in">
+        <div id="account_chart"  style="width:100%;height:500px"></div>
+    </div>
+
+
+    <h3>交易
+        <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
+            显示/隐藏
+        </a>
+    </h3>
+    <div  class="collapse in" id="account_profit">
+        <table class="table">
+            {% for month in aggregates_by_months %}
+                <tr>
+                    <th>{{ month.time }}</th>
+                    <td>
+                        {{ month.pair_profit }}
+                        {% if month.profit %} + {{ month.profit }} = <strong style="color:red;">{{ month.total }}</strong>{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th>未结配对盈亏: </th>
+                <td>{{ pair_virtual_profit|floatformat:2 }}</td>
+            </tr>
+            {% if transaction_virtual_profit %}
+                <tr><th>未结交易盈亏: </th><td>{{ transaction_virtual_profit|floatformat:2 }}</td></tr>
+            {% endif %}
+        </table>
+    </div>
+
+
+    {% if logged_in and account.main %}
+        <h3>配对</h3>
+        {% include "stocks/includes/pair_list.html" %}
+    {% endif %}
+
+
+    <h3>未结配对交易<a href="{% url 'admin:index' %}stocks/pairtransaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a></h3>
+    {% with pair_transactions_unfinished as pair_transactions %}
+        {% include "stocks/includes/pair_transaction_list.html" %}
+    {% endwith %}
+
+    <h3>已完成配对交易</h3>
+    {% with recent_pair_transactions as pair_transactions %}
+        {% include "stocks/includes/pair_transaction_list.html" %}
+    {% endwith %}
+
+    {% if account_transactions %}
+        <a href="{% url 'admin:index' %}stocks/transaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加 Transaction</a>
+        <h3>未结交易</h3>
+        {% with transactions_unfinished as transactions %}
+            {% include "stocks/includes/transaction_list.html" %}
+        {% endwith %}
+        <h3>已完成交易</h3>
+        {% with transactions_this_month as transactions %}
+            {% include "stocks/includes/transaction_list.html" %}
+        {% endwith %}
+    {% endif %}
+</section>
+{% endblock %}
+
+
+{% block extra_js %}
+  {{ block.super }}
+  <script src="{% static 'echarts-3.4/echarts.js' %}"></script>
+  <script type="text/javascript">
+      // http://echarts.baidu.com/tutorial.html
+      var solid_style = {normal: {lineStyle:{type:'solid'}}}
+      var weak_style = {normal: {lineStyle:{color:'grey', width: 0.5}}}
+      /* -------------------------------- 账户图 --------------------------------------- */
+      var myChart = echarts.init(document.getElementById('account_chart'));
+      var names = []
+      var data = []
+      {% for stock in account.stocks.all %}
+          names.push('{{ stock.stock }}');
+          data.push({value: {{ stock.total }}, name:'{{ stock.stock }}'})
+      {% endfor %}
+      var option = {
+          tooltip : {
+              trigger: 'item',
+              formatter: "{a} <br/>{b} : {c} ({d}%)"
+          },
+          toolbox: {
+              show : true,
+              feature : {
+                  mark : {show: true},
+                  dataView : {show: true, readOnly: false},
+                  restore : {show: true},
+                  saveAsImage : {show: true}
+              }
+          },
+          calculable : true,
+          series : [
+              {
+                  name:'账户股票比例',
+                  type:'pie',
+                  radius : '65%',
+                  center: ['50%', '50%'],
+                  data: data
+              }
+          ]
+        };
+        myChart.setOption(option);
+        /* -------------------------------- 账户图结束 --------------------------------------- */
+  </script>
+{% endblock %}

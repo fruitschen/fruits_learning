@@ -1,0 +1,29 @@
+{% for t in pair_transactions %}
+    <table class="table" style="margin:0;">
+        <thead>
+            <tr>
+                <th style="width:60%">
+                    <strong>{{ t }} {{ t.started.date.year }}-{{ t.started.date.month }}-{{ t.started.date.day }}</strong>
+                    <strong style="color:red;">{{ t.get_profit|floatformat:2 }}</strong>
+                    比例: {{ t.to_ratio|floatformat:3 }} -&gt; | &lt;- {% if t.finished %}{{ t.from_ratio|floatformat:3 }}{% else %}({{ t.pair.current_value|floatformat:3 }}){% endif %}
+                </th>
+                <th style="width:20%">
+                    <strong style="color:red">{{ t.percent }} = {{ t.get_profit|floatformat:2 }} / {{ t.money_taken|floatformat:2 }}</strong>
+                </th>
+                <th style="width:20%">
+                    <a href="{% url 'admin:index' %}stocks/pairtransaction/{{ t.id }}/" target="_blank" class="btn btn-primary btn-sm">Admin</a>
+                    <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="#pair_transactions_{{ t.id }}" aria-expanded="false" aria-controls="pair_transactions_{{ t.id }}">
+                        明细
+                    </a>
+                </th>
+            </tr>
+        </thead>
+        <tbody class="collapse pair_trans_details" id="pair_transactions_{{ t.id }}">
+            <tr><th>卖出{{ t.sold_stock.name }}</th><td colspan="2"> {{ t.sold_price|floatformat:3 }} x {{ t.sold_amount }} = {{ t.sold_total|floatformat:2 }}</td></tr>
+            <tr><th>买入{{ t.bought_stock.name }}</th><td colspan="2"> {{ t.bought_price|floatformat:3 }} x {{ t.bought_amount }} = {{ t.bought_total|floatformat:2 }}</td></tr>
+            <tr><th>卖出{{ t.bought_stock.name }}</th><td colspan="2"> {{ t.bought_sold_price|default:t.bought_stock.price|floatformat:3 }} x {{ t.bought_amount }} = {{ t.bought_sold_total|floatformat:2 }}</td></tr>
+            <tr><th>买入{{ t.sold_stock.name }}</th><td colspan="2"> {{ t.sold_bought_back_price|default:t.sold_stock.price|floatformat:3 }} x {{ t.sold_amount }} = {{ t.sold_bought_back_total|floatformat:2 }}</td></tr>
+            <tr><th>利润</th><td colspan="2"> <strong style="color:red;">{{ t.get_profit|floatformat:3 }}</strong> = {{ t.profit_before_fee|floatformat:2 }} - {{ t.fee|floatformat:2 }}</td></tr>
+        </tbody>
+    </table>
+{% endfor %}

@@ -1,0 +1,20 @@
+{% extends "stocks/stocks_base.html" %}
+{% load static %}
+
+{% block head %}
+    <title>{{ pair }}</title>
+{% endblock %}
+
+
+{% block content %}
+    <section class="content-wrap container" id="stock_container">
+        <h1>{{ pair }}</h1>
+        <h3>未完成</h3>
+        {% with unfinished_pair_transactions as pair_transactions %}
+            {% include "stocks/includes/pair_transaction_list.html" %}
+        {% endwith %}
+        <h3>完成</h3>
+        {% include "stocks/includes/pair_transaction_list.html" %}
+    </section>
+{% endblock %}
+

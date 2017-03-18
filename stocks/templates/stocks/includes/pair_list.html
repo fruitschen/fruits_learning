@@ -1,0 +1,20 @@
+<table class="table">
+    <tr>
+        <th>配对</th>
+        <th>当前值</th>
+        <th>--</th>
+    </tr>
+    {% for pair in pairs %}
+        <tr>
+            <td>
+                <a href="{% url 'pair_details' pair.id %}">{{ pair.started_stock.name}}/{{ pair.target_stock.name }}</a>
+            </td>
+            <td>
+                <strong>{{ pair.current_value }}</strong>
+            </td>
+            <td>
+                <a href="{% url 'admin:stocks_stockpair_change' pair.id %}" target="_blank">Admin</a>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
