@@ -1,0 +1,14 @@
+server {
+
+    listen 81 default_server;
+    server_name local.fruitschen.com, pms;
+
+    access_log /var/log/nginx/pms_access.log combined;
+    error_log /var/log/nginx/pms_error.log;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/fruitschen/workspace/learning/fruits_learning/local/deploy/fruits_learning.sock;
+    }
+
+}

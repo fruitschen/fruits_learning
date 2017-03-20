@@ -13,6 +13,7 @@ static/*
 !static/.htaccess
 search_index/*
 logs/*
+*.log
 bower_components/
 db.sqlite3
 

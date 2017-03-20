@@ -8,6 +8,7 @@ class Command(BaseCommand):
     help = u'更新股票价格'
 
     def add_arguments(self, parser):
+        super(Command, self).add_arguments(parser)
         parser.add_argument('--all',
             action='store_true',
             dest='all',
@@ -29,9 +30,9 @@ class Command(BaseCommand):
             update_stocks_prices(group)
             i += 50
 
-        if options.get('verbose'):
+        if options.get('verbosity'):
             print 'Done'
         for pair in pairs:
             pair.update_if_needed()
-        if options.get('verbose'):
+        if options.get('verbosity'):
             print 'Updated Pairs'

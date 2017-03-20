@@ -78,61 +78,61 @@
         <div id="account_chart"  style="width:100%;height:500px"></div>
     </div>
 
-
-    <h3>交易
-        <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
-            显示/隐藏
-        </a>
-    </h3>
-    <div  class="collapse in" id="account_profit">
-        <table class="table">
-            {% for month in aggregates_by_months %}
-                <tr>
-                    <th>{{ month.time }}</th>
-                    <td>
-                        {{ month.pair_profit }}
-                        {% if month.profit %} + {{ month.profit }} = <strong style="color:red;">{{ month.total }}</strong>{% endif %}
-                    </td>
-                </tr>
-            {% endfor %}
-            <tr>
-                <th>未结配对盈亏: </th>
-                <td>{{ pair_virtual_profit|floatformat:2 }}</td>
-            </tr>
-            {% if transaction_virtual_profit %}
-                <tr><th>未结交易盈亏: </th><td>{{ transaction_virtual_profit|floatformat:2 }}</td></tr>
-            {% endif %}
-        </table>
-    </div>
-
-
     {% if logged_in and account.main %}
+
+        <h3>交易
+            <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
+                显示/隐藏
+            </a>
+        </h3>
+        <div  class="collapse in" id="account_profit">
+            <table class="table">
+                {% for month in aggregates_by_months %}
+                    <tr>
+                        <th>{{ month.time }}</th>
+                        <td>
+                            {{ month.pair_profit }}
+                            {% if month.profit %} + {{ month.profit }} = <strong style="color:red;">{{ month.total }}</strong>{% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <th>未结配对盈亏: </th>
+                    <td>{{ pair_virtual_profit|floatformat:2 }}</td>
+                </tr>
+                {% if transaction_virtual_profit %}
+                    <tr><th>未结交易盈亏: </th><td>{{ transaction_virtual_profit|floatformat:2 }}</td></tr>
+                {% endif %}
+            </table>
+        </div>
+
         <h3>配对</h3>
         {% include "stocks/includes/pair_list.html" %}
+
+        <h3>未结配对交易<a href="{% url 'admin:index' %}stocks/pairtransaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a></h3>
+        {% with pair_transactions_unfinished as pair_transactions %}
+            {% include "stocks/includes/pair_transaction_list.html" %}
+        {% endwith %}
+
+        <h3>已完成配对交易</h3>
+        {% with recent_pair_transactions as pair_transactions %}
+            {% include "stocks/includes/pair_transaction_list.html" %}
+        {% endwith %}
+
+        {% if account_transactions %}
+            <a href="{% url 'admin:index' %}stocks/transaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加 Transaction</a>
+            <h3>未结交易</h3>
+            {% with transactions_unfinished as transactions %}
+                {% include "stocks/includes/transaction_list.html" %}
+            {% endwith %}
+            <h3>已完成交易</h3>
+            {% with transactions_this_month as transactions %}
+                {% include "stocks/includes/transaction_list.html" %}
+            {% endwith %}
+        {% endif %}
     {% endif %}
 
 
-    <h3>未结配对交易<a href="{% url 'admin:index' %}stocks/pairtransaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a></h3>
-    {% with pair_transactions_unfinished as pair_transactions %}
-        {% include "stocks/includes/pair_transaction_list.html" %}
-    {% endwith %}
-
-    <h3>已完成配对交易</h3>
-    {% with recent_pair_transactions as pair_transactions %}
-        {% include "stocks/includes/pair_transaction_list.html" %}
-    {% endwith %}
-
-    {% if account_transactions %}
-        <a href="{% url 'admin:index' %}stocks/transaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加 Transaction</a>
-        <h3>未结交易</h3>
-        {% with transactions_unfinished as transactions %}
-            {% include "stocks/includes/transaction_list.html" %}
-        {% endwith %}
-        <h3>已完成交易</h3>
-        {% with transactions_this_month as transactions %}
-            {% include "stocks/includes/transaction_list.html" %}
-        {% endwith %}
-    {% endif %}
 </section>
 {% endblock %}
 
