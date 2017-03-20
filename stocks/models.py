@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from decimal import Decimal
-from datetime import timedelta
+from datetime import timedelta, datetime
 from django.utils import timezone
 
 from django.core.urlresolvers import reverse
@@ -43,8 +43,8 @@ for transaction in sold_trans:
 
 class StockPair(models.Model):
     name = models.CharField(max_length=256, default='')
-    started_stock = models.ForeignKey('Stock', limit_choices_to={'star': True}, related_name='pairs')
-    target_stock = models.ForeignKey('Stock', limit_choices_to={'star': True}, related_name='targeted_pairs')
+    started_stock = models.ForeignKey('Stock', limit_choices_to={'star': True}, related_name='pairs', on_delete=models.PROTECT)
+    target_stock = models.ForeignKey('Stock', limit_choices_to={'star': True}, related_name='targeted_pairs', on_delete=models.PROTECT)
     star = models.BooleanField(default=False, blank=True)
     current_value = models.DecimalField(max_digits=10, decimal_places=4, null=True, blank=True)
     value_updated = models.DateTimeField(null=True, blank=True)
@@ -75,11 +75,11 @@ class StockPair(models.Model):
 
 class PairTransaction(models.Model):
     account = models.ForeignKey('Account', on_delete=models.PROTECT, related_name='pair_transactions')
-    pair = models.ForeignKey(StockPair, limit_choices_to={'star': True}, null=True, blank=True, related_name='transactions')
-    sold_stock = models.ForeignKey('Stock', verbose_name=u'卖出股票', limit_choices_to={'star': True}, related_name='sold_pair_transactions')
+    pair = models.ForeignKey(StockPair, limit_choices_to={'star': True}, null=True, blank=True, related_name='transactions', on_delete=models.PROTECT)
+    sold_stock = models.ForeignKey('Stock', verbose_name=u'卖出股票', limit_choices_to={'star': True}, related_name='sold_pair_transactions', on_delete=models.PROTECT)
     sold_price = models.DecimalField(u'卖出价格', max_digits=10, decimal_places=4)
     sold_amount = models.IntegerField(u'卖出数量',)
-    bought_stock = models.ForeignKey('Stock', verbose_name=u'买入股票', limit_choices_to={'star': True}, related_name='bought_pair_transactions')
+    bought_stock = models.ForeignKey('Stock', verbose_name=u'买入股票', limit_choices_to={'star': True}, related_name='bought_pair_transactions', on_delete=models.PROTECT)
     bought_price = models.DecimalField(u'买入价格', max_digits=10, decimal_places=4)
     bought_amount = models.IntegerField(u'买入数量',)
     started = models.DateTimeField(u'交易时间', null=True, blank=True)
@@ -210,7 +210,7 @@ class Stock(models.Model):
 
 class Transaction(models.Model):
     account = models.ForeignKey('Account', blank=True, null=True, on_delete=models.PROTECT, related_name='transactions')
-    bought_stock = models.ForeignKey('Stock', verbose_name=u'买入股票', limit_choices_to={'star': True}, related_name='transactions')
+    bought_stock = models.ForeignKey('Stock', verbose_name=u'买入股票', limit_choices_to={'star': True}, related_name='transactions', on_delete=models.PROTECT)
     bought_price = models.DecimalField(u'买入价格', max_digits=10, decimal_places=4, null=True, blank=True)
     bought_amount = models.IntegerField(u'买入数量',)
     started = models.DateTimeField(u'交易时间', null=True, blank=True)
@@ -296,6 +296,7 @@ class Account(models.Model):
     public = models.BooleanField(u'是否公开', default=False)
     display_summary = models.BooleanField(u'是否默认显示概览', default=False)
     initial_investment = models.DecimalField(u'初始投资', max_digits=14, decimal_places=2, null=True, blank=True)
+    cash = models.DecimalField(u'现金', max_digits=14, decimal_places=2, default=0)
     initial_date = models.DateField(u'初始投资时间', )
     debt = models.DecimalField(u'负债', max_digits=10, decimal_places=2, null=True, blank=True)
 
@@ -303,8 +304,12 @@ class Account(models.Model):
         return self.name
 
     @property
-    def total(self):
+    def stocks_total(self):
         return sum([stock.total for stock in self.stocks.all()])
+
+    @property
+    def total(self):
+        return self.stocks_total + self.cash
 
     @property
     def net(self):
@@ -341,4 +346,119 @@ class Account(models.Model):
     @property
     def yearly_yield_percent(self):
         return self.yearly_yield * Decimal(100)
+
+    def take_snapshot(self):
+        if self.snapshots.all():
+            serial_number = 1 + self.snapshots.all().order_by('-id')[0].id
+        else:
+            serial_number = 1
+        snapshot = Snapshot(
+            account=self,
+            date=datetime.today(),
+            serial_number=serial_number,
+            stocks_asset=self.stocks_total,
+            net_asset=self.net,
+            cash=self.cash,
+            debt=self.debt,
+        )
+        snapshot.save()
+        for account_stock in self.stocks.all():
+            stock = account_stock.stock
+            snapshot_stock = SnapshotStock.objects.create(
+                snapshot=snapshot,
+                stock=stock,
+                amount=account_stock.amount,
+                price=stock.price,
+                name=stock.name,
+                code=stock.code,
+                total=account_stock.total
+            )
+
+
+class Snapshot(models.Model):
+    account = models.ForeignKey('Account', related_name='snapshots', on_delete=models.PROTECT)
+    date = models.DateField(u'时间', )
+    serial_number = models.PositiveIntegerField(null=True)
+
+    net_asset = models.DecimalField(u'净资产', max_digits=14, decimal_places=2, null=True, blank=True)
+    stocks_asset = models.DecimalField(u'股票市值', max_digits=14, decimal_places=2, null=True, blank=True)
+    cash = models.DecimalField(u'现金', max_digits=14, decimal_places=2, null=True, blank=True)
+    debt = models.DecimalField(u'负债', max_digits=10, decimal_places=2, null=True, blank=True, default=0)
+    increase = models.DecimalField(u'涨幅', max_digits=8, decimal_places=4, null=True, blank=True)
+    has_transaction = models.BooleanField(u'是否有交易', default=False)
+    transactions_count = models.IntegerField(default=0)
+
+    error = models.DecimalField(u'误差', max_digits=8, decimal_places=2, null=True, blank=True)
+    comment = models.TextField(u'备注', blank=True, default='')
+    status_image = models.ImageField(upload_to='snapshots', blank=True)
+    change_image = models.ImageField(upload_to='snapshots', blank=True)
+    xueqiu_url = models.URLField(null=True, blank=True)
+
+    def __unicode__(self):
+        return u'{} snapshot {} '.format(self.account, self.serial_number)
+
+    @property
+    def public(self):
+        return self.account.public
+
+    @property
+    def previous_snapshot(self):
+        previous_snapshot = None
+        previous_snapshots = self.account.snapshots.all().filter(id__lt=self.id).order_by('-id')
+        if previous_snapshots.exists():
+            previous_snapshot = previous_snapshots[0]
+        return previous_snapshot
+
+    def calculate_increase(self):
+        self.increase = 0
+        previous_snapshot = self.previous_snapshot
+        if previous_snapshot:
+            self.increase = self.net_asset / previous_snapshot.net_asset - 1
+
+    def calculate_net_asset(self):
+        for stock in self.stocks.all():
+            if not (stock.total and stock.name and stock.code):
+                stock.total = stock.price * stock.amount
+                stock.name = stock.stock.name
+                stock.code = stock.stock.code
+                stock.save()
+        self.stocks_asset = sum([stock.total for stock in self.stocks.all()])
+        self.net_asset = self.stocks_asset + self.cash - (self.debt or 0)
+        self.calculate_increase()
+
+    def populate_from_previous(self):
+        if self.stocks.all():
+            return
+        previous = self.previous_snapshot
+        for snapshot_stock in previous.stocks.all():
+            snapshot_stock.id = None
+            snapshot_stock.total = None
+            snapshot_stock.snapshot = self
+            snapshot_stock.save()
+
+    @property
+    def increase_percent(self):
+        return self.increase * 100
+
+    @property
+    def total(self):
+        return self.stocks_total + self.cash
+
+
+class SnapshotStock(models.Model):
+    snapshot = models.ForeignKey('Snapshot', related_name='stocks')
+    stock = models.ForeignKey(Stock, on_delete=models.PROTECT, limit_choices_to={'star': True})
+    amount = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
+    name = models.CharField(max_length=16, blank=True)
+    code = models.CharField(max_length=6, blank=True)
+    total = models.DecimalField(u'总价', max_digits=14, decimal_places=2, null=True, blank=True)
+
+    @property
+    def get_total(self):
+        return self.stock.price * self.amount
+
+    @property
+    def percent(self):
+        return self.total / self.snapshot.stocks_asset * Decimal(100)
 

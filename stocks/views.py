@@ -36,6 +36,15 @@ def account_details(request, account_slug):
     account = Account.objects.get(slug=account_slug)
     if not account.public and not request.user.is_authenticated():
         return HttpResponseForbidden('Oops')
+    snapshots = account.snapshots.all().order_by('-id')
+    snapshots_chart_data = None
+    if snapshots.count() >= 3:
+        raw_data = snapshots.values_list('date', 'net_asset')
+        raw_data = raw_data.reverse()
+        x_axis = [r[0].strftime('%Y-%m-%d') for r in raw_data]
+        y_axis = [int(r[1]) for r in raw_data]
+        snapshots_chart_data = {'x_axis': x_axis , 'y_axis': y_axis }
+
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
     account_pair_transactions = account.pair_transactions.all()
@@ -90,6 +99,8 @@ def account_details(request, account_slug):
 
     context = {
         'account': account,
+        'snapshots': snapshots,
+        'snapshots_chart_data': snapshots_chart_data,
         'logged_in': logged_in,
         'star_stocks': star_stocks,
         'recent_pair_transactions': recent_pair_transactions,
@@ -141,3 +152,19 @@ def pair_details(request, pair_id):
         'unfinished_pair_transactions': unfinished_pair_transactions,
     }
     return render(request, 'stocks/pair_details.html', context)
+
+
+def account_snapshot(request, account_slug, snapshot_number):
+    logged_in = request.user.is_authenticated()
+    account = Account.objects.get(slug=account_slug)
+    if not account.public and not request.user.is_authenticated():
+        return HttpResponseForbidden('Oops')
+    snapshot = account.snapshots.all().get(serial_number=snapshot_number)
+    context = {
+        'account': account,
+        'snapshot': snapshot,
+        'logged_in': logged_in,
+    }
+    context.update(get_pairs_context(request))
+    return render(request, 'stocks/account_snapshot.html', context)
+

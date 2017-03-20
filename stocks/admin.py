@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 from stocks.models import (Stock, StockPair, PairTransaction, Transaction, Account,
-                           AccountStock)
+                           AccountStock, Snapshot, SnapshotStock)
 
 
 def add_star(modeladmin, request, queryset):
@@ -49,8 +49,17 @@ class AccountAdmin(admin.ModelAdmin):
     inlines = [AccountStockInline]
 
 
+class SnapshotStockInline(admin.TabularInline):
+    model = SnapshotStock
+
+
+class SnapshotAdmin(admin.ModelAdmin):
+    model = Snapshot
+    inlines = [SnapshotStockInline]
+
 admin.site.register(Stock, StockAdmin)
 admin.site.register(StockPair, PairAdmin)
 admin.site.register(PairTransaction, PairTransactionAdmin)
 admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(Account, AccountAdmin)
+admin.site.register(Snapshot, SnapshotAdmin)
