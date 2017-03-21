@@ -11,7 +11,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 
-from stocks.models import Stock, StockPair, PairTransaction, Transaction, Account
+from stocks.models import Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account
 from stocks.utils import update_stocks_prices, update_stocks_prices_url
 
 
@@ -57,13 +57,13 @@ def account_details(request, account_slug):
     for p in pair_transactions_unfinished:
         pair_virtual_profit += p.get_profit()
 
-    account_transactions = account.transactions.all()
-    transactions = account_transactions.exclude(finished__lt=timezone.datetime(now.year, now.month, 1))
-    transactions_this_month = transactions.filter(finished__isnull=False).order_by('-finished')
-    transactions_unfinished = transactions.filter(finished__isnull=True).order_by('-started')
-    transaction_profit = transactions_this_month.aggregate(Sum('profit'))['profit__sum']
+    account_bs_transactions = account.bs_transactions.all()
+    bs_transactions = account_bs_transactions.exclude(finished__lt=timezone.datetime(now.year, now.month, 1))
+    bs_transactions_this_month = bs_transactions.filter(finished__isnull=False).order_by('-finished')
+    bs_transactions_unfinished = bs_transactions.filter(finished__isnull=True).order_by('-started')
+    transaction_profit = bs_transactions_this_month.aggregate(Sum('profit'))['profit__sum']
     transaction_virtual_profit = 0
-    for t in transactions_unfinished:
+    for t in bs_transactions_unfinished:
         transaction_virtual_profit += t.get_profit()
 
     aggregates_by_months = []
@@ -79,7 +79,7 @@ def account_details(request, account_slug):
         end = timezone.datetime(now.year, month+1, 1)
         pair_transactions_by_month = account_pair_transactions.filter(finished__isnull=False)\
             .filter(finished__gte=start, finished__lt=end)
-        transactions_by_month = account_transactions.filter(finished__isnull=False)\
+        transactions_by_month = account_bs_transactions.filter(finished__isnull=False)\
             .filter(finished__gte=start, finished__lt=end)
 
         pair_profit_by_momth = pair_transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
@@ -106,9 +106,9 @@ def account_details(request, account_slug):
         'recent_pair_transactions': recent_pair_transactions,
         'pair_transactions_unfinished': pair_transactions_unfinished,
         'pair_virtual_profit': pair_virtual_profit,
-        'account_transactions': account_transactions,
-        'transactions_this_month': transactions_this_month,
-        'transactions_unfinished': transactions_unfinished,
+        'account_bs_transactions': account_bs_transactions,
+        'bs_transactions_this_month': bs_transactions_this_month,
+        'bs_transactions_unfinished': bs_transactions_unfinished,
         'transaction_profit': transaction_profit,
         'transaction_virtual_profit': transaction_virtual_profit,
         'aggregates_by_months': aggregates_by_months,

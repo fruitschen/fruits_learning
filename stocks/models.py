@@ -42,6 +42,7 @@ for transaction in sold_trans:
 
 
 class StockPair(models.Model):
+    u"""一组配对交易标的"""
     name = models.CharField(max_length=256, default='')
     started_stock = models.ForeignKey('Stock', limit_choices_to={'star': True}, related_name='pairs', on_delete=models.PROTECT)
     target_stock = models.ForeignKey('Stock', limit_choices_to={'star': True}, related_name='targeted_pairs', on_delete=models.PROTECT)
@@ -74,6 +75,7 @@ class StockPair(models.Model):
 
 
 class PairTransaction(models.Model):
+    u"""一笔配对交易"""
     account = models.ForeignKey('Account', on_delete=models.PROTECT, related_name='pair_transactions')
     pair = models.ForeignKey(StockPair, limit_choices_to={'star': True}, null=True, blank=True, related_name='transactions', on_delete=models.PROTECT)
     sold_stock = models.ForeignKey('Stock', verbose_name=u'卖出股票', limit_choices_to={'star': True}, related_name='sold_pair_transactions', on_delete=models.PROTECT)
@@ -208,9 +210,10 @@ class Stock(models.Model):
         return reverse('stock_details', args=(self.code,))
 
 
-class Transaction(models.Model):
-    account = models.ForeignKey('Account', blank=True, null=True, on_delete=models.PROTECT, related_name='transactions')
-    bought_stock = models.ForeignKey('Stock', verbose_name=u'买入股票', limit_choices_to={'star': True}, related_name='transactions', on_delete=models.PROTECT)
+class BoughtSoldTransaction(models.Model):
+    """以短期内卖出为目的的交易"""
+    account = models.ForeignKey('Account', blank=True, null=True, on_delete=models.PROTECT, related_name='bs_transactions')
+    bought_stock = models.ForeignKey('Stock', verbose_name=u'买入股票', limit_choices_to={'star': True}, related_name='bs_transactions', on_delete=models.PROTECT)
     bought_price = models.DecimalField(u'买入价格', max_digits=10, decimal_places=4, null=True, blank=True)
     bought_amount = models.IntegerField(u'买入数量',)
     started = models.DateTimeField(u'交易时间', null=True, blank=True)
@@ -272,7 +275,7 @@ class Transaction(models.Model):
     def save(self, **kwargs):
         if not self.profit and self.finished:
             self.profit = self.get_profit()
-        super(Transaction, self).save(**kwargs)
+        super(BoughtSoldTransaction, self).save(**kwargs)
 
 
 class AccountStock(models.Model):

@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.contrib import admin
 
-from stocks.models import (Stock, StockPair, PairTransaction, Transaction, Account,
+from stocks.models import (Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account,
                            AccountStock, Snapshot, SnapshotStock)
 
 
@@ -60,6 +60,6 @@ class SnapshotAdmin(admin.ModelAdmin):
 admin.site.register(Stock, StockAdmin)
 admin.site.register(StockPair, PairAdmin)
 admin.site.register(PairTransaction, PairTransactionAdmin)
-admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(BoughtSoldTransaction, TransactionAdmin)
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Snapshot, SnapshotAdmin)

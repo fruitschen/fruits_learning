@@ -146,7 +146,7 @@
         <h3>配对</h3>
         {% include "stocks/includes/pair_list.html" %}
 
-        <h3>未结配对交易<a href="{% url 'admin:index' %}stocks/pairtransaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a></h3>
+        <h3>未结配对交易<a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a></h3>
         {% with pair_transactions_unfinished as pair_transactions %}
             {% include "stocks/includes/pair_transaction_list.html" %}
         {% endwith %}
@@ -156,15 +156,16 @@
             {% include "stocks/includes/pair_transaction_list.html" %}
         {% endwith %}
 
-        {% if account_transactions %}
-            <a href="{% url 'admin:index' %}stocks/transaction/add/?account={{ account.id }}" target="_blank" class="btn btn-primary">添加 Transaction</a>
-            <h3>未结交易</h3>
-            {% with transactions_unfinished as transactions %}
-                {% include "stocks/includes/transaction_list.html" %}
+        {% if account_bs_transactions %}
+            <h3>未卖出交易
+                <a href="{% url 'admin:stocks_boughtsoldtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a>
+            </h3>
+            {% with bs_transactions_unfinished as bs_transactions %}
+                {% include "stocks/includes/bs_transaction_list.html" %}
             {% endwith %}
-            <h3>已完成交易</h3>
-            {% with transactions_this_month as transactions %}
-                {% include "stocks/includes/transaction_list.html" %}
+            <h3>已卖出交易</h3>
+            {% with bs_transactions_this_month as bs_transactions %}
+                {% include "stocks/includes/bs_transaction_list.html" %}
             {% endwith %}
         {% endif %}
     {% endif %}
