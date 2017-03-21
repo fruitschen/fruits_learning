@@ -60,6 +60,18 @@
         <div id="account_chart"  style="width:100%;height:500px"></div>
     </div>
 
+
+    {% if transactions %}
+        <h3>交易
+            <a class="btn btn-primary" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">
+                显示/隐藏
+            </a>
+        </h3>
+        <div class="collapse in" id="recent_transactions">
+            {% include "stocks/includes/transactions_list.html" %}
+        </div>
+    {% endif %}
+
 </section>
 {% endblock %}
 

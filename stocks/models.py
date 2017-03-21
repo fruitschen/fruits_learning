@@ -41,6 +41,18 @@ for transaction in sold_trans:
 '''
 
 
+class Transaction(object):
+    """TODO"""
+
+    def __init__(self, date, action, stock, amount, price, total_money):
+        self.date = date
+        self.action = action
+        self.stock = stock
+        self.amount = amount
+        self.price = price
+        self.total_money = total_money
+
+
 class StockPair(models.Model):
     u"""一组配对交易标的"""
     name = models.CharField(max_length=256, default='')
@@ -180,6 +192,26 @@ class PairTransaction(models.Model):
             self.profit = self.get_profit()
         super(PairTransaction, self).save(**kwargs)
 
+    def as_transactions(self):
+        transactions = [
+            # sold
+            Transaction(date=self.started.date(), action=u'卖出', stock=self.sold_stock, amount=self.sold_amount,
+                        price=self.sold_price, total_money=self.sold_total),
+            # bought
+            Transaction(date=self.started.date(), action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
+                        price=self.bought_price, total_money=self.bought_total),
+        ]
+        if self.finished:
+            transactions.extend([
+                # sold
+                Transaction(date=self.finished.date(), action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
+                            price=self.bought_sold_price, total_money=self.bought_sold_total),
+                # bought
+                Transaction(date=self.finished.date(), action=u'买入', stock=self.sold_stock, amount=self.sold_amount,
+                            price=self.sold_bought_back_price, total_money=self.sold_bought_back_total),
+            ])
+        return transactions
+
 
 class Stock(models.Model):
     code = models.CharField(max_length=6)
@@ -276,6 +308,19 @@ class BoughtSoldTransaction(models.Model):
         if not self.profit and self.finished:
             self.profit = self.get_profit()
         super(BoughtSoldTransaction, self).save(**kwargs)
+
+    def as_transactions(self):
+        transactions = [
+            # sold
+            Transaction(date=self.started.date(), action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
+                        price=self.bought_price, total_money=self.bought_total),
+        ]
+        if self.finished:
+            transactions.append(
+                Transaction(date=self.finished.date(), action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
+                            price=self.sold_price, total_money=self.sold_total)
+            )
+        return transactions
 
 
 class AccountStock(models.Model):
@@ -377,6 +422,35 @@ class Account(models.Model):
                 total=account_stock.total
             )
 
+    def find_transactions(self, start, end):
+        all_transactions = []
+        bs_transactions = self.bs_transactions.all()
+        pair_transactions = self.pair_transactions.all()
+        valid_bs_transactions = bs_transactions.filter(
+            Q(started__gte=start, started__lte=end) | Q(finished__gte=start, finished__lte=end)
+        )
+        valid_pair_transactions = pair_transactions.filter(
+            Q(started__gte=start, started__lte=end) | Q(finished__gte=start, finished__lte=end)
+        )
+        all_transactions.extend(list(valid_bs_transactions))
+        all_transactions.extend(list(valid_pair_transactions))
+        transactions = []
+        for t in all_transactions:
+            transactions.extend(t.as_transactions())
+        transactions = filter(lambda x: start < x.date < end, transactions)
+        transactions = sorted(transactions, key=lambda x: x.date, reverse=True)
+        return transactions
+
+    def recent_transactions(self):
+        today = timezone.now().date()
+        month_start = timezone.datetime(today.year, today.month, 1).date()
+        transactions = self.find_transactions(month_start, today)
+        if not transactions:
+            last_month = month_start - timedelta(days=1)
+            last_month_start = timezone.datetime(last_month.year, last_month.month, 1).date()
+            all_transactions = self.find_transactions(last_month_start, last_month)
+        return transactions
+
 
 class Snapshot(models.Model):
     account = models.ForeignKey('Account', related_name='snapshots', on_delete=models.PROTECT)
@@ -446,6 +520,11 @@ class Snapshot(models.Model):
     @property
     def total(self):
         return self.stocks_total + self.cash
+
+    def find_transactions(self):
+        start = timezone.datetime(self.date.year, self.date.month, 1).date()
+        transactions = self.account.find_transactions(start, self.date)
+        return transactions
 
 
 class SnapshotStock(models.Model):

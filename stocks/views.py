@@ -96,6 +96,7 @@ def account_details(request, account_slug):
         month -= 1
 
     aggregates_by_months.append(year_profits)
+    recent_transactions = account.recent_transactions()
 
     context = {
         'account': account,
@@ -113,6 +114,7 @@ def account_details(request, account_slug):
         'transaction_virtual_profit': transaction_virtual_profit,
         'aggregates_by_months': aggregates_by_months,
         'year_profits': year_profits,
+        'recent_transactions': recent_transactions,
     }
     context.update(get_pairs_context(request))
     return render(request, 'stocks/account_details.html', context)
@@ -160,10 +162,12 @@ def account_snapshot(request, account_slug, snapshot_number):
     if not account.public and not request.user.is_authenticated():
         return HttpResponseForbidden('Oops')
     snapshot = account.snapshots.all().get(serial_number=snapshot_number)
+    transactions = snapshot.find_transactions()
     context = {
         'account': account,
         'snapshot': snapshot,
         'logged_in': logged_in,
+        'transactions': transactions,
     }
     context.update(get_pairs_context(request))
     return render(request, 'stocks/account_snapshot.html', context)

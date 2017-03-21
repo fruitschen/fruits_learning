@@ -117,7 +117,7 @@
 
 
     {% if logged_in and account.main %}
-        <h3>交易
+        <h3>利润
             <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
                 显示/隐藏
             </a>
@@ -168,6 +168,20 @@
                 {% include "stocks/includes/bs_transaction_list.html" %}
             {% endwith %}
         {% endif %}
+    {% endif %}
+
+
+    {% if recent_transactions %}
+        {% with recent_transactions as transactions %}
+            <h3>最近交易
+                <a class="btn btn-primary" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">
+                    显示/隐藏
+                </a>
+            </h3>
+            <div class="collapse in" id="recent_transactions">
+                {% include "stocks/includes/transactions_list.html" %}
+            </div>
+        {% endwith %}
     {% endif %}
 
 

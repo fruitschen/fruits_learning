@@ -1,0 +1,26 @@
+<div class="collapse in" id="recent_transactions">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>日期</th>
+                <th>类型</th>
+                <th>股票</th>
+                <th>数量</th>
+                <th>价格</th>
+                <th>交易额</th>
+            </tr>
+        </thead>
+        <tbody class="trans_details">
+            {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.date|date:'Y-m-d' }}</td>
+                    <td>{{ transaction.action }}</td>
+                    <td>{{ transaction.stock }}</td>
+                    <td>{{ transaction.amount }}</td>
+                    <td>{{ transaction.price }}</td>
+                    <td>{{ transaction.total_money }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
