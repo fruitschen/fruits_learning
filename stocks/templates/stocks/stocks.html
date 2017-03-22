@@ -1,8 +1,7 @@
 {% extends "stocks/stocks_base.html" %}
 {% load static %}
 
-{% block content %}
-<section class="content-wrap container" id="stock_container">
+{% block stocks_content %}
     <h1>股票</h1>
     <ul>
         {% for account in accounts %}
@@ -14,7 +13,5 @@
     <h3>配对 <a class="btn btn-primary load_pair" href="{% url 'pair_list' %}?force_update=1" target="_blank">更新比值</a></h3>
         {% include "stocks/includes/pair_list.html" %}
     {% endif %}
-
-</section>
 {% endblock %}
 

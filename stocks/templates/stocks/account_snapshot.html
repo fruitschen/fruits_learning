@@ -1,8 +1,7 @@
 {% extends "stocks/stocks_base.html" %}
 {% load static %}
 
-{% block content %}
-<section class="content-wrap container" id="stock_container">
+{% block stocks_content %}
     <h1>{{ account }} 快照 #{{ snapshot.serial_number }} {{ snapshot.date|date:'Y-m-j' }}</h1>
     <ul>
         <li><a href="{% url 'account_details' account.slug %}">返回 {{ account }}</a></li>
@@ -72,7 +71,6 @@
         </div>
     {% endif %}
 
-</section>
 {% endblock %}
 
 

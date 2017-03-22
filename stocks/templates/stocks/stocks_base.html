@@ -5,6 +5,17 @@
     <link href="{% static "bootstrap-3.3.7-dist/css/bootstrap.min.css" %}" rel="stylesheet">
 {% endblock %}
 
+{% block content %}
+    <div class="content-wrap container" id="stock_container">
+        <div class="row">
+            <div class="col-md-12">
+                {% block stocks_content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
 {% block extra_js %}
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static "bootstrap-3.3.7-dist/js/bootstrap.min.js" %}"></script>

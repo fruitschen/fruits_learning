@@ -1,8 +1,7 @@
 {% extends "stocks/stocks_base.html" %}
 {% load static %}
 
-{% block content %}
-<section class="content-wrap container" id="stock_container">
+{% block stocks_content %}
     <h1>{{ account }}</h1>
     <ul>
         <li><a href="{% url 'stocks' %}">股票首页</a></li>
@@ -185,16 +184,39 @@
             </div>
         {% endwith %}
     {% endif %}
-
-
-</section>
 {% endblock %}
 
 
 {% block extra_js %}
+    {% if logged_in and get_price_job %}
+    <div id="refresh_seconds_count_down" data-spy="affix" data-offset-top="200" data-offset-bottom="100" style="top: 300px; position: fixed; visibility:hidden;">
+        <div class="alert alert-info alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">x</span>
+            </button>
+            <span id="refresh_seconds"></span>秒后刷新
+        </div>
+    </div>
+    {% endif %}
+
   {{ block.super }}
   <script src="{% static 'echarts-3.4/echarts.js' %}"></script>
   <script type="text/javascript">
+      {% if logged_in and get_price_job %}
+          var seconds = 60
+          function reloadCountDown(){
+              seconds -= 1;
+              $('#refresh_seconds').html(seconds);
+              $('#refresh_seconds_count_down').css('visibility','visible');
+              if (seconds <= 0){
+                  location.reload()
+              }
+          }
+          $(function(){
+              setInterval('reloadCountDown()', 1000)
+          })
+      {% endif %}
+
       // http://echarts.baidu.com/tutorial.html
       var solid_style = {normal: {lineStyle:{type:'solid'}}}
       var weak_style = {normal: {lineStyle:{color:'grey', width: 0.5}}}

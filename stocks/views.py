@@ -13,7 +13,7 @@ from django.http import HttpResponseForbidden
 
 from stocks.models import Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account
 from stocks.utils import update_stocks_prices, update_stocks_prices_url
-
+from stocks.jobs import get_price
 
 def stocks(request):
     logged_in = request.user.is_authenticated()
@@ -33,6 +33,9 @@ def stocks(request):
 
 def account_details(request, account_slug):
     logged_in = request.user.is_authenticated()
+    get_price_job = None
+    if logged_in and request.GET.get('update', False):
+        get_price_job = get_price.delay()
     account = Account.objects.get(slug=account_slug)
     if not account.public and not request.user.is_authenticated():
         return HttpResponseForbidden('Oops')
@@ -100,6 +103,7 @@ def account_details(request, account_slug):
 
     context = {
         'account': account,
+        'get_price_job': get_price_job,
         'snapshots': snapshots,
         'snapshots_chart_data': snapshots_chart_data,
         'logged_in': logged_in,
