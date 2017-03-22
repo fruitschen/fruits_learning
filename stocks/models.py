@@ -95,6 +95,15 @@ class StockPair(models.Model):
         if not self.value_updated or self.value_updated < (timezone.now() + timedelta(minutes=1)):
             self.update()
 
+    @property
+    def status(self):
+        change_one = Decimal(self.started_stock.status['price_change_percent'])
+        change_two = Decimal(self.target_stock.status['price_change_percent'])
+        change_percent = ((100 + change_one) / (100 + change_two) - 1) * 100
+        return {
+            'change_percent': change_percent
+        }
+
 
 class PairTransaction(models.Model):
     u"""一笔配对交易"""
@@ -256,6 +265,16 @@ class Stock(models.Model):
     def get_absolute_url(self):
         return reverse('stock_details', args=(self.code,))
 
+    @property
+    def status(self):
+        if not self.comment:
+            return {}
+        items = self.comment.split('~')
+        return {
+            'price': items[3],
+            'price_change': items[4],
+            'price_change_percent': items[5],
+        }
 
 class BoughtSoldTransaction(models.Model):
     """以短期内卖出为目的的交易"""

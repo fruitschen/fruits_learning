@@ -8,6 +8,7 @@ from decimal import Decimal
 
 from django.utils import timezone
 
+
 def update_stocks_prices(stocks, verbose=0):
     url = update_stocks_prices_url(stocks)
     content = ''
@@ -28,6 +29,7 @@ def update_stocks_prices(stocks, verbose=0):
                 print line, stock, i
             price = line.split('~')[3]
             if Decimal(price) > 0:
+                stock.comment = line.decode('gb2312')
                 stock.price = price
                 stock.price_updated = timezone.now()
                 stock.save()
