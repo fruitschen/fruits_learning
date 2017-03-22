@@ -48,7 +48,7 @@ class Transaction(models.Model):
     SELL = u'卖出'
     ACTION_CHOICES = (
         (BUY, BUY),
-        (BUY, SELL),
+        (SELL, SELL),
     )
     account = models.ForeignKey('Account', blank=True, null=True, on_delete=models.PROTECT, related_name='transactions')
     action = models.CharField(u'交易类型', max_length=16, blank=True, choices=ACTION_CHOICES)

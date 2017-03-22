@@ -35,8 +35,8 @@ class BoughtSoldTransactionAdmin(admin.ModelAdmin):
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['account', 'stock', 'price', 'amount', 'date', ]
-    list_filter = ['account', ]
+    list_display = ['account', 'action', 'stock', 'price', 'amount', 'date', ]
+    list_filter = ['account', 'action']
 
 
 class PairAdmin(admin.ModelAdmin):
