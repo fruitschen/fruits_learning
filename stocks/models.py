@@ -63,6 +63,7 @@ class Transaction(models.Model):
             self.total_money = self.price * self.amount
         super(Transaction, self).save(*args, **kwargs)
 
+
 class StockPair(models.Model):
     u"""一组配对交易标的"""
     name = models.CharField(max_length=256, default='')

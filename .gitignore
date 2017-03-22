@@ -24,6 +24,7 @@ webpack-stats.json
 webpack-stats-prod.json
 
 django_project/settings/settings_local.py
+fruits_learning/settings/local.py
 local_test_settings.py
 
 # Always exclude this as it's used for secrets and importing
