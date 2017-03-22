@@ -2,7 +2,7 @@
 from django.contrib import admin
 
 from stocks.models import (Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account,
-                           AccountStock, Snapshot, SnapshotStock)
+                           AccountStock, Snapshot, SnapshotStock, Transaction)
 
 
 def add_star(modeladmin, request, queryset):
@@ -23,15 +23,20 @@ class StockAdmin(admin.ModelAdmin):
 
 
 class PairTransactionAdmin(admin.ModelAdmin):
-    list_display = ['sold_stock', 'bought_stock', 'profit', 'started', 'finished']
+    list_display = ['account', 'sold_stock', 'bought_stock', 'profit', 'started', 'finished']
+    list_filter = ['finished', 'account']
+    readonly_fields = ['profit', ]
+
+
+class BoughtSoldTransactionAdmin(admin.ModelAdmin):
+    list_display = ['bought_stock', 'bought_price', 'profit', 'started', 'finished']
     list_filter = ['finished', ]
     readonly_fields = ['profit', ]
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['bought_stock', 'bought_price', 'profit', 'started', 'finished']
-    list_filter = ['finished', ]
-    readonly_fields = ['profit', ]
+    list_display = ['account', 'stock', 'price', 'amount', 'date', ]
+    list_filter = ['account', ]
 
 
 class PairAdmin(admin.ModelAdmin):
@@ -60,6 +65,7 @@ class SnapshotAdmin(admin.ModelAdmin):
 admin.site.register(Stock, StockAdmin)
 admin.site.register(StockPair, PairAdmin)
 admin.site.register(PairTransaction, PairTransactionAdmin)
-admin.site.register(BoughtSoldTransaction, TransactionAdmin)
+admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(BoughtSoldTransaction, BoughtSoldTransactionAdmin)
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Snapshot, SnapshotAdmin)

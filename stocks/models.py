@@ -41,17 +41,27 @@ for transaction in sold_trans:
 '''
 
 
-class Transaction(object):
-    """TODO"""
 
-    def __init__(self, date, action, stock, amount, price, total_money):
-        self.date = date
-        self.action = action
-        self.stock = stock
-        self.amount = amount
-        self.price = price
-        self.total_money = total_money
+class Transaction(models.Model):
+    """一笔买入、卖出交易"""
+    BUY = u'买入'
+    SELL = u'卖出'
+    ACTION_CHOICES = (
+        (BUY, BUY),
+        (BUY, SELL),
+    )
+    account = models.ForeignKey('Account', blank=True, null=True, on_delete=models.PROTECT, related_name='transactions')
+    action = models.CharField(u'交易类型', max_length=16, blank=True, choices=ACTION_CHOICES)
+    stock = models.ForeignKey('Stock', verbose_name=u'股票', limit_choices_to={'star': True}, related_name='transactions', on_delete=models.PROTECT)
+    price = models.DecimalField(u'交易价格', max_digits=10, decimal_places=4, null=True, blank=True)
+    amount = models.IntegerField(u'交易数量',)
+    date = models.DateTimeField(u'交易时间', null=True, blank=True)
+    total_money = models.DecimalField(u'交易额', max_digits=10, decimal_places=4, null=True, blank=True)
 
+    def save(self, *args, **kwargs):
+        if not self.total_money:
+            self.total_money = self.price * self.amount
+        super(Transaction, self).save(*args, **kwargs)
 
 class StockPair(models.Model):
     u"""一组配对交易标的"""
@@ -100,6 +110,9 @@ class PairTransaction(models.Model):
 
     finished = models.DateTimeField(u'结束交易时间', null=True, blank=True)
     sold_bought_back_price = models.DecimalField(u'卖出后买入价格', max_digits=10, decimal_places=4, null=True, blank=True)
+    bought_back_amount = models.IntegerField(
+        u'实际买回数量', null=True, blank=True,
+        help_text=u'实际买回的数量可能和之前卖出的数量不一致，这个值用于显示Transaction的交易额，并不用于计算配对交易的利润。')
     bought_sold_price = models.DecimalField(u'买入后卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
     profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
     order = models.IntegerField(default=100)
@@ -202,13 +215,15 @@ class PairTransaction(models.Model):
                         price=self.bought_price, total_money=self.bought_total),
         ]
         if self.finished:
+            actual_bought_back_amount = self.bought_back_amount or self.sold_amount
+            actual__bought_back_total = actual_bought_back_amount * self.sold_bought_back_price
             transactions.extend([
                 # sold
                 Transaction(date=self.finished.date(), action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
                             price=self.bought_sold_price, total_money=self.bought_sold_total),
                 # bought
-                Transaction(date=self.finished.date(), action=u'买入', stock=self.sold_stock, amount=self.sold_amount,
-                            price=self.sold_bought_back_price, total_money=self.sold_bought_back_total),
+                Transaction(date=self.finished.date(), action=u'买入', stock=self.sold_stock, amount=actual_bought_back_amount,
+                            price=self.sold_bought_back_price, total_money=actual__bought_back_total),
             ])
         return transactions
 
@@ -437,7 +452,11 @@ class Account(models.Model):
         transactions = []
         for t in all_transactions:
             transactions.extend(t.as_transactions())
-        transactions = filter(lambda x: start < x.date < end, transactions)
+        for t in self.transactions.filter(date__gte=start, date__lte=end):
+            t.date = t.date.date()
+            transactions.append(t)
+
+        transactions = filter(lambda x: start <= x.date <= end, transactions)
         transactions = sorted(transactions, key=lambda x: x.date, reverse=True)
         return transactions
 
@@ -501,6 +520,8 @@ class Snapshot(models.Model):
                 stock.save()
         self.stocks_asset = sum([stock.total for stock in self.stocks.all()])
         self.net_asset = self.stocks_asset + self.cash - (self.debt or 0)
+        if not self.transactions_count:
+            self.transactions_count = len(self.find_transactions())
         self.calculate_increase()
 
     def populate_from_previous(self):

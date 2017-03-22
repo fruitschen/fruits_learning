@@ -115,8 +115,13 @@
     {% endif %}
 
 
-
     {% if logged_in and account.main %}
+        <h3>配对</h3>
+        {% include "stocks/includes/pair_list.html" %}
+    {% endif %}
+
+
+    {% if logged_in %}
         <h3>利润
             <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
                 显示/隐藏
@@ -142,9 +147,6 @@
                 {% endif %}
             </table>
         </div>
-
-        <h3>配对</h3>
-        {% include "stocks/includes/pair_list.html" %}
 
         <h3>未结配对交易<a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a></h3>
         {% with pair_transactions_unfinished as pair_transactions %}
