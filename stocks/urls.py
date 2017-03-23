@@ -9,5 +9,3 @@ urlpatterns = [
     url(r'^accounts/(?P<account_slug>\w+)/$', account_details, name='account_details'),
     url(r'^accounts/(?P<account_slug>\w+)/(?P<snapshot_number>\d+)/$', account_snapshot, name='account_snapshot'),
 ]
-
-

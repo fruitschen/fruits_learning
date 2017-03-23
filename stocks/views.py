@@ -1,19 +1,16 @@
 # -*- coding: UTF-8 -*-
-from decimal import Decimal
-import json
-import os.path
-from datetime import datetime, date, timedelta
+from datetime import timedelta
 
-
-from django.db.models import Sum, Q
-from django.shortcuts import render, redirect
+from django.db.models import Sum
+from django.shortcuts import render
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.http import HttpResponseForbidden
 
-from stocks.models import Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account
+from stocks.models import Stock, StockPair, PairTransaction, Account
 from stocks.utils import update_stocks_prices, update_stocks_prices_url
 from stocks.jobs import get_price
+
 
 def stocks(request):
     logged_in = request.user.is_authenticated()
@@ -46,7 +43,7 @@ def account_details(request, account_slug):
         raw_data = raw_data.reverse()
         x_axis = [r[0].strftime('%Y-%m-%d') for r in raw_data]
         y_axis = [int(r[1]) for r in raw_data]
-        snapshots_chart_data = {'x_axis': x_axis , 'y_axis': y_axis }
+        snapshots_chart_data = {'x_axis': x_axis, 'y_axis': y_axis}
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
@@ -54,7 +51,8 @@ def account_details(request, account_slug):
     if account.public:
         recent_pair_transactions = account_pair_transactions.filter(finished__isnull=False).order_by('-finished')[:5]
     else:
-        recent_pair_transactions = account_pair_transactions.filter(finished__isnull=False).order_by('-finished').exclude(finished__lt=timezone.datetime(now.year, now.month, 1))
+        recent_pair_transactions = account_pair_transactions.filter(finished__isnull=False).order_by('-finished').\
+            exclude(finished__lt=timezone.datetime(now.year, now.month, 1))
     pair_transactions_unfinished = account_pair_transactions.filter(finished__isnull=True)
     pair_virtual_profit = 0
     for p in pair_transactions_unfinished:
@@ -70,7 +68,7 @@ def account_details(request, account_slug):
         transaction_virtual_profit += t.get_profit()
 
     aggregates_by_months = []
-    year_profits =  {
+    year_profits = {
         'time': '{} ~ '.format(now.year, 1, 1),
         'pair_profit': 0,
         'profit': 0,
@@ -89,8 +87,8 @@ def account_details(request, account_slug):
         profit_by_momth = transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
         aggregates_by_months.append({
             'time': '{} ~ {}'.format(start.date(), (end-timedelta(days=1)).date()),
-            'pair_profit':pair_profit_by_momth,
-            'profit':profit_by_momth,
+            'pair_profit': pair_profit_by_momth,
+            'profit': profit_by_momth,
             'total': pair_profit_by_momth + profit_by_momth
         })
         year_profits['pair_profit'] += pair_profit_by_momth
@@ -125,7 +123,6 @@ def account_details(request, account_slug):
 
 
 def get_pairs_context(request):
-    pairs = StockPair.objects.all()
     star_pairs = StockPair.objects.filter(star=True)
     ids = star_pairs.values_list('target_stock', 'started_stock')
     stock_ids = []
@@ -133,11 +130,11 @@ def get_pairs_context(request):
         stock_ids.extend(i)
     stock_ids = set(stock_ids)
 
-    stocks = Stock.objects.filter(id__in=stock_ids)
+    pair_stocks = Stock.objects.filter(id__in=stock_ids)
     if request.GET.get('force_update', False):
-        update_stocks_prices(stocks)
+        update_stocks_prices(pair_stocks)
 
-    return {"pairs": star_pairs, "update_stocks_prices_url": update_stocks_prices_url(stocks),}
+    return {"pairs": star_pairs, "update_stocks_prices_url": update_stocks_prices_url(pair_stocks)}
 
 
 @staff_member_required
@@ -149,8 +146,10 @@ def pair_list(request):
 @staff_member_required
 def pair_details(request, pair_id):
     pair = StockPair.objects.get(id=pair_id)
-    pair_transactions = PairTransaction.objects.all().filter(pair=pair).filter(finished__isnull=False).order_by('-finished')
-    unfinished_pair_transactions = PairTransaction.objects.all().filter(pair=pair).exclude(finished__isnull=False).order_by('-started')
+    pair_transactions = PairTransaction.objects.all().filter(pair=pair).\
+        filter(finished__isnull=False).order_by('-finished')
+    unfinished_pair_transactions = PairTransaction.objects.all().\
+        filter(pair=pair).exclude(finished__isnull=False).order_by('-started')
 
     context = {
         'pair': pair,
@@ -175,4 +174,3 @@ def account_snapshot(request, account_slug, snapshot_number):
     }
     context.update(get_pairs_context(request))
     return render(request, 'stocks/account_snapshot.html', context)
-

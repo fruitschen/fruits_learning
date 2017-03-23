@@ -16,9 +16,9 @@ remove_star.short_description = "Unstar"
 
 
 class StockAdmin(admin.ModelAdmin):
-    list_display = ['name', 'code', 'price', 'market', 'star' ]
+    list_display = ['name', 'code', 'price', 'market', 'star']
     list_filter = ['star', ]
-    search_fields = ['name', 'code',]
+    search_fields = ['name', 'code', ]
     actions = [add_star, remove_star, ]
 
 
@@ -61,6 +61,7 @@ class SnapshotStockInline(admin.TabularInline):
 class SnapshotAdmin(admin.ModelAdmin):
     model = Snapshot
     inlines = [SnapshotStockInline]
+
 
 admin.site.register(Stock, StockAdmin)
 admin.site.register(StockPair, PairAdmin)

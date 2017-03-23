@@ -9,7 +9,7 @@
                     <strong style="color:red;">{{ t.percent }} = {{ t.get_profit|floatformat:2 }} / {{ t.money_taken|floatformat:2 }}</strong>
                 </th>
                 <th style="width:12%">
-                    <a href="{% url 'admin:index' %}stocks/transaction/{{ t.id }}/" target="_blank" class="btn btn-primary btn-sm">Admin</a>
+                    <a href="{% url 'admin:stocks_boughtsoldtransaction_change' t.id %}" target="_blank" class="btn btn-primary btn-sm">Admin</a>
                     <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="#transactions_{{ t.id }}" aria-expanded="false" aria-controls="transactions_{{ t.id }}">
                         明细
                     </a>

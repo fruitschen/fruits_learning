@@ -5,13 +5,13 @@
                 <th style="width:60%">
                     <strong>{{ t }} {{ t.started.date.year }}-{{ t.started.date.month }}-{{ t.started.date.day }}</strong>
                     <strong style="color:red;">{{ t.get_profit|floatformat:2 }}</strong>
-                    比例: {{ t.to_ratio|floatformat:3 }} -&gt; | &lt;- {% if t.finished %}{{ t.from_ratio|floatformat:3 }}{% else %}({{ t.pair.current_value|floatformat:3 }}){% endif %}
+                    比例: {{ t.to_ratio|floatformat:3 }} -&gt; | &lt;- {% if t.finished %}{{ t.back_ratio|floatformat:3 }}{% else %}({{ t.pair.current_value|floatformat:3 }}){% endif %}
                 </th>
                 <th style="width:28%">
                     <strong style="color:red">{{ t.percent }} = {{ t.get_profit|floatformat:2 }} / {{ t.money_taken|floatformat:2 }}</strong>
                 </th>
                 <th style="width:12%">
-                    <a href="{% url 'admin:index' %}stocks/pairtransaction/{{ t.id }}/" target="_blank" class="btn btn-primary btn-sm">Admin</a>
+                    <a href="{% url 'admin:stocks_pairtransaction_change' t.id %}" target="_blank" class="btn btn-primary btn-sm">Admin</a>
                     <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="#pair_transactions_{{ t.id }}" aria-expanded="false" aria-controls="pair_transactions_{{ t.id }}">
                         明细
                     </a>

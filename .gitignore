@@ -22,7 +22,9 @@ assets/bundles
 assets/dist
 webpack-stats.json
 webpack-stats-prod.json
+npm-debug.*
 
+local/local_supervisor.conf
 django_project/settings/settings_local.py
 fruits_learning/settings/local.py
 local_test_settings.py

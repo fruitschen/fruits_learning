@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-import os
-import json
-import urllib2
 import requests
-from datetime import datetime
 from decimal import Decimal
 
 from django.utils import timezone
 
 
 def update_stocks_prices(stocks, verbose=0):
+    """
+    (批量)更新股票价格
+    """
     url = update_stocks_prices_url(stocks)
     content = ''
     error = 0
@@ -40,6 +39,7 @@ def update_stocks_prices(stocks, verbose=0):
 
 
 def update_stocks_prices_url(stocks):
+    """取得更新股票价格的url"""
     base_url = 'http://qt.gtimg.cn/q='
     key = []
     for stock in stocks:
@@ -47,4 +47,3 @@ def update_stocks_prices_url(stocks):
     key = ','.join(key)
     url = base_url + key
     return url
-
