@@ -34,6 +34,7 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
     class Meta:
         model = Info
         fields = {
+            'title': ['contains', ],
             'is_read': ['exact', ],
             'info_source': ['exact', ],
         }

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Pagination, Card, Button, Icon, Row, Col, Radio, Switch } from 'antd';
+import { Pagination, Card, Button, Icon, Row, Col, Radio, Switch, Input } from 'antd';
 import 'antd/dist/antd.css';  // or 'antd/dist/antd.less'
 const RadioGroup = Radio.Group;
 const radioStyle = {
@@ -8,6 +8,7 @@ const radioStyle = {
   height: '30px',
   lineHeight: '30px',
 };
+const Search = Input.Search;
 
 var InfoItem = React.createClass({
   getInitialState: function() {
@@ -141,6 +142,11 @@ var InfoReader = React.createClass({
       this.loadInfo();
     })
   },
+  search: function(value){
+    this.setState({search_title: value, page:1}, function(){
+      this.loadInfo()
+    })
+  },
   showReadItems: function(checked){
     var show_read_items=false;
     if (checked){
@@ -155,6 +161,7 @@ var InfoReader = React.createClass({
       url: this.props.url,
       data: {
         page: this.state.page,
+        title__contains: this.state.search_title,
         is_read: this.state.show_read_items,
         info_source: this.state.info_source
       },
@@ -193,6 +200,7 @@ var InfoReader = React.createClass({
   getInitialState: function() {
     return {
       page: 1,
+      search_title: '',
       info_items: [],
       info_sources: [],
       previous: null,
@@ -215,6 +223,7 @@ var InfoReader = React.createClass({
             <Switch checkedChildren={'显示已读'} unCheckedChildren={'隐藏已读'} onChange={this.showReadItems}
               style={{marginTop:'10px'}}
             />
+            <Search placeholder="Search title" onSearch={this.search} style={{marginTop:'10px', width:'200px'}} />
           </Col>
           <Col className="gutter-row" span={20}>
             <Pagination defaultCurrent={this.state.page} total={this.state.total} pageSize={50} onChange={this.changePage} current={this.state.page} />
