@@ -17,3 +17,5 @@ BACKUP_DATABASE_COPIES = {
    'weekly': 4,
    'monthly': 12,
 }
+
+SECRET_KEY = 'Enter something here...'
