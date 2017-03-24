@@ -10,5 +10,6 @@
 
 {% block extra_js %}
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/jquery_ajax_csrf.js' %}"></script>
     {% render_bundle 'InfoReader' %}
 {% endblock %}

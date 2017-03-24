@@ -154,7 +154,7 @@ CACHES = {
     'default': {
         'BACKEND': 'diskcache.DjangoCache',
         'LOCATION': os.path.join(BASE_DIR, '.cache'),
-        'SHARDS': 4,
+        'SHARDS': 1,
         'DATABASE_TIMEOUT': 1.0,
         'OPTIONS': {
             'size_limit': 2 ** 32  # 4 gigabytes
