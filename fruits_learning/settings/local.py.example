@@ -10,3 +10,10 @@ DATABASES = {
 }
 
 ALLOWED_HOSTS = ['pms', 'localhost']
+
+BACKUP_LOCAL_DIRECTORY = '/path/to/backups' # Where to store local backups
+BACKUP_DATABASE_COPIES = {
+   'daily': 7,
+   'weekly': 4,
+   'monthly': 12,
+}

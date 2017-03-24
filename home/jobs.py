@@ -7,6 +7,10 @@ def poll_feeds():
 def delete_old_info():
     call_command('delete_old_info')
 
+def run_backup():
+    """backup database with django-backup"""
+    call_command('backup', compress=True, cleanlocaldb=True)
+
 def run_crawlers():
     from info_collector import crawlers
     info_crawlers = (
@@ -45,6 +49,12 @@ cron_jobs = [
         repeat=None,
         queue_name='default'
     ),
+    dict(
+        cron_string='0 11 * * *',
+        func=run_backup,
+        args=[],
+        kwargs={},
+        repeat=None,
+        queue_name='default'
+    ),
 ]
-
-

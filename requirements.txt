@@ -17,3 +17,5 @@ djangorestframework
 markdown       # Markdown support for the browsable API.
 django-filter  # Filtering support
 django-crispy-forms
+
+-e git+https://github.com/django-backup/django-backup.git@develop#egg=django-backup
