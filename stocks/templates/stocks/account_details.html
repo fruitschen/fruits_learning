@@ -144,6 +144,14 @@
                 {% if transaction_virtual_profit %}
                     <tr><th>未结交易盈亏: </th><td>{{ transaction_virtual_profit|floatformat:2 }}</td></tr>
                 {% endif %}
+                    <tr>
+                        <th>全部历史盈亏: </th>
+                        <td>
+                            配对：{{ all_time_profits.pair|floatformat:2 }}
+                            卖出：{{ all_time_profits.bs|floatformat:2 }}
+                            全部：{{ all_time_profits.total|floatformat:2 }}
+                        </td>
+                    </tr>
             </table>
         </div>
 

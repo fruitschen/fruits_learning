@@ -47,7 +47,8 @@ def account_details(request, account_slug):
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
-    account_pair_transactions = account.pair_transactions.all().exclude(archived=True)
+    all_account_pair_transactions = account.pair_transactions.all()
+    account_pair_transactions = all_account_pair_transactions.exclude(archived=True)
     if account.public:
         recent_pair_transactions = account_pair_transactions.filter(finished__isnull=False).order_by('-finished')[:5]
     else:
@@ -58,7 +59,9 @@ def account_details(request, account_slug):
     for p in pair_transactions_unfinished:
         pair_virtual_profit += p.get_profit()
 
-    account_bs_transactions = account.bs_transactions.all().exclude(archived=True)
+    all_account_bs_transactions = account.bs_transactions.all()
+    account_bs_transactions = all_account_bs_transactions.exclude(archived=True)
+
     bs_transactions = account_bs_transactions.exclude(finished__lt=timezone.datetime(now.year, now.month, 1))
     bs_transactions_this_month = bs_transactions.filter(finished__isnull=False).order_by('-finished')
     bs_transactions_unfinished = bs_transactions.filter(finished__isnull=True).order_by('-started')
@@ -99,6 +102,15 @@ def account_details(request, account_slug):
     aggregates_by_months.append(year_profits)
     recent_transactions = account.recent_transactions()
 
+    all_time_profits = {}
+    all_time_profits['pair_finished']= all_account_pair_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
+    all_time_profits['pair_unfinished'] = sum([pt.get_profit() for pt in all_account_pair_transactions.filter(finished__isnull=True)])
+    all_time_profits['bs_finished']= all_account_bs_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
+    all_time_profits['bs_unfinished']= sum([t.get_profit() for t in all_account_bs_transactions.filter(finished__isnull=True)])
+    all_time_profits['pair'] = all_time_profits['pair_finished'] + all_time_profits['pair_unfinished']
+    all_time_profits['bs'] = all_time_profits['bs_finished'] + all_time_profits['bs_unfinished']
+    all_time_profits['total'] = all_time_profits['bs'] + all_time_profits['pair']
+
     context = {
         'account': account,
         'get_price_job': get_price_job,
@@ -117,6 +129,7 @@ def account_details(request, account_slug):
         'aggregates_by_months': aggregates_by_months,
         'year_profits': year_profits,
         'recent_transactions': recent_transactions,
+        'all_time_profits': all_time_profits,
     }
     context.update(get_pairs_context(request))
     return render(request, 'stocks/account_details.html', context)
