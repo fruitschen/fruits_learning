@@ -15,6 +15,30 @@ def remove_star(modeladmin, request, queryset):
 remove_star.short_description = "Unstar"
 
 
+def combine_pair_transactions(modeladmin, request, queryset):
+    base = queryset[0]
+    sold_amount = 0
+    bought_amount = 0
+    sold_total = 0
+    bought_total = 0
+    for obj in queryset:
+        if obj.finished or obj.archived or obj.pair != base.pair or obj.account != base.account\
+                or obj.bought_stock != base.bought_stock:
+            raise RuntimeError('Cannot combine these pair transactions. ')
+        bought_total += obj.bought_total
+        sold_total += obj.sold_total
+        sold_amount += obj.sold_amount
+        bought_amount += obj.bought_amount
+    base.bought_price = bought_total / bought_amount
+    base.bought_amount = bought_amount
+    base.sold_price = sold_total / sold_amount
+    base.sold_amount = sold_amount
+    base.save()
+    for obj in queryset[1:]:
+        obj.delete()
+
+combine_pair_transactions.short_description = "Combine"
+
 class StockAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'price', 'market', 'star']
     list_filter = ['star', ]
@@ -24,13 +48,14 @@ class StockAdmin(admin.ModelAdmin):
 
 class PairTransactionAdmin(admin.ModelAdmin):
     list_display = ['account', 'sold_stock', 'bought_stock', 'profit', 'started', 'finished']
-    list_filter = ['finished', 'account']
+    list_filter = ['finished', 'account', 'archived', 'pair']
     readonly_fields = ['profit', ]
+    actions = [combine_pair_transactions, ]
 
 
 class BoughtSoldTransactionAdmin(admin.ModelAdmin):
     list_display = ['bought_stock', 'bought_price', 'profit', 'started', 'finished']
-    list_filter = ['finished', ]
+    list_filter = ['finished', 'account', 'archived', ]
     readonly_fields = ['profit', ]
 
 

@@ -47,7 +47,7 @@ def account_details(request, account_slug):
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
-    account_pair_transactions = account.pair_transactions.all()
+    account_pair_transactions = account.pair_transactions.all().exclude(archived=True)
     if account.public:
         recent_pair_transactions = account_pair_transactions.filter(finished__isnull=False).order_by('-finished')[:5]
     else:
@@ -58,7 +58,7 @@ def account_details(request, account_slug):
     for p in pair_transactions_unfinished:
         pair_virtual_profit += p.get_profit()
 
-    account_bs_transactions = account.bs_transactions.all()
+    account_bs_transactions = account.bs_transactions.all().exclude(archived=True)
     bs_transactions = account_bs_transactions.exclude(finished__lt=timezone.datetime(now.year, now.month, 1))
     bs_transactions_this_month = bs_transactions.filter(finished__isnull=False).order_by('-finished')
     bs_transactions_unfinished = bs_transactions.filter(finished__isnull=True).order_by('-started')

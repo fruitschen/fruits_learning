@@ -14,8 +14,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Add debug toolbar
 INTERNAL_IPS = ['127.0.0.1', ]
-MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware',] + MIDDLEWARE
-INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
+# MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware',] + MIDDLEWARE
+# INSTALLED_APPS = ['debug_toolbar'] + INSTALLED_APPS
 
 try:
     from .local import *

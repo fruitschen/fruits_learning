@@ -152,6 +152,7 @@ class PairTransaction(models.Model):
     bought_sold_price = models.DecimalField(u'买入后卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
     profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
     order = models.IntegerField(default=100)
+    archived = models.BooleanField('存档-不再计算盈亏', default=False)
 
     class Meta:
         ordering = ['order', 'finished', '-started']
@@ -339,6 +340,7 @@ class BoughtSoldTransaction(models.Model):
     sold_price = models.DecimalField(u'卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
     profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
     interest_rate = models.DecimalField(u'利率成本', max_digits=6, decimal_places=4, default='0.0835')
+    archived = models.BooleanField('存档-不再计算盈亏', default=False)
 
     def __unicode__(self):
         return u'{} 交易'.format(self.bought_stock)
