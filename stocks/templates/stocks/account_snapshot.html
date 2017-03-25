@@ -74,6 +74,16 @@
         </div>
     {% endif %}
 
+
+    <h3>全部快照
+        <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_snapshots" aria-expanded="true" aria-controls="account_snapshots">
+            显示/隐藏
+        </a>
+    </h3>
+
+    {% include "stocks/includes/snapshot_list.html" %}
+
+
 {% endblock %}
 
 

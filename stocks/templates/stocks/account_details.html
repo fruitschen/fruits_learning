@@ -87,30 +87,9 @@
                 显示/隐藏
             </a>
         </h3>
-        <div id="account_snapshots" class="collapse in">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>编号</th>
-                        <th>日期</th>
-                        <th>净资产</th>
-                        <th>比上期涨跌</th>
-                        <th>交易笔数</th>
-                        <th>雪球链接</th>
-                    </tr>
-                </thead>
-            {% for snapshot in snapshots %}
-                <tr>
-                    <td><a href="{% url 'account_snapshot' account.slug snapshot.serial_number %}">快照#{{ snapshot.serial_number }}</a></td>
-                    <td>{{ snapshot.date|date:"Y-m-j" }}</td>
-                    <td>{{ snapshot.net_asset }}</td>
-                    <td>{{ snapshot.increase_percent|floatformat:2 }}%</td>
-                    <td>{{ snapshot.transactions_count }}</td>
-                    <td>{{ snapshot.xueqiu_url }}</td>
-                </tr>
-            {% endfor %}
-            </table>
-        </div>
+
+        {% include "stocks/includes/snapshot_list.html" %}
+
         {% if snapshots_chart_data %}
         <div id="snapshots_chart" style="width:100%;height:500px"></div>
         {% endif %}

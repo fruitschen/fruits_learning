@@ -1,0 +1,30 @@
+<div id="account_snapshots" class="collapse in">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>日期</th>
+                <th>净资产</th>
+                <th>比上期涨跌</th>
+                <th>交易笔数</th>
+                <th>雪球链接</th>
+            </tr>
+        </thead>
+    {% for s in snapshots %}
+        <tr>
+            <td>
+                {% if snapshot and snapshot == s %}
+                    快照#{{ s.serial_number }}
+                {% else %}
+                    <a href="{% url 'account_snapshot' account.slug s.serial_number %}">快照#{{ s.serial_number }}</a>
+                {% endif %}
+            </td>
+            <td>{{ s.date|date:"Y-m-j" }}</td>
+            <td>{{ s.net_asset }}</td>
+            <td>{{ s.increase_percent|floatformat:2 }}%</td>
+            <td>{{ s.transactions_count }}</td>
+            <td>{{ s.xueqiu_url }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>

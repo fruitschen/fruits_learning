@@ -179,9 +179,11 @@ def account_snapshot(request, account_slug, snapshot_number):
         return HttpResponseForbidden('Oops')
     snapshot = account.snapshots.all().get(serial_number=snapshot_number)
     transactions = snapshot.find_transactions()
+    snapshots = account.snapshots.all().order_by('-id')
     context = {
         'account': account,
         'snapshot': snapshot,
+        'snapshots': snapshots,
         'logged_in': logged_in,
         'transactions': transactions,
     }
