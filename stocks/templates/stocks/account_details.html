@@ -2,11 +2,14 @@
 {% load static %}
 
 {% block stocks_content %}
-    <h1>{{ account }}</h1>
-    <ul>
-        <li><a href="{% url 'stocks' %}">股票首页</a></li>
-    </ul>
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'stocks' %}">股票</a></li>
+        <li><a href="">{{ account }} </a></li>
+    </ol>
 
+
+    <h1>{{ account }}</h1>
     <h3>概览
         <a class="btn btn-primary" role="button" data-toggle="collapse" href="#summary" aria-expanded="{% if account.display_summary %}true{% else %}false{% endif %}" aria-controls="summary">
             显示/隐藏

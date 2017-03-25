@@ -23,30 +23,17 @@ router.register(r'entry', EntryViewSet)
 
 urlpatterns = [
     url(r'^django-admin/', include(admin.site.urls)),
-
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
-
     url(r'^search/$', search_views.search, name='search'),
     url(r'^api/', include(router.urls)),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^info/', include('info_collector.urls')),
     url(r'^stocks/', include('stocks.urls')),
-
-    url(r'^fund_value_estimation/$', investing_views.fund_value_estimation, name='fund_value_estimation'),
+    url(r'^stocks/fund_value_estimation/$', investing_views.fund_value_estimation, name='fund_value_estimation'),
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),
-
     url(r'^django-rq/', include('django_rq.urls')),
-
-    url(r'^feedreader/', include('feedreader.urls', namespace='feedreader')),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    # For anything not caught by a more specific rule above, hand over to
-    # Wagtail's page serving mechanism. This should be the last pattern in
-    # the list:
     url(r'', include(wagtail_urls)),
-
-    # Alternatively, if you want Wagtail pages to be served from a subpath
-    # of your site, rather than the site root:
-    #    url(r'^pages/', include(wagtail_urls)),
 ]
 
 

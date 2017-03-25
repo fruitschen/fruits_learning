@@ -2,7 +2,13 @@
 {% load static %}
 
 {% block stocks_content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li>股票</li>
+    </ol>
+
     <h1>股票</h1>
+
     <ul>
         {% for account in accounts %}
             <li><a href="{% url 'account_details' account.slug %}">{{ account }}</a></li>

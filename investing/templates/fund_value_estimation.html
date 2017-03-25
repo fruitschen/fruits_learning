@@ -1,10 +1,17 @@
-{% extends "base.html" %}
+{% extends "stocks/stocks_base.html" %}
 {% load static %}
 
 {% block body_class %}template-homepage{% endblock %}
 
-{% block content %}
-    <h1>分级基金价值估算</h1>
+{% block stocks_content %}
+
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'stocks' %}">股票</a></li>
+        <li><a href="">银行B份价值估算</a></li>
+    </ol>
+
+    <h1>银行B份价值估算</h1>
 
     {% for group in groups %}
         <h2>ROE {{ group.roe }}</h2>

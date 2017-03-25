@@ -7,6 +7,12 @@
 
 
 {% block stocks_content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'stocks' %}">股票</a></li>
+        <li><a href="">"{{ pair }}" 配对明细</a></li>
+    </ol>
+
     <h1>{{ pair }}</h1>
     <h3>未完成</h3>
     {% with unfinished_pair_transactions as pair_transactions %}

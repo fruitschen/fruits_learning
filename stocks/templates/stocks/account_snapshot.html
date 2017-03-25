@@ -2,11 +2,14 @@
 {% load static %}
 
 {% block stocks_content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'stocks' %}">股票</a></li>
+        <li><a href="{% url 'account_details' account.slug %}">{{ account }} </a></li>
+        <li><a href="">快照 #{{ snapshot.serial_number }} {{ snapshot.date|date:'Y-m-j' }}</a></li>
+    </ol>
+
     <h1>{{ account }} 快照 #{{ snapshot.serial_number }} {{ snapshot.date|date:'Y-m-j' }}</h1>
-    <ul>
-        <li><a href="{% url 'account_details' account.slug %}">返回 {{ account }}</a></li>
-        <li><a href="{% url 'stocks' %}">返回 股票首页</a></li>
-    </ul>
 
     <h3>概览
     </h3>

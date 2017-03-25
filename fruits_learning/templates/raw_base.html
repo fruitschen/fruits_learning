@@ -21,7 +21,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
         {# Global stylesheets #}
-        <link href="{% static "bootstrap-3.3.7-dist/css/bootstrap.min.css" %}" rel="stylesheet">
         <link rel="stylesheet" type="text/css" href="{% static 'css/fruits_learning.css' %}">
 
         {% block extra_css %}
@@ -30,29 +29,11 @@
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
-        {% wagtailuserbar %}
+        <ol class="breadcrumb">
+            <li><a href="/">主页</a></li>
+        </ol>
+        {% block content %}{% endblock %}
 
-        <header class="container">
-            <h1>投资者，程序员 -- 陈喆</h1>
-        </header>
-
-        {% block outter_content %}
-        <div class="container">
-            <div class="col-md-10">
-                {% block content %}{% endblock %}
-            </div>
-        </div>
-        {% endblock %}
-
-        <footer class="container">
-            <p class="col-md-12">
-                <a href="http://ixxy.co.uk/" target="_blank">Ixxy</a> /
-                <a href="https://xueqiu.com/fruitschen" target="_blank">雪球</a> /
-                <a href="http://github.com/fruitschen" target="_blank">GitHub</a>
-            </p>
-        </footer>
-
-        {# Global javascript #}
         {% block extra_js %}
             {# Override this in templates to add extra javascript #}
         {% endblock %}
