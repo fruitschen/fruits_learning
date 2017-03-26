@@ -190,7 +190,7 @@
     {% endif %}
 
   {{ block.super }}
-  <script src="{% static 'echarts-3.4/echarts.js' %}"></script>
+  <script src="{% static 'echarts-3.4/echarts.simple.min.js' %}"></script>
   <script type="text/javascript">
       {% if logged_in and get_price_job %}
           var seconds = 60
