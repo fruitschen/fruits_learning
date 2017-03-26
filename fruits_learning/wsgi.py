@@ -17,4 +17,4 @@ from whitenoise import WhiteNoise
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fruits_learning.settings.dev")
 
 application = get_wsgi_application()
-application = WhiteNoise(application, root='/home/fruitschen/srv/frutis_learning/static')
+application = WhiteNoise(application, root='/home/fruitschen/srv/fruits_learning/static')
