@@ -1,0 +1,9 @@
+{
+  "plugins": [
+    ["import", {
+      "libraryName": "antd",
+      "style": 'css', // true or 'css'
+      }
+    ]
+  ]
+}
