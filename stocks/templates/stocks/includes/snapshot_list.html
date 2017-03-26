@@ -23,7 +23,9 @@
             <td>{{ s.net_asset }}</td>
             <td>{{ s.increase_percent|floatformat:2 }}%</td>
             <td>{{ s.transactions_count }}</td>
-            <td>{{ s.xueqiu_url }}</td>
+            <td>
+                <a href="{{ s.xueqiu_url }}" target="_blank">雪球第{{ s.serial_number }}期</a>
+            </td>
         </tr>
     {% endfor %}
     </table>
