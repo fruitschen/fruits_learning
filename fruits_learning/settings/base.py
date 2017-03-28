@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'info_collector',
     'stocks',
     'investing',
+    'weibo_backup',
 ]
 
 MIDDLEWARE = [
