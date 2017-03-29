@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
 
+import weibo_backup.views
 from search import views as search_views
 from investing import views as investing_views
 from my_feedreader.views import my_feedreader
@@ -31,6 +32,8 @@ urlpatterns = [
     url(r'^info/', include('info_collector.urls')),
     url(r'^stocks/', include('stocks.urls')),
     url(r'^stocks/fund_value_estimation/$', investing_views.fund_value_estimation, name='fund_value_estimation'),
+    url(r'^tweets/$', weibo_backup.views.tweets, name='tweets'),
+
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),
     url(r'^django-rq/', include('django_rq.urls')),
     url(r'', include(wagtail_urls)),

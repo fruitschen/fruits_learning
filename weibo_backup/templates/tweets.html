@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li>Tweets</li>
+    </ol>
+
+    <h1>Tweets</h1>
+
+    {% for tweet in tweets %}
+        <div>
+            <p>{{ tweet.t_time }}</p>
+            <p>
+                {{ tweet.content }}
+            </p>
+            <img src="{{ tweet.screenshot_full_url }}" />
+        </div>
+    {% endfor %}
+
+{% endblock %}
+

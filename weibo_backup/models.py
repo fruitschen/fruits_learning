@@ -1,8 +1,10 @@
 from __future__ import unicode_literals
 
 import os
+from datetime import datetime
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 BASE_DIR = os.path.join(settings.MEDIA_ROOT, 'tweets')
 
 
@@ -32,7 +34,23 @@ class Tweet(models.Model):
         return os.path.join(self.media_dir, '{}_full.png'.format(self.id))
 
     @property
+    def screenshot_full_url(self):
+        return self.screenshot_full.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
+
+    @property
     def screenshot_pictures(self):
         return os.path.join(self.media_dir, '{}_pics.png'.format(self.id))
 
+    def save(self, *args, **kwargs):
+        if self.t_time and not self.published:
+            if not self.t_time[:4].isdigit():
+                now = timezone.now()
+                self.t_time = '{}-{}'.format(now.year, self.t_time)
+            published = datetime.strptime(self.t_time, '%Y-%m-%d %H:%M')
+            self.published = timezone.datetime(published.year, published.month, published.day, published.hour,
+                                               published.minute, tzinfo=timezone.get_current_timezone())
 
+        super(Tweet, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ['-published']
