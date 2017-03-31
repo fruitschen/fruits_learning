@@ -516,6 +516,7 @@ class Account(models.Model):
             debt=self.debt,
         )
         snapshot.save()
+        snapshot = Snapshot.objects.get(id=snapshot.id)
         for account_stock in self.stocks.all():
             stock = account_stock.stock
             SnapshotStock.objects.create(
@@ -528,6 +529,7 @@ class Account(models.Model):
                 total=account_stock.total
             )
         snapshot.calculate_net_asset()
+        snapshot.save()
 
     def find_transactions(self, start, end):
         """找到账户在给定时间段内的交易"""

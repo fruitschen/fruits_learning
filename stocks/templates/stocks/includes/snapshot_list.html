@@ -24,7 +24,9 @@
             <td>{{ s.increase_percent|floatformat:2 }}%</td>
             <td>{{ s.transactions_count }}</td>
             <td>
-                <a href="{{ s.xueqiu_url }}" target="_blank">雪球第{{ s.serial_number }}期</a>
+                {% if s.xueqiu_url %}
+                    <a href="{{ s.xueqiu_url }}" target="_blank">雪球第{{ s.serial_number }}期</a>
+                {% endif %}
             </td>
         </tr>
     {% endfor %}

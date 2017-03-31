@@ -35,7 +35,7 @@
             {% endif %}
             <tr>
                 <td>比上期涨跌</td>
-                <td>{{ snapshot.increase|default:0|floatformat:2 }}%</td>
+                <td>{{ snapshot.increase_percent|default:0|floatformat:2 }}%</td>
             </tr>
         </table>
         <table class="table">
