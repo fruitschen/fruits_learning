@@ -3,8 +3,6 @@ This command mark the old info as deleted.
 """
 from __future__ import absolute_import
 
-from optparse import make_option
-
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from datetime import timedelta

@@ -37,7 +37,14 @@ class InfoSource(models.Model):
         return self.name
 
 
+class AuthorManager(models.Manager):
+    def get_by_natural_key(self, user_id, name):
+        return self.get(user_id=user_id, name=name)
+
+
 class Author(models.Model):
+    objects = AuthorManager()
+
     user_id = models.CharField(max_length=256, blank=True)
     name = models.CharField(max_length=128, blank=True)
     url = models.CharField(max_length=1000, blank=True)
@@ -46,6 +53,14 @@ class Author(models.Model):
 
     def __unicode__(self):
         return self.name or u'[no name]'
+
+    def natural_key(self):
+        return (self.user_id, self.name)
+
+
+class InfoManager(models.Manager):
+    def get_by_natural_key(self, info_source, identifier):
+        return self.get(info_source=info_source, identifier=identifier)
 
 
 class Info(models.Model):
@@ -57,6 +72,7 @@ class Info(models.Model):
         (OK, 'Ok'),
         (ERROR, 'Error'),
     )
+    objects = InfoManager()
 
     info_source = models.ForeignKey(InfoSource, related_name='stories')
     title = models.CharField(max_length=500, null=True, blank=True)
@@ -80,6 +96,9 @@ class Info(models.Model):
     def __unicode__(self):
         return self.title or ''
 
+    def natural_key(self):
+        return (self.info_source, self.identifier)
+
     def delete_me(self):
         self.is_deleted = True
         self.save()
@@ -87,4 +106,3 @@ class Info(models.Model):
 
 class Content(models.Model):
     content = models.TextField(blank=True)
-
