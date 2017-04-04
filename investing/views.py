@@ -2,6 +2,45 @@
 from django.shortcuts import render
 
 from decimal import Decimal
+from stocks.templatetags.money import money_display
+
+def compound_interest(request):
+    cols = [8, 10, 15, 20, 25, 30]
+    years = range(1, 51)
+    rows = []
+    base = 1
+    if request.GET.get('base', False):
+        base = Decimal(request.GET.get('base'))
+    skip = None
+    if request.GET.get('skip'):
+        skip = int(request.GET.get('skip'))
+
+    for year in years:
+        if skip and year > skip:
+            if year % skip != 0:
+                continue
+        row = {
+            'title': u'{}年'.format(year),
+            'result': [],
+        }
+        for rate in cols:
+             res = (1 + Decimal(rate)/Decimal('100')) ** year * base
+             earning = (res - 1)
+             earning_percent = earning * 100
+             if base != 1:
+                 display = money_display(res)
+                 display = '{}万'.format('%.2f' % (res / 10000))
+             elif earning > 1:
+                 display = u'{}倍'.format('%.2f' % earning)
+             else:
+                 display = u'{}%'.format('%.2f' % earning_percent)
+             row['result'].append(display)
+        rows.append(row)
+    context = {
+        'cols': cols,
+        'rows': rows,
+    }
+    return render(request, 'compound_interest.html', context)
 
 
 def fund_value_estimation(request):
@@ -9,7 +48,6 @@ def fund_value_estimation(request):
     fund_value = Decimal('0.646')
     fee = (Decimal('1') + Decimal('0.22')) / 100
     interest_rate = Decimal('7.25') / 100
-
 
     initial_fund_value = Decimal('0.65')  # 净值为0.65时候初始估值大概是1
     initial_pb = 1
@@ -62,4 +100,3 @@ def fund_value_estimation(request):
         'groups': groups,
     }
     return render(request, 'fund_value_estimation.html', context)
-

@@ -31,7 +31,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^info/', include('info_collector.urls')),
     url(r'^stocks/', include('stocks.urls')),
-    url(r'^stocks/fund_value_estimation/$', investing_views.fund_value_estimation, name='fund_value_estimation'),
+    url(r'^investing/', include('investing.urls')),
     url(r'^tweets/$', weibo_backup.views.tweets, name='tweets'),
 
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),

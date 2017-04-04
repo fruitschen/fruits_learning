@@ -1,0 +1,40 @@
+{% extends "stocks/stocks_base.html" %}
+{% load static %}
+
+{% block body_class %}template-homepage{% endblock %}
+
+{% block stocks_content %}
+
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'stocks' %}">股票</a></li>
+        <li><a href="">复利表</a></li>
+    </ol>
+
+    <h1>复利表</h1>
+
+    <table class="table">
+        <tr>
+            <th>年\收益率</th>
+            {% for col in cols %}
+                <th>{{ col }}%</th>
+            {% endfor %}
+        </tr>
+
+        {% for row in rows %}
+            <tr>
+                <th>{{ row.title }}</th>
+                {% for item in row.result %}
+                    <td>{{ item }}</td>
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
+    <form>
+        <label>本金：</label>
+        <input type="number" {% if request.GET.base %}value="{{ request.GET.base }}"{% endif %} name="base" />
+        <label>N年：</label>
+        <input type="number" {% if request.GET.skip %}value="{{ request.GET.skip }}"{% endif %} name="skip" />
+        <input type="submit" />
+    </form>
+{% endblock %}
