@@ -18,3 +18,4 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fruits_learning.settings.dev")
 
 application = get_wsgi_application()
 application = WhiteNoise(application, root='/home/fruitschen/srv/fruits_learning/static')
+application.add_files('/home/fruitschen/srv/fruits_learning/media', prefix='media')
