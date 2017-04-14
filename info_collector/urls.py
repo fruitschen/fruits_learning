@@ -50,7 +50,7 @@ class InfoViewSet(viewsets.ModelViewSet):
                   methods=['post'])
     def mark_as_read(self, request, *args, **kwargs):
         info = self.get_object()
-        if not info.read_at:
+        if not info.read_at or not info.is_read:
             info.read_at = timezone.now()
             info.is_read = True
             info.save()
