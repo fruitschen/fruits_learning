@@ -37,9 +37,19 @@ def test_stock(client):
 
     assert account.stocks_total == 0
     assert account.total == 0
+    transaction = Transaction.objects.create(
+        stock=gree_stock,
+        action=Transaction.BUY,
+        amount=100,
+        price=Decimal('20'),
+        account=account,
+        date=datetime(2017, 1, 1),
+    )
+    '''
     AccountStock.objects.create(
         stock=gree_stock, amount=100, account=account,
     )
+    '''
     assert account.stocks_total == Decimal('4000')
     assert account.total == Decimal('4000')
     account.cash = 1000
@@ -64,6 +74,32 @@ def test_stock(client):
         date=datetime(2017, 1, 1),
     )
     assert transaction.total_money == Decimal(2000)
+
+    assert account.stocks_total == Decimal('12000')
+    assert account.total == Decimal('13000')
+
+    transaction = Transaction.objects.create(
+        account=account,
+        action=Transaction.SELL,
+        stock=gree_stock,
+        price=Decimal('20'),
+        amount=100,
+        date=datetime(2017, 2, 1),
+    )
+    assert account.stocks_total == Decimal('7000')
+    assert account.total == Decimal('8000')
+
+    transaction = Transaction.objects.create(
+        account=account,
+        action=Transaction.BUY,
+        stock=gree_stock,
+        price=Decimal('20'),
+        amount=100,
+        date=datetime(2017, 2, 1),
+        has_updated_account=True,
+    )
+    assert account.stocks_total == Decimal('7000')
+    assert account.total == Decimal('8000')
 
     bs_transaction = BoughtSoldTransaction.objects.create(
         account=account,

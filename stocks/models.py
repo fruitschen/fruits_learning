@@ -68,7 +68,27 @@ class Transaction(models.Model):
         u"""如果没有填交易额，在save之前自动计算。"""
         if not self.total_money:
             self.total_money = self.price * self.amount
+        if not self.has_updated_account:
+            self.update_account()
         super(Transaction, self).save(*args, **kwargs)
+
+    def update_account(self):
+        """只更新股票，不更新现金和负债。"""
+        if self.has_updated_account:
+            return
+        account_stock_query = self.account.stocks.filter(stock=self.stock)
+        if self.action == Transaction.BUY:
+            if account_stock_query.exists():
+                account_stock = account_stock_query[0]
+                account_stock.amount += self.amount
+                account_stock.save()
+            else:
+                account_stock = AccountStock.objects.create(stock=self.stock, amount=self.amount, account=self.account)
+        elif self.action == Transaction.SELL:
+            account_stock = account_stock_query[0]
+            account_stock.amount -= self.amount
+            account_stock.save()
+
 
 
 class StockPair(models.Model):
@@ -253,8 +273,8 @@ class PairTransaction(models.Model):
 
         if not self.profit and self.finished:
             self.profit = self.get_profit()
-        self.as_transactions()
         super(PairTransaction, self).save(**kwargs)
+        self.as_transactions()
 
     def as_transactions(self):
         """
@@ -418,8 +438,8 @@ class BoughtSoldTransaction(models.Model):
         """如果信息足够，计算利润"""
         if not self.profit and self.finished:
             self.profit = self.get_profit()
-        self.as_transactions()
         super(BoughtSoldTransaction, self).save(**kwargs)
+        self.as_transactions()
 
     def as_transactions(self):
         """
