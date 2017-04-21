@@ -62,6 +62,7 @@ class Transaction(models.Model):
     amount = models.IntegerField(u'交易数量',)
     date = models.DateTimeField(u'交易时间', null=True, blank=True)
     total_money = models.DecimalField(u'交易额', max_digits=10, decimal_places=4, null=True, blank=True)
+    has_updated_account = models.BooleanField(u'是否已经更新账户', default=False)
 
     def save(self, *args, **kwargs):
         u"""如果没有填交易额，在save之前自动计算。"""
@@ -153,6 +154,8 @@ class PairTransaction(models.Model):
     profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
     order = models.IntegerField(default=100)
     archived = models.BooleanField(u'存档-不再计算盈亏', default=False)
+
+    transactions = models.ManyToManyField(Transaction)
 
     class Meta:
         ordering = ['order', 'finished', '-started']
@@ -250,6 +253,7 @@ class PairTransaction(models.Model):
 
         if not self.profit and self.finished:
             self.profit = self.get_profit()
+        self.as_transactions()
         super(PairTransaction, self).save(**kwargs)
 
     def as_transactions(self):
@@ -257,29 +261,45 @@ class PairTransaction(models.Model):
         把配对交易以四笔Transaction交易的形式显示
         (如果没完成的话就是两笔交易)
         """
-        transactions = [
+        start_transactions = [
             # sold
-            Transaction(date=self.started.date(), action=u'卖出', stock=self.sold_stock, amount=self.sold_amount,
-                        price=self.sold_price, total_money=self.sold_total),
+            Transaction(
+                account=self.account,
+                date=self.started, action=u'卖出', stock=self.sold_stock, amount=self.sold_amount,
+                price=self.sold_price, total_money=self.sold_total),
             # bought
-            Transaction(date=self.started.date(), action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
-                        price=self.bought_price, total_money=self.bought_total),
+            Transaction(
+                account=self.account,
+                date=self.started, action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
+                price=self.bought_price, total_money=self.bought_total),
         ]
+        if self.transactions.all().count() < 2:
+            for t in start_transactions:
+                t.save()
+                self.transactions.add(t)
+        end_transactions = []
         if self.finished:
             actual_bought_back_amount = self.bought_back_amount or self.sold_amount
             actual__bought_back_total = actual_bought_back_amount * self.sold_bought_back_price
-            transactions.extend([
+            end_transactions = [
                 # sold the bought
                 Transaction(
-                    date=self.finished.date(), action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
+                    account=self.account,
+                    date=self.finished, action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
                     price=self.bought_sold_price, total_money=self.bought_sold_total
                 ),
                 # bought the sold
                 Transaction(
-                    date=self.finished.date(), action=u'买入', stock=self.sold_stock, amount=actual_bought_back_amount,
+                    account=self.account,
+                    date=self.finished, action=u'买入', stock=self.sold_stock, amount=actual_bought_back_amount,
                     price=self.sold_bought_back_price, total_money=actual__bought_back_total
                 ),
-            ])
+            ]
+            if self.transactions.all().count() < 4:
+                for t in end_transactions:
+                    t.save()
+                    self.transactions.add(t)
+        transactions = start_transactions + end_transactions
         return transactions
 
 
@@ -341,6 +361,7 @@ class BoughtSoldTransaction(models.Model):
     profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
     interest_rate = models.DecimalField(u'利率成本', max_digits=6, decimal_places=4, default='0.0835')
     archived = models.BooleanField(u'存档-不再计算盈亏', default=False)
+    transactions = models.ManyToManyField(Transaction)
 
     def __unicode__(self):
         return u'{} 交易'.format(self.bought_stock)
@@ -397,24 +418,39 @@ class BoughtSoldTransaction(models.Model):
         """如果信息足够，计算利润"""
         if not self.profit and self.finished:
             self.profit = self.get_profit()
+        self.as_transactions()
         super(BoughtSoldTransaction, self).save(**kwargs)
 
     def as_transactions(self):
         """
-        把买入卖出亿以两笔Transaction交易的形式显示
+        把买入卖出以两笔Transaction交易的形式显示
         (如果没完成的话就是一笔卖出交易)
         """
-        transactions = [
+        start_transactions = [
             # bought
-            Transaction(date=self.started.date(), action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
-                        price=self.bought_price, total_money=self.bought_total),
+            Transaction(
+                account=self.account,
+                date=self.started, action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
+                price=self.bought_price, total_money=self.bought_total),
         ]
+        if self.transactions.all().count() < 1:
+            for t in start_transactions:
+                t.save()
+                self.transactions.add(t)
+        end_transactions = []
         if self.finished:
-            transactions.append(
+            end_transactions = [
                 # sold
-                Transaction(date=self.finished.date(), action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
-                            price=self.sold_price, total_money=self.sold_total)
-            )
+                Transaction(
+                    account=self.account,
+                    date=self.finished, action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
+                    price=self.sold_price, total_money=self.sold_total)
+            ]
+            if self.transactions.all().count() < 2:
+                for t in end_transactions:
+                    t.save()
+                    self.transactions.add(t)
+        transactions = start_transactions + end_transactions
         return transactions
 
 
@@ -533,25 +569,7 @@ class Account(models.Model):
 
     def find_transactions(self, start, end):
         """找到账户在给定时间段内的交易"""
-        all_transactions = []
-        bs_transactions = self.bs_transactions.all()
-        pair_transactions = self.pair_transactions.all()
-        valid_bs_transactions = bs_transactions.filter(
-            Q(started__gte=start, started__lte=end) | Q(finished__gte=start, finished__lte=end)
-        )
-        valid_pair_transactions = pair_transactions.filter(
-            Q(started__gte=start, started__lte=end) | Q(finished__gte=start, finished__lte=end)
-        )
-        all_transactions.extend(list(valid_bs_transactions))
-        all_transactions.extend(list(valid_pair_transactions))
-        transactions = []
-        for t in all_transactions:
-            transactions.extend(t.as_transactions())
-        for t in self.transactions.filter(date__gte=start, date__lte=end):
-            t.date = t.date.date()
-            transactions.append(t)
-
-        transactions = filter(lambda x: start <= x.date <= end, transactions)
+        transactions = self.transactions.filter(date__gte=start, date__lte=end)
         transactions = sorted(transactions, key=lambda x: x.date, reverse=True)
         return transactions
 
