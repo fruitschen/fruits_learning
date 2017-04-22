@@ -74,7 +74,7 @@ def test_stock(client):
         date=datetime(2017, 1, 1),
     )
     assert transaction.total_money == Decimal(2000)
-
+    assert transaction.has_updated_account == True
     assert account.stocks_total == Decimal('12000')
     assert account.total == Decimal('13000')
 

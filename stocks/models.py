@@ -88,7 +88,8 @@ class Transaction(models.Model):
             account_stock = account_stock_query[0]
             account_stock.amount -= self.amount
             account_stock.save()
-
+        self.has_updated_account = True
+        self.save()
 
 
 class StockPair(models.Model):
