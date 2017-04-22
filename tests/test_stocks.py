@@ -43,7 +43,7 @@ def test_stock(client):
         amount=100,
         price=Decimal('20'),
         account=account,
-        date=datetime(2017, 1, 1),
+        date=datetime(2017, 1, 1, tzinfo=timezone.get_current_timezone()),
     )
     '''
     AccountStock.objects.create(
@@ -71,7 +71,7 @@ def test_stock(client):
         stock=gree_stock,
         price=Decimal('20'),
         amount=100,
-        date=datetime(2017, 1, 1),
+        date=datetime(2017, 1, 1, tzinfo=timezone.get_current_timezone()),
     )
     assert transaction.total_money == Decimal(2000)
     assert transaction.has_updated_account == True
@@ -84,7 +84,7 @@ def test_stock(client):
         stock=gree_stock,
         price=Decimal('20'),
         amount=100,
-        date=datetime(2017, 2, 1),
+        date=datetime(2017, 2, 1, tzinfo=timezone.get_current_timezone()),
     )
     assert account.stocks_total == Decimal('7000')
     assert account.total == Decimal('8000')
@@ -95,7 +95,7 @@ def test_stock(client):
         stock=gree_stock,
         price=Decimal('20'),
         amount=100,
-        date=datetime(2017, 2, 1),
+        date=datetime(2017, 2, 1, tzinfo=timezone.get_current_timezone()),
         has_updated_account=True,
     )
     assert account.stocks_total == Decimal('7000')
@@ -114,3 +114,4 @@ def test_stock(client):
     assert bs_transaction.fee == (Decimal('2000') + Decimal('2100') ) * Decimal('0.001')
     assert bs_transaction.interest == Decimal('2000') * Decimal('0.1') / Decimal('365')
     assert bs_transaction.get_profit() == Decimal('100') - bs_transaction.fee - bs_transaction.interest
+
