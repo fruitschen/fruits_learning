@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'read_list' %}">阅读</a></li>
+        <li><a href="">{{ read.get_title }}</a></li>
+    </ol>
+
+    <h1>{{ read.get_title }}</h1>
+    <p>
+        原文链接: <a href="{{ read.get_original_url }}" target="_blank">{{ read.get_original_url }}</a>
+    </p>
+    <p>
+        笔记:
+    </p>
+    {{ read.note|linebreaks }}
+
+{% endblock %}

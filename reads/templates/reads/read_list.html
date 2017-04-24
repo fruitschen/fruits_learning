@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'read_list' %}">阅读</a></li>
+    </ol>
+
+    <h1>阅读</h1>
+
+    <ul>
+        {% for read in reads_items %}
+            <li><a href="{% url 'read_details' read.slug %}">{{ read.get_title }}</a></li>
+        {% endfor %}
+    </ul>
+{% endblock %}
