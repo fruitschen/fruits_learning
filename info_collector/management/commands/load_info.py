@@ -37,6 +37,13 @@ class Command(BaseCommand):
         for info in info_items:
             info.save()
 
+        reads_data = open(os.path.join(settings.INFO_SYNC['LOAD_FROM'], 'reads.json'), 'r').read()
+        reads_items = serializers.deserialize(
+            "json", reads_data, indent=2, use_natural_foreign_keys=True, use_natural_primary_keys=True
+        )
+        for read in reads_items:
+            read.save()
+
         if verbosity:
             print('import done')
 

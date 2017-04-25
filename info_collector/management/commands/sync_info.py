@@ -11,6 +11,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 from ...models import Info, Author
+from reads.models import Read
 
 import logging
 
@@ -39,6 +40,17 @@ class Command(BaseCommand):
             "json", recent_items, indent=2, fields=fields, use_natural_foreign_keys=True, use_natural_primary_keys=True
         )
         open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'info.json'), 'w').write(data)
+
+        reads_items = Read.objects.all()
+        if verbosity:
+            print('exporting %d items' % (reads_items.count()))
+        fields = [f.name for f in Read._meta.fields]
+        fields = filter(lambda x: x not in ['id', ], fields)
+        data = serializers.serialize(
+            "json", reads_items, indent=2, fields=fields, use_natural_foreign_keys=True
+        )
+        open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'reads.json'), 'w').write(data)
+
 
         cmd = 'rsync -rave ssh {} {}:{}'.format(
             settings.INFO_SYNC['DUMP_TO'], settings.INFO_SYNC['SERVER'], settings.INFO_SYNC['LOAD_FROM']

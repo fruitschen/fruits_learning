@@ -4,7 +4,7 @@ from reads.models import Read
 
 
 def read_list(request):
-    reads_items = Read.objects.all()
+    reads_items = Read.objects.all().order_by('-id')
     context = {
         'reads_items': reads_items,
     }

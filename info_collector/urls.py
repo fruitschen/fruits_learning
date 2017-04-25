@@ -10,6 +10,7 @@ from rest_framework.reverse import reverse
 from info_collector.models import Info, InfoSource
 from info_collector.views import info_reader
 
+
 class InfoSerializer(serializers.HyperlinkedModelSerializer):
     absolute_url = serializers.HyperlinkedIdentityField(view_name='info-detail', read_only=True)
     mark_as_read = serializers.HyperlinkedIdentityField(view_name='info-mark-as-read', read_only=True)
@@ -36,6 +37,7 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
         fields = {
             'title': ['contains', ],
             'is_read': ['exact', ],
+            'starred': ['exact', ],
             'info_source': ['exact', ],
         }
 

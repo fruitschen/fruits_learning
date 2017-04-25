@@ -144,6 +144,17 @@ var InfoReader = React.createClass({
       this.loadInfo();
     })
   },
+  onlyStarItems: function(checked){
+    var show_starred_items=false;
+    if (checked){
+      show_starred_items=true;
+    }else{
+      show_starred_items=null;
+    }
+    this.setState({show_starred_items: show_starred_items, page:1}, function(){
+      this.loadInfo();
+    })
+  },
   search: function(value){
     this.setState({search_title: value, page:1}, function(){
       this.loadInfo()
@@ -164,6 +175,7 @@ var InfoReader = React.createClass({
       data: {
         page: this.state.page,
         title__contains: this.state.search_title,
+        starred: this.state.show_starred_items,
         is_read: this.state.show_read_items,
         info_source: this.state.info_source
       },
@@ -203,6 +215,7 @@ var InfoReader = React.createClass({
     return {
       page: 1,
       search_title: '',
+      show_starred_items: null,
       info_items: [],
       info_sources: [],
       previous: null,
@@ -223,7 +236,11 @@ var InfoReader = React.createClass({
           <Col className="gutter-row" span={4}>
             <InfoSourceList info_sources={this.state.info_sources} onChange={this.selectSource} />
             <Switch checkedChildren={'显示已读'} unCheckedChildren={'隐藏已读'} onChange={this.showReadItems}
-              style={{marginTop:'10px'}}
+              style={{marginTop:'10px', width:'100px'}}
+            />
+            <br />
+            <Switch checkedChildren={'仅收藏'} unCheckedChildren={'全部'} onChange={this.onlyStarItems}
+              style={{marginTop:'10px', width:'100px'}}
             />
             <Search placeholder="Search title" onSearch={this.search} style={{marginTop:'10px', width:'200px'}} />
           </Col>

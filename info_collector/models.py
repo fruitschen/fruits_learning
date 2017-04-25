@@ -98,7 +98,7 @@ class Info(models.Model):
         return self.title or ''
 
     def natural_key(self):
-        return (self.info_source, self.identifier)
+        return (self.info_source.id, self.identifier)
 
     def delete_me(self):
         self.is_deleted = True

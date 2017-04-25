@@ -17,18 +17,18 @@
             </td>
         </tr>
         {% if read.info %}
-        <tr>
-            <th>原文作者</th>
-            <td>
-                {{ read.info.author.name }}
-            </td>
-        </tr>
-        <tr>
-            <th>原文时间</th>
-            <td>
-                {{ read.info.original_timestamp|date:'Y年n月j日' }}
-            </td>
-        </tr>
+            <tr>
+                <th>原文作者</th>
+                <td>
+                    {{ read.info.author.name }}
+                </td>
+            </tr>
+            <tr>
+                <th>原文时间</th>
+                <td>
+                    {{ read.info.original_timestamp|date:'Y年n月j日' }}
+                </td>
+            </tr>
         {% endif %}
     </table>
     <h4>笔记:</h4>
