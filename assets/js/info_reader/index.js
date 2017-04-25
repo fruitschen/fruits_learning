@@ -72,6 +72,7 @@ var InfoItem = React.createClass({
     }else{
       var mark_as_read_button = <Icon type="check" />
     }
+    var create_read_button = <Button type="primary" style={{ marginRight:10 }}><a href={this.props.info_item.create_read_url} target="_blank">Create Read<Icon type="plus" /></a></Button>
 
     var content = '';
     if (this.props.info_item.content){
@@ -82,6 +83,7 @@ var InfoItem = React.createClass({
       <Card title={<a href={this.props.info_item.url} target="_blank">{this.props.info_item.title} <Icon type="link" /></a>} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
         <p>
           {star_button}
+          {create_read_button}
           {mark_as_read_button}
         </p>
         <p style={{marginTop:10}}><img src={this.props.info_item.author_avatar} /> {this.props.info_item.author_name}</p>

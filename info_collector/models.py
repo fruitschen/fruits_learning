@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 from datetime import timedelta
 from django.utils import timezone
 from django.db import models
+from django.core.urlresolvers import reverse
 
 
 class InfoSource(models.Model):
@@ -102,6 +103,10 @@ class Info(models.Model):
     def delete_me(self):
         self.is_deleted = True
         self.save()
+
+    @property
+    def create_read_url(self):
+        return '{}?info={}'.format(reverse('admin:reads_read_add'), self.id)
 
 
 class Content(models.Model):
