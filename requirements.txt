@@ -20,4 +20,6 @@ django-filter  # Filtering support
 django-crispy-forms
 django-debug-toolbar
 selenium
+xlrd==1.0.0
+
 -e git+https://github.com/django-backup/django-backup.git@develop#egg=django-backup

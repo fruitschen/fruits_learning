@@ -196,3 +196,5 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'PAGE_SIZE': 50,
 }
+
+DATA_DIR = os.path.join(BASE_DIR, 'stuff', 'data')

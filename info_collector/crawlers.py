@@ -1,17 +1,21 @@
 # coding: utf-8
+import os
 import json
 import logging
 import random
 import requests
 import time
+import xlrd
 from BeautifulSoup import BeautifulSoup as BS
 from datetime import datetime, timedelta
 
 
+from django.conf import settings
 from django.utils import timezone
 from django.utils.html import strip_tags
 
 from info_collector.models import InfoSource, Info, Content, Author
+from stocks.models import Stock
 
 import urllib3.contrib.pyopenssl
 urllib3.contrib.pyopenssl.inject_into_urllib3()
@@ -305,3 +309,66 @@ class DoubanBookCrawler(AbstractBaseCrawler):
                     else:
                         pass
                         # print u'Book exists {}'.format(book['title'])
+
+
+
+class StocksCrawler(AbstractBaseCrawler):
+    """
+    from info_collector.crawlers import StocksCrawler
+    crawler = StocksCrawler()
+    crawler.update_info()
+    """
+
+    def __init__(self):
+        super(StocksCrawler, self).__init__('stocks')
+
+    def update_info(self):
+        sh_url = 'http://yunhq.sse.com.cn:32041/v1/sh1/list/exchange/equity'
+        session = requests.Session()
+        json_response = get_response(session, sh_url, timeout=3, headers=self.headers)
+        json_result = json_response.json()
+        for item in json_result['list']:
+            code, name, price = item
+            if not Stock.objects.filter(code=code, market='sh').exists():
+                stock = Stock.objects.create(
+                    code=code,
+                    name=name,
+                    market='sh',
+                    is_stock=True,
+                    price=price,
+                    price_updated=timezone.now()
+                )
+            else:
+                stock = Stock.objects.get(code=code)
+                if stock.name != name:
+                    print stock.name
+                    stock.name = name
+                    stock.save()
+
+        if not os.path.exists(settings.DATA_DIR):
+            os.makedirs(settings.DATA_DIR)
+        sz_list_file = os.path.join(settings.DATA_DIR, 'sz_list.xlsx')
+        sz_url = 'http://www.szse.cn/szseWeb/ShowReport.szse?SHOWTYPE=xlsx&CATALOGID=1110&&ENCODE=1&TABKEY=tab2'
+        response = get_response(session, sz_url, timeout=3, headers=self.headers)
+        open(sz_list_file, 'w').write(response.content)
+        data = xlrd.open_workbook(sz_list_file)
+        table = data.sheets()[0]
+        table = data.sheet_by_index(0)
+        nrows = table.nrows
+        for i in range(nrows):
+            row = table.row_values(i)
+            code, name = row[0], row[1]
+            name = name.replace(' ', '')
+            if not Stock.objects.filter(code=code, market='sz').exists():
+                stock = Stock.objects.create(
+                    code=code,
+                    name=name,
+                    market='sz',
+                    is_stock=True,
+                )
+            else:
+                stock = Stock.objects.get(code=code)
+                if stock.name != name:
+                    print stock.name
+                    stock.name = name
+                    stock.save()

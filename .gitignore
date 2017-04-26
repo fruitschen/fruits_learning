@@ -15,6 +15,7 @@ search_index/*
 logs/*
 *.log
 bower_components/
+stuff/
 db.sqlite3
 
 node_modules
