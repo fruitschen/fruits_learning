@@ -41,7 +41,7 @@ combine_pair_transactions.short_description = "Combine"
 
 class StockAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'price', 'market', 'star']
-    list_filter = ['star', ]
+    list_filter = ['star', 'watching']
     search_fields = ['name', 'code', ]
     actions = [add_star, remove_star, ]
 

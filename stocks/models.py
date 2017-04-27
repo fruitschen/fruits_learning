@@ -334,8 +334,7 @@ class Stock(models.Model):
     price_updated = models.DateTimeField(null=True, blank=True)
     star = models.BooleanField(default=False, blank=True)
 
-    archive = models.BooleanField(default=False, blank=True)
-    archived_reason = models.CharField(max_length=256, blank=True, default='')
+    watching = models.BooleanField(default=False, blank=True)
     comment = models.TextField(blank=True)
 
     pair_stocks = models.ManyToManyField('Stock', blank=True, through=StockPair)
@@ -362,6 +361,11 @@ class Stock(models.Model):
             'price_change': items[4],
             'price_change_percent': items[5],
         }
+
+    def save(self, **kwargs):
+        if self.star and not self.watching:
+            self.watching = True
+        super(Stock, self).save(**kwargs)
 
 
 class BoughtSoldTransaction(models.Model):
