@@ -19,7 +19,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        stocks = Stock.objects.exclude(archive=True)
+        stocks = Stock.objects.all()
         if options.get('all'):
             stocks = Stock.objects.all()
             pairs = StockPair.objects.all()
