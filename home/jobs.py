@@ -19,6 +19,7 @@ def run_crawlers():
         crawlers.DoubanBookCrawler(),
         crawlers.XueqiuPeopleCrawler(),
         crawlers.StocksCrawler(),
+        crawlers.StocksAnnouncementCrawler(),
     )
     for crawler in info_crawlers:
         if crawler.info_source.should_fetch():

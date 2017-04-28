@@ -46,12 +46,15 @@ class AbstractBaseCrawler(object):
                 pass
 
 
-def get_response(req, url, timeout, headers):
+def get_response(req, url, timeout, headers, post_data=None):
     response = None
     retry = 0
     while not response and retry < 3:
         try:
-            response = req.get(url, timeout=timeout, headers=headers)
+            if post_data:
+                response = req.post(url, data=post_data, timeout=timeout, headers=headers)
+            else:
+                response = req.get(url, timeout=timeout, headers=headers)
         except requests.exceptions.ConnectTimeout:
             pass
         retry += 1
@@ -311,7 +314,6 @@ class DoubanBookCrawler(AbstractBaseCrawler):
                         # print u'Book exists {}'.format(book['title'])
 
 
-
 class StocksCrawler(AbstractBaseCrawler):
     """
     from info_collector.crawlers import StocksCrawler
@@ -372,3 +374,111 @@ class StocksCrawler(AbstractBaseCrawler):
                     print stock.name
                     stock.name = name
                     stock.save()
+
+
+class StocksAnnouncementCrawler(AbstractBaseCrawler):
+    """
+    from info_collector.crawlers import StocksAnnouncementCrawler
+    crawler = StocksAnnouncementCrawler()
+    crawler.update_info()
+    """
+
+    def __init__(self):
+        super(StocksAnnouncementCrawler, self).__init__('cninfo')
+
+    def update_info(self):
+        session = requests.Session()
+        watching = Stock.objects.filter(watching=True).values_list('code', flat=True)
+        sh_url = 'http://www.cninfo.com.cn/cninfo-new/disclosure/sse'
+        response = get_response(session, sh_url, timeout=3, headers=self.headers)  # just for cookie
+        sh_announcements_url = 'http://www.cninfo.com.cn/cninfo-new/disclosure/sse_latest'
+        we_shall_stop = False
+        page = 1
+        save_point = None
+        while page < 5 and not we_shall_stop:
+            json_response = get_response(session, sh_announcements_url, timeout=3, headers=self.headers, post_data={
+                'column': 'sse',
+                'columnTitle': u'沪市公告',
+                'pageNum': unicode(page),
+                'pageSize': u'30',
+                'tabName': u'latest',
+                'seDate': u'请选择日期',
+            })
+            json_result = json_response.json()
+            for item_list in json_result['classifiedAnnouncements']:
+                if we_shall_stop:
+                    break
+                for item in item_list:
+                    code = item['secCode']
+                    name = item['secName']
+                    title = item['announcementTitle']
+                    identifier = item['adjunctUrl']
+                    announcement_id = item['announcementId']
+                    storage_time = item['storageTime']
+                    correct_time = datetime.utcfromtimestamp(storage_time/1000)
+                    time_str = correct_time.strftime('%Y-%m-%d')
+                    info_url = 'http://www.cninfo.com.cn/cninfo-new/disclosure/sse/bulletin_detail/true/{}?announceTime={}'
+                    info_url = info_url.format(announcement_id, time_str)
+                    if code in watching or not save_point:
+                        save_point = True
+                        created = correct_time
+                        if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
+                            info = Info.objects.create(
+                                url=info_url,
+                                status=Info.NEW,
+                                info_source=self.info_source,
+                                title=name + ' ' + title,
+                                identifier=identifier,
+                                original_timestamp=created,
+                            )
+                        else:
+                            we_shall_stop = True
+            page += 1
+            time.sleep(2)
+
+        sz_url = 'http://www.cninfo.com.cn/cninfo-new/disclosure/szse'
+        response = get_response(session, sz_url, timeout=3, headers=self.headers)  # just for cookie
+        sz_announcements_url = 'http://www.cninfo.com.cn/cninfo-new/disclosure/szse_latest'
+        page = 1
+        we_shall_stop = False
+        save_point = None
+        while page < 5 and not we_shall_stop:
+            json_response = get_response(session, sz_announcements_url, timeout=3, headers=self.headers, post_data={
+                'column': 'szse',
+                'columnTitle': u'深市公告',
+                'pageNum': unicode(page),
+                'pageSize': u'30',
+                'tabName': u'latest',
+                'seDate': u'请选择日期',
+            })
+            json_result = json_response.json()
+            for item_list in json_result['classifiedAnnouncements']:
+                if we_shall_stop:
+                    break
+                for item in item_list:
+                    code = item['secCode']
+                    name = item['secName']
+                    title = item['announcementTitle']
+                    identifier = item['adjunctUrl']
+                    announcement_id = item['announcementId']
+                    storage_time = item['storageTime']
+                    correct_time = datetime.utcfromtimestamp(storage_time / 1000)
+                    time_str = correct_time.strftime('%Y-%m-%d')
+                    info_url = 'http://www.cninfo.com.cn/cninfo-new/disclosure/sse/bulletin_detail/true/{}?announceTime={}'
+                    info_url = info_url.format(announcement_id, time_str)
+                    if code in watching or not save_point:
+                        save_point = True
+                        created = correct_time
+                        if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
+                            info = Info.objects.create(
+                                url=info_url,
+                                status=Info.NEW,
+                                info_source=self.info_source,
+                                title=name + ' ' + title,
+                                identifier=identifier,
+                                original_timestamp=created,
+                            )
+                        else:
+                            we_shall_stop = True
+            page += 1
+            time.sleep(2)
