@@ -88,6 +88,7 @@ class Info(models.Model):
     is_read = models.BooleanField(default=False)
     starred_at = models.DateTimeField(null=True, blank=True)
     starred = models.BooleanField(default=False)
+    important = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
 
     class Meta:

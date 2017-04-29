@@ -26,7 +26,7 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
         fields = (
             'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at',
             'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read', 'content',
-            'author_name', 'author_avatar', 'create_read_url',
+            'author_name', 'author_avatar', 'create_read_url', 'important',
         )
 
 
@@ -38,12 +38,13 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
             'title': ['contains', ],
             'is_read': ['exact', ],
             'starred': ['exact', ],
+            'important': ['exact', ],
             'info_source': ['exact', ],
         }
 
 
 class InfoViewSet(viewsets.ModelViewSet):
-    queryset = Info.objects.all().filter(is_deleted=False).select_related('author')
+    queryset = Info.objects.all().filter(is_deleted=False).select_related('author').order_by('-important')
     serializer_class = InfoSerializer
     # filter_fields = ('read_at', )
     filter_class = InfoFilter

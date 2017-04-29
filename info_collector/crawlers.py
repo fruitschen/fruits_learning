@@ -430,6 +430,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                                 title=name + ' ' + title,
                                 identifier=identifier,
                                 original_timestamp=created,
+                                important=True,
                             )
                         else:
                             we_shall_stop = True
@@ -477,6 +478,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                                 title=name + ' ' + title,
                                 identifier=identifier,
                                 original_timestamp=created,
+                                important=True,
                             )
                         else:
                             we_shall_stop = True
