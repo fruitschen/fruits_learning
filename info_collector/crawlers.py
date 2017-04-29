@@ -106,6 +106,8 @@ class XueqiuBaseCrawler(AbstractBaseCrawler):
 
     def save_author(self, user_info, info):
         user_id = user_info['id']
+        if not user_id:
+            return
         author_query = Author.objects.filter(user_id=user_id)
         if not author_query.exists():
             img = user_info.get('profile_image_url', '')
@@ -228,6 +230,9 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
             posts = json_result['statuses']
             posts.reverse()
             for post in posts:
+                retweeted_status = post.get('retweeted_status', None)
+                if retweeted_status:
+                    self.handle_post(retweeted_status)
                 identifier = post['target']
                 title = post['title'] or post['topic_title']
                 target = post['target']
@@ -259,6 +264,38 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                         author = self.save_author(post['user'], info)
 
             time.sleep(3)
+
+    def handle_post(self, post):
+        identifier = post['target']
+        title = post['title'] or post['topic_title']
+        target = post['target']
+        if target[0] == '/':
+            target = target[1:]
+        url = '{}{}'.format(self.info_source.url, target)
+        text = post['text']
+        if not title:
+            title = u'[无标题]{}...'.format(strip_tags(text)[:64])
+        created_at = int(post['created_at']) / 1000
+        created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60 * 8)
+        info_query = Info.objects.filter(info_source=self.info_source, identifier=identifier)
+        if not info_query.exists():
+            content = Content.objects.create(content=text)
+            info = Info.objects.create(
+                url=url,
+                status=Info.OK,
+                info_source=self.info_source,
+                title=title,
+                identifier=identifier,
+                original_timestamp=created,
+                content=content,
+            )
+            info.save()
+            author = self.save_author(post['user'], info)
+        else:
+            info = info_query[0]
+            if not info.author:
+                author = self.save_author(post['user'], info)
+
 
 class DoubanBookCrawler(AbstractBaseCrawler):
     """
