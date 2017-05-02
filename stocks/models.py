@@ -2,11 +2,13 @@
 """
 券商有时候给出四舍五入的均价，自动计算交易额的时候，可能造成成交额有一点误差。
 """
+import os
 from decimal import Decimal
 from datetime import timedelta, datetime
 from django.utils import timezone
 
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
@@ -335,6 +337,7 @@ class Stock(models.Model):
     star = models.BooleanField(default=False, blank=True)
 
     watching = models.BooleanField(default=False, blank=True)
+    tracking = models.BooleanField(default=False, blank=True)
     comment = models.TextField(blank=True)
 
     pair_stocks = models.ManyToManyField('Stock', blank=True, through=StockPair)
@@ -366,6 +369,91 @@ class Stock(models.Model):
         if self.star and not self.watching:
             self.watching = True
         super(Stock, self).save(**kwargs)
+
+    @property
+    def price_file(self):
+        prices_dir = os.path.join(settings.DATA_DIR, 'prices')
+        if not os.path.exists(prices_dir):
+            os.makedirs(prices_dir)
+        return os.path.join(prices_dir, '{}.txt'.format(self.code))
+
+    def latest_price_date(self, fp=None):
+        if not fp:
+            fp = open(self.price_file, 'r')
+        first_line = fp.readline()
+        first_item = first_line.split()[1]
+        return first_item
+
+    def fix_tushare_price_content(self, content):
+        """
+        tushare的价格数据的数据头要去掉，只保留数据
+        index    date    open   close    high    low      volume     code
+        """
+        lines = content.splitlines()
+        while not lines[0][0].isdigit():
+            lines = lines[1:]
+        return '\n'.join(lines)
+
+    def download_price_history(self):
+        import tushare as ts
+        now = timezone.now()
+        target_file = self.price_file
+        if os.path.exists(target_file):
+            # 已经有数据，无需从上市开始下载数据
+            fp = open(target_file, 'r+')
+            latest_price_date = self.latest_price_date(fp=fp)
+            start = datetime.strptime(latest_price_date, '%Y-%m-%d') + timedelta(days=1)
+            if now.hour < 15:
+                end = (now - timedelta(days=1)).strftime('%Y-%m-%d')
+            else:
+                end = now.strftime('%Y-%m-%d')
+            data = ts.get_h_data(self.code, autype=None, retry_count=5, start=start.strftime('%Y-%m-%d'), end=end)
+            if data is not None:
+                content = data.to_string()
+                content = self.fix_tushare_price_content(content)
+                if content:
+                    fp.seek(0, 0)
+                    old_content = fp.read()
+                    fp.seek(0, 0)
+                    fp.tell()
+                    fp.write(content + old_content)
+                    fp.close()
+        else:
+            start = '2016-01-01'
+            data = ts.get_k_data(self.code, autype=None, retry_count=5, start=start, end=now.strftime('%Y-%m-%d'))
+            if data is not None:
+                content = data.to_string()
+                content = self.fix_tushare_price_content(content)
+                open(target_file, 'w').write(content)
+
+    @property
+    def get_prices(self):
+        """字典形式的价格数据 {date: price}"""
+        if getattr(self, '_prices', None):
+            return self._prices
+        prices_data = open(self.price_file, 'r')
+        lines = prices_data.readlines()
+        prices = {}
+        for line in lines:
+            items = line.split()
+            prices.update({items[1]: items[3]})
+        self._prices = prices
+        return prices
+
+    def get_price_by_date(self, date):
+        """给定日期获得价格，如果当天不是交易日则向前寻找最近的收盘价。"""
+        if getattr(date, 'strftime', None):
+            date_str = date.strftime('%Y-%m-%d')
+        else:
+            date_str = date
+            date = datetime.strptime(date, '%Y-%m-%d')
+        prices = self.get_prices
+        price = prices.get(date_str, None)
+        while not price and date > datetime(2016,1,1):
+            date = date - timedelta(days=1)
+            return self.get_price_by_date(date)
+        return price
+
 
 
 class BoughtSoldTransaction(models.Model):
