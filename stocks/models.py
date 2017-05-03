@@ -452,7 +452,7 @@ class Stock(models.Model):
         while not price and date > datetime(2016,1,1):
             date = date - timedelta(days=1)
             return self.get_price_by_date(date)
-        return price
+        return Decimal(price)
 
 
 

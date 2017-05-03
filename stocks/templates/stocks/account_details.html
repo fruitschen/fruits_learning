@@ -190,7 +190,7 @@
     {% endif %}
 
   {{ block.super }}
-  <script src="{% static 'echarts-3.4/echarts.simple.min.js' %}"></script>
+  <script src="{% static 'echarts-3.4/echarts.min.js' %}"></script>
   <script type="text/javascript">
       {% if logged_in and get_price_job %}
           var seconds = 60
@@ -251,6 +251,8 @@
       var snapshotsChart = echarts.init(document.getElementById('snapshots_chart'));
       var names = {{ snapshots_chart_data.x_axis|safe }}
       var data = {{ snapshots_chart_data.y_axis|safe }}
+      var sh_index = {{ snapshots_chart_data.sh_index|safe }}
+      var hs300_index = {{ snapshots_chart_data.hs300_index|safe }}
       var option = {
           toolbox: {
               show : true,
@@ -260,6 +262,10 @@
                   restore : {show: true},
                   saveAsImage : {show: true}
               }
+          },
+          legend: {
+              left: 'left',
+              data: ['账户历史净资产', '同期上证指数', '同期沪深300指数']
           },
           xAxis : [
               {
@@ -273,11 +279,29 @@
                   type : 'value'
               }
           ],
+          tooltip: {
+              trigger: 'item',
+              formatter: function (params, ticket, callback) {
+                  if(params.seriesName == '账户历史净资产'){
+                      return params.name + ' : ' + params.data
+                  };
+              }
+          },
           series : [
               {
                   name:'账户历史净资产',
                   type:'line',
                   data: data
+              },
+              {
+                  name:'同期上证指数',
+                  type:'line',
+                  data: sh_index
+              },
+              {
+                  name:'同期沪深300指数',
+                  type:'line',
+                  data: hs300_index
               }
           ]
       };

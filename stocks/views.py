@@ -1,5 +1,6 @@
 # -*- coding: UTF-8 -*-
 from datetime import timedelta
+from decimal import Decimal
 
 from django.db.models import Sum
 from django.shortcuts import render
@@ -38,12 +39,25 @@ def account_details(request, account_slug):
         return HttpResponseForbidden('Oops')
     snapshots = account.snapshots.all().order_by('-id')
     snapshots_chart_data = None
+    sh = Stock.objects.get(code='sh')
+    hs300 = Stock.objects.get(code='hs300')
     if snapshots.count() >= 3:
         raw_data = snapshots.values_list('date', 'net_asset')
         raw_data = raw_data.reverse()
+        dates = [r[0] for r in raw_data]
         x_axis = [r[0].strftime('%Y-%m-%d') for r in raw_data]
         y_axis = [int(r[1]) for r in raw_data]
-        snapshots_chart_data = {'x_axis': x_axis, 'y_axis': y_axis}
+        # 对比上证指数
+        sh_index = []
+        hs300_index = []
+        for date in dates:
+            sh_index.append(sh.get_price_by_date(date))
+            hs300_index.append(hs300.get_price_by_date(date))
+        sh_rate = y_axis[0] / sh_index[0]
+        sh_index = [int(value * sh_rate) for value in sh_index]
+        hs300_rate = y_axis[0] / hs300_index[0]
+        hs300_index = [int(value * hs300_rate) for value in hs300_index]
+        snapshots_chart_data = {'x_axis': x_axis, 'y_axis': y_axis, 'sh_index': sh_index, 'hs300_index': hs300_index}
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
