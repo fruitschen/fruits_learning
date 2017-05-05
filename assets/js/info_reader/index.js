@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Pagination, Card, Button, Icon, Row, Col, Radio, Switch, Input } from 'antd';
+import { Pagination, Card, Button, Icon, Row, Col, Radio, Switch, Input, Popconfirm } from 'antd';
 import 'antd/dist/antd.css';  // or 'antd/dist/antd.less'
 const RadioGroup = Radio.Group;
 const radioStyle = {
@@ -169,6 +169,28 @@ var InfoReader = React.createClass({
       this.loadInfo();
     })
   },
+  markAllAsRead: function(){
+    var show_read_items=false;
+    var index = 0;
+    var ids = []
+    for (index in this.state.info_items){
+      var info_item = this.state.info_items[index];
+      ids.push(info_item.id)
+    }
+    var url = '/api/info/mark_all_as_read/';
+    $.ajax({
+      type: 'POST',
+      dataType: 'json',
+      url: url,
+      data: {ids:ids},
+      success: function(data){
+        this.setState({page:1}, function(){
+          this.loadInfo();
+        })
+      }.bind(this)
+    });
+
+  },
   loadInfo: function() {
     $.ajax({
       url: this.props.url,
@@ -243,6 +265,9 @@ var InfoReader = React.createClass({
               style={{marginTop:'10px', width:'100px'}}
             />
             <Search placeholder="Search title" onSearch={this.search} style={{marginTop:'10px', width:'200px'}} />
+            <Popconfirm title="确定标记当页全部info为已读?" onConfirm={this.markAllAsRead} okText="Yes" cancelText="No">
+              <Button style={{marginTop:'10px', width:'100px'}}>标记当页已读</Button>
+            </Popconfirm>
           </Col>
           <Col className="gutter-row" span={20}>
             <Pagination defaultCurrent={this.state.page} total={this.state.total} pageSize={50} onChange={this.changePage} current={this.state.page} />

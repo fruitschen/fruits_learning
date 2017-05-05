@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from django.utils import timezone
 from django.shortcuts import redirect
 import django_filters
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework import serializers, viewsets, renderers
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -48,6 +48,12 @@ class InfoViewSet(viewsets.ModelViewSet):
     serializer_class = InfoSerializer
     # filter_fields = ('read_at', )
     filter_class = InfoFilter
+
+    @list_route(methods=['post'])
+    def mark_all_as_read(self, request):
+        info_items = Info.objects.filter(id__in=request.POST.getlist('ids[]', []))
+        info_items.update(is_read=True, read_at=timezone.now())
+        return Response({'status': 'OK'})
 
     @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer], url_path='mark-as-read',
                   methods=['post'])
