@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from __future__ import unicode_literals
 from django.db import models
 from wagtail.wagtailcore.models import Page
@@ -8,14 +9,20 @@ from wagtail.wagtailsearch import index
 
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
+    reverse_order = models.BooleanField(u'是否倒序排列?', default=False)
+
     content_panels = Page.content_panels + [
-        FieldPanel('intro', classname="full")
+        FieldPanel('intro', classname="full"),
+        FieldPanel('reverse_order', classname="")
     ]
 
     def get_context(self, request):
-        # Update context to include only published posts, ordered by reverse-chron
         context = super(BlogIndexPage, self).get_context(request)
-        blogpages = self.get_children().live().order_by('first_published_at')
+        blogpages = self.get_children().live()
+        if self.reverse_order:
+            blogpages = blogpages.order_by('-first_published_at')
+        else:
+            blogpages = blogpages.order_by('first_published_at')
         context['blogpages'] = blogpages
         return context
 
