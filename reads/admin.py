@@ -14,11 +14,16 @@ class ReadAdmin(admin.ModelAdmin):
         if 'info' in initial:
             info = Info.objects.get(id=initial['info'])
             initial['slug'] = 'info-{}-{}'.format(info.original_timestamp.strftime('%Y-%m-%d'), info.id)
-            initial['title'] = info.title
+            title = info.title
+            if info.author:
+                title = u'{}: {}'.format(info.author.name, title)
+            initial['title'] = title
+
             initial['original_url'] = info.url
             if info.content:
                 initial['note'] = strip_tags(
                     info.content.content.replace('<p>', '\n').replace('<br>', '\n').replace('<br />', '\n')
+                        .replace('&nbsp;', ' ')
                 )
         return initial
 

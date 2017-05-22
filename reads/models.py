@@ -14,6 +14,9 @@ class Read(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     # timeliness = models.ForeignKey()  # TODO #
 
+    def __unicode__(self):
+        return self.title or self.info.title
+
     def get_title(self):
         if self.title:
             return self.title
