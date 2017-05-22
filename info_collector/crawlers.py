@@ -472,6 +472,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                             if code not in watching:
                                 # just a save point, mark it as read
                                 info.is_read = True
+                                info.important = False
                                 info.read_at = timezone.now()
                         else:
                             we_shall_stop = True
@@ -524,6 +525,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                             if code not in watching:
                                 # just a save point, mark it as read
                                 info.is_read = True
+                                info.important = False
                                 info.read_at = timezone.now()
                         else:
                             we_shall_stop = True
