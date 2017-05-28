@@ -153,7 +153,9 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
             title = data['title'] or data['topic_title']
             url = '{}{}/{}'.format(self.info_source.url, data['user']['id'], identifier)
             created_at = int(data['created_at']) / 1000
-            created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60*8)
+            created = datetime.utcfromtimestamp(created_at)#  + timedelta(minutes=60*8)
+            created = timezone.datetime(created.year, created.month, created.day, created.hour, created.minute,
+                                        created.second, tzinfo=timezone.get_default_timezone())
             info_query = Info.objects.filter(info_source=self.info_source, identifier=identifier)
             if not info_query.exists():
                 info = Info.objects.create(
@@ -162,7 +164,7 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
                     info_source=self.info_source,
                     title=title,
                     identifier=identifier,
-                    original_timestamp = created,
+                    original_timestamp=created,
                 )
                 self.save_author(data['user'], info)
             else:
@@ -243,7 +245,9 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                 if not title:
                     title = u'[无标题]{}...'.format(strip_tags(text)[:64])
                 created_at = int(post['created_at']) / 1000
-                created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60*8)
+                created = datetime.utcfromtimestamp(created_at)  # + timedelta(minutes=60*8)
+                created = timezone.datetime(created.year, created.month, created.day, created.hour, created.minute,
+                                            created.second, tzinfo=timezone.get_default_timezone())
                 info_query = Info.objects.filter(info_source=self.info_source, identifier=identifier)
                 if not info_query.exists():
                     content = Content.objects.create(content=text)
@@ -253,8 +257,8 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                         info_source=self.info_source,
                         title=title,
                         identifier=identifier,
-                        original_timestamp = created,
-                        content = content,
+                        original_timestamp=created,
+                        content=content,
                     )
                     info.save()
                     author = self.save_author(post['user'], info)

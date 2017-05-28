@@ -10,7 +10,7 @@ class InfoSourceAdmin(admin.ModelAdmin):
 
 class InfoAdmin(admin.ModelAdmin):
     list_display = ['__unicode__', 'info_source', 'timestamp', 'original_timestamp']
-    list_filter = ['info_source', 'is_read', ]
+    list_filter = ['info_source', 'is_read', 'important']
 
 class AuthorAdmin(admin.ModelAdmin):
     list_display = ['name', 'url']

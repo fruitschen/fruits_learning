@@ -93,7 +93,7 @@ class Info(models.Model):
 
     class Meta:
         unique_together = (('info_source', 'identifier'),)
-        ordering = ('-timestamp',)
+        ordering = ['-important', '-timestamp']
 
     def __unicode__(self):
         return self.title or ''
