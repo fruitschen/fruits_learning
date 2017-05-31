@@ -447,9 +447,11 @@ class Stock(models.Model):
         else:
             date_str = date
             date = datetime.strptime(date, '%Y-%m-%d')
+        # add tzinfo
+        date = timezone.datetime(date.year, date.month, date.day, tzinfo=timezone.get_current_timezone())
         prices = self.get_prices
         price = prices.get(date_str, None)
-        while not price and date > datetime(2016,1,1):
+        while not price and date > timezone.datetime(2016, 1, 1, tzinfo=timezone.get_default_timezone()):
             date = date - timedelta(days=1)
             return self.get_price_by_date(date)
         return Decimal(price)
