@@ -478,6 +478,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                                 info.is_read = True
                                 info.important = False
                                 info.read_at = timezone.now()
+                                info.save()
                         else:
                             we_shall_stop = True
             page += 1
@@ -531,6 +532,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                                 info.is_read = True
                                 info.important = False
                                 info.read_at = timezone.now()
+                                info.save()
                         else:
                             we_shall_stop = True
             page += 1
