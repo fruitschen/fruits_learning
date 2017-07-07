@@ -653,7 +653,7 @@ class Account(models.Model):
     def take_snapshot(self):
         """制作一个账户快照account snapshot"""
         if self.snapshots.all():
-            serial_number = 1 + self.snapshots.all().order_by('-id')[0].id
+            serial_number = 1 + self.snapshots.all().order_by('-serial_number')[0].serial_number
         else:
             serial_number = 1
         snapshot = Snapshot(

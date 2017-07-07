@@ -1,0 +1,25 @@
+{% extends "stocks/stocks_base.html" %}
+{% load static %}
+
+{% block stocks_content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li><a href="{% url 'stocks' %}">股票</a></li>
+        <li><a href="..">{{ account }} </a></li>
+    </ol>
+
+
+    <h1>{{ account }} 全部配对交易</h1>
+
+    <h3>未结配对交易</h3>
+    {% with pair_transactions_unfinished as pair_transactions %}
+        {% include "stocks/includes/pair_transaction_list.html" %}
+    {% endwith %}
+
+    <h3>已完成配对交易</h3>
+    {% with pair_transactions_finished as pair_transactions %}
+        {% include "stocks/includes/pair_transaction_list.html" %}
+    {% endwith %}
+
+
+{% endblock %}

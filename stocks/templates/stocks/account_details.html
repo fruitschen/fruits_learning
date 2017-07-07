@@ -11,7 +11,7 @@
 
     <h1>{{ account }}</h1>
     <h3>概览
-        <a class="btn btn-primary" role="button" data-toggle="collapse" href="#summary" aria-expanded="{% if account.display_summary %}true{% else %}false{% endif %}" aria-controls="summary">
+        <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#summary" aria-expanded="{% if account.display_summary %}true{% else %}false{% endif %}" aria-controls="summary">
             显示/隐藏
         </a>
     </h3>
@@ -72,7 +72,7 @@
 
 
     <h3>构成
-        <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_chart_container" aria-expanded="true" aria-controls="account_chart_container">
+        <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#account_chart_container" aria-expanded="true" aria-controls="account_chart_container">
             显示/隐藏
         </a>
     </h3>
@@ -83,7 +83,7 @@
 
     {% if snapshots %}
         <h3>快照
-            <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_snapshots" aria-expanded="true" aria-controls="account_snapshots">
+            <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#account_snapshots" aria-expanded="true" aria-controls="account_snapshots">
                 显示/隐藏
             </a>
         </h3>
@@ -104,7 +104,7 @@
 
     {% if logged_in %}
         <h3>利润
-            <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
+            <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
                 显示/隐藏
             </a>
         </h3>
@@ -137,7 +137,11 @@
             </table>
         </div>
 
-        <h3>未结配对交易<a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a></h3>
+        <h3>未结配对交易
+            <a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-lg btn-primary btn-lg">添加</a>
+            <a href="{% url 'account_pair_transactions' account.slug %}" target="_blank" class="btn btn-lg btn-lg btn-primary">全部配对交易</a>
+
+        </h3>
         {% with pair_transactions_unfinished as pair_transactions %}
             {% include "stocks/includes/pair_transaction_list.html" %}
         {% endwith %}
@@ -149,7 +153,7 @@
 
         {% if account_bs_transactions %}
             <h3>未卖出交易
-                <a href="{% url 'admin:stocks_boughtsoldtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-primary">添加</a>
+                <a href="{% url 'admin:stocks_boughtsoldtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-lg btn-primary">添加</a>
             </h3>
             {% with bs_transactions_unfinished as bs_transactions %}
                 {% include "stocks/includes/bs_transaction_list.html" %}
@@ -165,7 +169,7 @@
     {% if recent_transactions %}
         {% with recent_transactions as transactions %}
             <h3>最近交易
-                <a class="btn btn-primary" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">
+                <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">
                     显示/隐藏
                 </a>
             </h3>

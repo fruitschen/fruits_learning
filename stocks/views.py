@@ -28,6 +28,23 @@ def stocks(request):
         context.update(get_pairs_context(request))
     return render(request, 'stocks/stocks.html', context)
 
+def account_pair_transactions(request, account_slug):
+    logged_in = request.user.is_authenticated()
+    if not request.user.is_authenticated():
+        return HttpResponseForbidden('Oops')
+
+    account = Account.objects.get(slug=account_slug)
+    all_account_pair_transactions = account.pair_transactions.all()
+    pair_transactions_unfinished = all_account_pair_transactions.filter(finished__isnull=True)
+    pair_transactions_finished = all_account_pair_transactions.filter(finished__isnull=False)
+    context = {
+        'account': account,
+        'pair_transactions_unfinished': pair_transactions_unfinished,
+        'pair_transactions_finished': pair_transactions_finished,
+    }
+    return render(request, 'stocks/account_pair_transactions.html', context)
+
+
 
 def account_details(request, account_slug):
     logged_in = request.user.is_authenticated()
