@@ -16,6 +16,7 @@ from django.utils.html import strip_tags
 
 from info_collector.models import InfoSource, Info, Content, Author
 from stocks.models import Stock
+from info_collector.tag_utils import apply_tags
 
 import urllib3.contrib.pyopenssl
 urllib3.contrib.pyopenssl.inject_into_urllib3()
@@ -473,6 +474,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                                 original_timestamp=created,
                                 important=True,
                             )
+                            apply_tags(info)
                             if code not in watching:
                                 # just a save point, mark it as read
                                 info.is_read = True
@@ -527,6 +529,7 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
                                 original_timestamp=created,
                                 important=True,
                             )
+                            apply_tags(info)
                             if code not in watching:
                                 # just a save point, mark it as read
                                 info.is_read = True

@@ -24,7 +24,7 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Info
         fields = (
-            'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at',
+            'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at', 'tags',
             'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read', 'content',
             'author_name', 'author_avatar', 'create_read_url', 'important',
         )
@@ -36,6 +36,7 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
         model = Info
         fields = {
             'title': ['contains', ],
+            'tags': ['contains', ],
             'is_read': ['exact', ],
             'starred': ['exact', ],
             'important': ['exact', ],

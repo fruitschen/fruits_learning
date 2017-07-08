@@ -77,6 +77,7 @@ class Info(models.Model):
 
     info_source = models.ForeignKey(InfoSource, related_name='stories')
     title = models.CharField(max_length=500, null=True, blank=True)
+    tags = models.CharField(max_length=256, blank=True)
     author = models.ForeignKey('Author', null=True, blank=True, on_delete=models.SET_NULL)
     identifier = models.CharField(max_length=255)
     url = models.URLField(max_length=2000, null=True, blank=True)

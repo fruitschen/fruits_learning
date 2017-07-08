@@ -79,8 +79,13 @@ var InfoItem = React.createClass({
       var content = <div dangerouslySetInnerHTML={{__html: this.props.info_item.content}}></div>;
     }
 
+    var tags = ''
+    if (this.props.info_item.tags){
+      var tags = <strong style={{ color:'red' }}>[{ this.props.info_item.tags }] </strong>;
+    }
+
     return (
-      <Card title={<a href={this.props.info_item.url} target="_blank">{this.props.info_item.title} <Icon type="link" /></a>} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
+      <Card title={<a href={this.props.info_item.url} target="_blank">{tags}{this.props.info_item.title} <Icon type="link" /></a>} extra={this.props.info_item.source_name} style={{ margin:'12px 0' }}>
         <p>
           {star_button}
           {create_read_button}
