@@ -102,11 +102,11 @@ class InfoSourceSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = InfoSource
-        fields = ('absolute_url', 'id','name', 'status', 'url', )
+        fields = ('absolute_url', 'id', 'name', 'status', 'url', )
 
 
 class InfoSourceViewSet(viewsets.ModelViewSet):
-    queryset = InfoSource.objects.all()
+    queryset = InfoSource.objects.all().exclude(silence=True)
     serializer_class = InfoSourceSerializer
 
 

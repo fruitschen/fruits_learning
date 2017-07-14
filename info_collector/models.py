@@ -24,6 +24,7 @@ class InfoSource(models.Model):
     interval = models.IntegerField(u'抓取间隔(秒)', default=15*60)
     status = models.CharField(max_length=1, default=GOOD, choices=CURRENT_STATUS)
     description = models.TextField()
+    silence = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('name',)
