@@ -720,7 +720,7 @@ class Snapshot(models.Model):
     status_image = models.ImageField(upload_to='snapshots', blank=True)
     change_image = models.ImageField(upload_to='snapshots', blank=True)
     xueqiu_url = models.URLField(null=True, blank=True)
-    extra_content = MarkdownxField(u'更多内容')
+    extra_content = MarkdownxField(u'更多内容', blank=True, default='')
 
     def __unicode__(self):
         return u'{} snapshot {} '.format(self.account, self.serial_number)
