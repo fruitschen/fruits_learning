@@ -37,6 +37,7 @@ urlpatterns = [
 
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),
     url(r'^django-rq/', include('django_rq.urls')),
+    url(r'^markdownx/', include('markdownx.urls')),
     url(r'', include(wagtail_urls)),
 ]
 

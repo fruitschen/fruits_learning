@@ -75,6 +75,10 @@
         同时发布在个人网站：<a href="http://www.fruitschen.com{% url 'account_details' account.slug %}">http://www.fruitschen.com{% url 'account_details' account.slug %}</a>
     </p>
 
+    {% if snapshot.extra_content %}
+    {{ snapshot.formatted_extra_content|safe }}
+    {% endif %}
+
     {% if transactions %}
         <h3>交易
             <a class="btn btn-primary" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">

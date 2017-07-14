@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'crispy_forms',
     'django_backup',
+    'markdownx',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -65,6 +66,7 @@ INSTALLED_APPS = [
     'reads',
     'stocks',
     'weibo_backup',
+
 ]
 
 MIDDLEWARE = [

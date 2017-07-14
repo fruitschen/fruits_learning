@@ -12,6 +12,8 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Q
 
+from markdownx.models import MarkdownxField
+from markdownx.utils import markdownify
 from stocks.utils import update_stocks_prices
 
 
@@ -718,6 +720,7 @@ class Snapshot(models.Model):
     status_image = models.ImageField(upload_to='snapshots', blank=True)
     change_image = models.ImageField(upload_to='snapshots', blank=True)
     xueqiu_url = models.URLField(null=True, blank=True)
+    extra_content = MarkdownxField(u'更多内容')
 
     def __unicode__(self):
         return u'{} snapshot {} '.format(self.account, self.serial_number)
@@ -782,6 +785,9 @@ class Snapshot(models.Model):
         start = timezone.datetime(self.date.year, self.date.month, 1).date()
         transactions = self.account.find_transactions(start, self.date)
         return transactions
+
+    def formatted_extra_content(self):
+        return markdownify(self.extra_content)
 
 
 class SnapshotStock(models.Model):

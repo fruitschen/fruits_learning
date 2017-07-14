@@ -3,6 +3,7 @@ from django.contrib import admin
 
 from stocks.models import (Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account,
                            AccountStock, Snapshot, SnapshotStock, Transaction)
+from markdownx.admin import MarkdownxModelAdmin
 
 
 def add_star(modeladmin, request, queryset):
@@ -83,7 +84,7 @@ class SnapshotStockInline(admin.TabularInline):
     model = SnapshotStock
 
 
-class SnapshotAdmin(admin.ModelAdmin):
+class SnapshotAdmin(MarkdownxModelAdmin):
     model = Snapshot
     inlines = [SnapshotStockInline]
 
