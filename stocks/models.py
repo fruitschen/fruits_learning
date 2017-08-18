@@ -722,6 +722,8 @@ class Snapshot(models.Model):
     xueqiu_url = models.URLField(null=True, blank=True)
     extra_content = MarkdownxField(u'更多内容', blank=True, default='')
 
+    is_annual = models.BooleanField(default=False)
+
     def __unicode__(self):
         return u'{} snapshot {} '.format(self.account, self.serial_number)
 
@@ -788,6 +790,34 @@ class Snapshot(models.Model):
 
     def formatted_extra_content(self):
         return markdownify(self.extra_content)
+
+    # 下面是年度snapshot用到的代码
+
+    @property
+    def previous_annual_snapshot(self):
+        """找到上一个快照"""
+        previous_annual_snapshot = None
+        previous_annual_snapshots = self.account.snapshots.all().filter(id__lt=self.id, is_annual=True).order_by('-id')
+        if previous_annual_snapshots.exists():
+            previous_annual_snapshot = previous_annual_snapshots[0]
+        return previous_annual_snapshot
+
+    @property
+    def yield_yoy(self):
+        """一年收益率, 只适用于 annual_snapshot """
+        if not self.is_annual:
+            return None
+        return self.net_asset / self.previous_annual_snapshot.net_asset - 1
+
+    @property
+    def yield_yoy_percent(self):
+        """一年收益率，百分比"""
+        return self.yield_yoy * 100
+
+    @property
+    def nth_year(self):
+        first_snapshot = self.account.snapshots.all().order_by('id')[0]
+        return self.date.year - first_snapshot.date.year
 
 
 class SnapshotStock(models.Model):

@@ -218,5 +218,13 @@ def account_snapshot(request, account_slug, snapshot_number):
         'logged_in': logged_in,
         'transactions': transactions,
     }
+    if snapshot.is_annual:
+        incs = account.snapshots.values_list('increase', flat=True)
+        max_inc = max(incs) * 100
+        min_inc = min(incs) * 100
+        context.update({
+            'max_inc': max_inc,
+            'min_inc': min_inc,
+        })
     context.update(get_pairs_context(request))
     return render(request, 'stocks/account_snapshot.html', context)

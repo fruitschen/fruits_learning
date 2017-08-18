@@ -1,5 +1,6 @@
 {% extends "stocks/stocks_base.html" %}
 {% load static %}
+{% load money %}
 
 {% block stocks_content %}
     <ol class="breadcrumb">
@@ -75,10 +76,6 @@
         同时发布在个人网站：<a href="http://www.fruitschen.com{% url 'account_details' account.slug %}">http://www.fruitschen.com{% url 'account_details' account.slug %}</a>
     </p>
 
-    {% if snapshot.extra_content %}
-    {{ snapshot.formatted_extra_content|safe }}
-    {% endif %}
-
     {% if transactions %}
         <h3>交易
             <a class="btn btn-primary" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">
@@ -89,6 +86,22 @@
             {% include "stocks/includes/transactions_list.html" %}
         </div>
     {% endif %}
+
+
+    {% if snapshot.is_annual and snapshot.previous_annual_snapshot %}
+        <h1>{{ account }}第{{ snapshot.nth_year }}年总结</h1>
+        <p>
+            实验账户第{{ snapshot.nth_year }}年收益率为{{ snapshot.yield_yoy_percent|floatformat:2 }}%。
+            净资产由{{ snapshot.previous_annual_snapshot.net_asset|money_display }}增长到{{ snapshot.net_asset|money_display }}。
+        </p>
+        <p>按月计算最单月最高涨幅为{{ max_inc|floatformat:2 }}%, 最低为{{ min_inc|floatformat:2 }}%。</p>
+
+    {% endif %}
+
+    {% if snapshot.extra_content %}
+    {{ snapshot.formatted_extra_content|safe }}
+    {% endif %}
+
 
     <h3>全部快照
         <a class="btn btn-primary" role="button" data-toggle="collapse" href="#account_snapshots" aria-expanded="true" aria-controls="account_snapshots">
