@@ -10,15 +10,16 @@
     <li>TODO</li>
 </ul>
 
-<h2>今日 {{ today_diary.date }}</h2>
-<p>
-    <a class="btn btn-default" href="{% url 'diary_details' today_diary.id %}">编辑</a>
-</p>
-
+<h2>今日 {{ today_diary.date }} <a class="btn btn-default" href="{% url 'diary_details' today_diary.id %}?editting=1">编辑</a></h2>
+{% for content in today_diary.contents.all %}
+    {{ content.render }}
+{% endfor %}
 
 <h2>最近日记列表</h2>
 <ul>
-    <li>TODO</li>
+    {% for diary in recent_diary_items %}
+        <li><a href="{% url 'diary_details' diary.id %}">{{ diary.date }}</a></li>
+    {% endfor %}
 </ul>
 <p>
     更多:

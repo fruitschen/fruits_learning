@@ -2,4 +2,4 @@
     <h4>{{ content.title }}</h4>
 {% endif %}
 {{ content.text|linebreaks }}
-<a class="edit" href="{% url 'diary_edit_text' content.id %}">编辑</a>
+<a class="edit" style="display:none" href="{% url 'diary_edit_text' content.id %}">编辑</a>

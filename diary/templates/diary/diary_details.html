@@ -39,13 +39,13 @@
     {{ block.super }}
     <script>
     $(function() {
-        $('.edit').hide();
-        $("#tabs").tabs();
+        {% if editting %}
+            $('.edit').show();
+        {% endif %}
         $('#diary-title').append('<a href="#" id="edit-button" class="btn btn-default">编辑</a>')
         $('#edit-button').click(function(){
             $('.edit').toggle()
         })
-
     });
 
   </script>

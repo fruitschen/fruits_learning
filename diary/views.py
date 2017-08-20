@@ -14,8 +14,10 @@ from diary.forms import DiaryTextForm, DiaryImageForm
 def diary_index(request):
     today = date.today()
     today_diary, created = Diary.objects.all().get_or_create(date=today)
+    recent_diary_items = Diary.objects.all().order_by('-id')[:5]
     context = {
         'today_diary': today_diary,
+        'recent_diary_items': recent_diary_items,
     }
     return render(request, 'diary/diary_index.html', context)
 
@@ -32,10 +34,12 @@ def diary_list(request):
 @staff_member_required
 def diary_details(request, diary_id):
     diary = Diary.objects.get(id=diary_id)
+    editting = request.GET.get('editting', False)
     context = {
         'diary': diary,
         'text_form': DiaryTextForm(),
         'image_form': DiaryImageForm(),
+        'editting': editting,
     }
     return render(request, 'diary/diary_details.html', context)
 
