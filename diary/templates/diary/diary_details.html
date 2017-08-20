@@ -1,9 +1,4 @@
 {% extends "diary/diary_base.html" %}
-
-{% block extra_css %}
-    <link rel="stylesheet" href="//code.jquery.com/ui/1.10.4/themes/smoothness/jquery-ui.css">
-{% endblock %}
-
 {% block diary_content %}
     <ol class="breadcrumb">
         <li><a href="/">主页</a></li>
@@ -20,15 +15,19 @@
 {% for content in diary.contents.all %}
     {{ content.render }}
 {% endfor %}
-<div id="tabs">
-    <ul>
-        <li><a href="#add-text">添加文字</a></li>
-        <li><a href="#add-image">添加图片</a></li>
-    </ul>
-    <div id="add-text" style="height: 350px;">
+<ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active">
+        <a href="#add-text" aria-controls="add-text" role="tab" data-toggle="tab">添加文字</a>
+    </li>
+    <li>
+        <a href="#add-image" aria-controls="add-image" role="tab" data-toggle="tab">添加图片</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div role="tabpanel" class="tab-pane active" id="add-text" style="height: 350px;">
         {% include "diary/include/diary_add_text.html" %}
     </div>
-    <div id="add-image" style="height: 350px;">
+    <div role="tabpanel" class="tab-pane"  id="add-image" style="height: 350px;">
         {% include "diary/include/diary_add_image.html" %}
     </div>
 </div>

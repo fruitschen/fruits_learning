@@ -1,5 +1,6 @@
+{% load crispy_forms_tags %}
 <form method="post" action="{% url 'diary_add_text' diary.id %}">
     {% csrf_token %}
-    {{ text_form.as_p }}
+    {{ text_form|crispy }}
     <input type="submit" />
 </form>
