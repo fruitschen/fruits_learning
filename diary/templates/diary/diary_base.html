@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block outter_content %}
+    <div class="content-wrap container" id="diary_container">
+        <div class="row">
+            <div class="col-md-12">
+                {% block diary_content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+    <script src="//code.jquery.com/ui/1.10.4/jquery-ui.js"></script>
+    <script src="{% static "bootstrap-3.3.7-dist/js/bootstrap.min.js" %}"></script>
+{% endblock %}
+

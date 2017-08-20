@@ -1,0 +1,5 @@
+{% if content.title %}
+    <h4>{{ content.title }}</h4>
+{% endif %}
+{{ content.text|linebreaks }}
+<a class="edit" href="{% url 'diary_edit_text' content.id %}">编辑</a>

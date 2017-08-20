@@ -1,0 +1,29 @@
+{% extends "diary/diary_base.html" %}
+
+{% block diary_content %}
+    <ol class="breadcrumb">
+        <li><a href="/">主页</a></li>
+        <li>日记</li>
+    </ol>
+<h2>日程与提醒</h2>
+<ul>
+    <li>TODO</li>
+</ul>
+
+<h2>今日 {{ today_diary.date }}</h2>
+<p>
+    <a class="btn btn-default" href="{% url 'diary_details' today_diary.id %}">编辑</a>
+</p>
+
+
+<h2>最近日记列表</h2>
+<ul>
+    <li>TODO</li>
+</ul>
+<p>
+    更多:
+    <a href="{% url 'diary_list' %}">日记列表</a>
+</p>
+
+{% endblock %}
+

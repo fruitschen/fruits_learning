@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'my_feedreader',
     'reads',
     'stocks',
+    'diary',
     'weibo_backup',
 
 ]

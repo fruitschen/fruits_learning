@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'diary_edit_text' text_content.id %}">
+    {% csrf_token %}
+    {{ text_form.as_p }}
+    <input type="submit" />
+</form>

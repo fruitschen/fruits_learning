@@ -1,0 +1,5 @@
+<form method="post" action="{% url 'diary_add_image' diary.id %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ image_form.as_p }}
+    <input type="submit" />
+</form>
