@@ -10,4 +10,5 @@ urlpatterns = [
     url(r'^details/(?P<diary_id>\d+)/add_text/$', diary_add_text, name='diary_add_text'),
     url(r'^details/(?P<diary_id>\d+)/add_image/$', diary_add_image, name='diary_add_image'),
     url(r'^edit_text/(?P<content_id>\d+)/$', diary_edit_text, name='diary_edit_text'),
+    url(r'^update_task/$', update_task, name='update_task'),
 ]

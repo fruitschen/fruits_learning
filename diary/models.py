@@ -70,6 +70,23 @@ class BaseEventTemplate(models.Model):
     class Meta:
         abstract = True
 
+    def to_event(self, event_date, commit=False):
+        event = Event(
+            event=self.event,
+            is_task=self.is_task,
+            priority=self.priority,
+            start_hour=self.start_hour,
+            start_min=self.start_min,
+            end_hour=self.end_hour,
+            end_min=self.end_min,
+            memo=self.memo,
+            event_date=event_date,
+            event_type=self.event_type,
+        )
+        if commit:
+            event.save()
+        return event
+
 
 WEEKDAY_CHOICES = (
     ('0', u'星期一'),
@@ -84,7 +101,6 @@ WEEKDAY_DICT = dict(WEEKDAY_CHOICES)
 
 
 class Weekday(models.Model):
-    event_type = 'weekday_event'
     weekday = models.CharField(choices=WEEKDAY_CHOICES, unique=True, max_length=1)
 
     def __unicode__(self):
@@ -95,6 +111,7 @@ class Weekday(models.Model):
 
 
 class WeekdayEventTemplate(BaseEventTemplate):
+    event_type = 'weekday_event'
     weekdays = models.ManyToManyField('Weekday')
 
     def __unicode__(self):
@@ -112,6 +129,14 @@ class MonthEventTemplate(BaseEventTemplate):
     def __unicode__(self):
         return u'{} {}日 (Month Event Template)'.format(self.event, self.day)
 
+
+class Event(BaseEventTemplate):
+    event_date = models.DateField()
+    is_done = models.BooleanField(default=False)
+    event_type = models.CharField(max_length=64)
+
+    def to_event(self):
+        return self
 
 def generate_weekdays(**kwargs):
     days = range(0, 7)

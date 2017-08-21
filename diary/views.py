@@ -2,11 +2,12 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.csrf import csrf_exempt
 from rest_framework.reverse import reverse
 
 from datetime import date, timedelta
 
-from diary.models import Diary, DiaryText, WEEKDAY_DICT
+from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event
 from diary.forms import DiaryTextForm, DiaryImageForm
 from diary.utils import get_events_by_date
 
@@ -15,7 +16,7 @@ from diary.utils import get_events_by_date
 def diary_index(request):
     today = date.today()
     today_diary, created = Diary.objects.all().get_or_create(date=today)
-    events = get_events_by_date(today)
+    events = get_events_by_date(today, commit=True)
     recent_diary_items = Diary.objects.all().order_by('-id')[:5]
     context = {
         'today_diary': today_diary,
@@ -37,7 +38,7 @@ def diary_list(request):
 @staff_member_required
 def diary_details(request, diary_id):
     diary = Diary.objects.get(id=diary_id)
-    events = get_events_by_date(diary.date)
+    events = get_events_by_date(diary.date, commit=True)
     editting = request.GET.get('editting', False)
     context = {
         'diary': diary,
@@ -140,3 +141,17 @@ def diary_events(request):
         'days_and_events': days_and_events,
     }
     return render(request, 'diary/events.html', context)
+
+
+@staff_member_required
+@csrf_exempt
+def update_task(request):
+    task_id = request.POST.get('event_id', None)
+    task = Event.objects.get(id=task_id)
+    done = request.POST.get('checked', False)
+    if done.lower() == 'true':
+        task.is_done = True
+    elif done.lower() == 'false':
+        task.is_done = False
+    task.save()
+    return HttpResponse('Task Updated. ')

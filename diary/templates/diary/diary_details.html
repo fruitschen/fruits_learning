@@ -7,11 +7,7 @@
         <li><a href="">日记 #{{ diary.id }} {{ diary.date|date:'Y-m-j' }}</a></li>
     </ol>
 <h2>日程与提醒</h2>
-<ul>
-    {% for event in events %}
-        <li>{{ event.event }}</li>
-    {% endfor %}
-</ul>
+{% include 'diary/include/events_list.html' %}
 
 
 <h2 id="diary-title">{{ diary.date }}日记</h2>
@@ -50,7 +46,8 @@
             $('.edit').toggle()
         })
     });
+    </script>
+    {% include "diary/include/events_list_js.html" %}
 
-  </script>
 {% endblock %}
 

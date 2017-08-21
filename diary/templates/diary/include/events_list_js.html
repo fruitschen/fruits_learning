@@ -1,0 +1,21 @@
+<script>
+    $(function() {
+        $('.event-checkbox').change(function(){
+            var checked = $(this).prop('checked');
+            var dom_id = $(this).attr('id')
+            var event_id = $(this).data('event_id');
+            $.post('{% url 'update_task' %}', {
+                  event_id:event_id,
+                  checked:checked
+            },
+            function(data, status){
+                if (status == 'success'){
+                    var message = $($('.alert-success')[0]).clone();
+                    message.show();
+                    $(message).find('.message').html(data + ' ' + status);
+                    $('#events-message-area').append(message);
+                }
+            });
+        })
+    });
+</script>
