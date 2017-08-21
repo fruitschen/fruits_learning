@@ -1,38 +1,35 @@
 {% extends "diary/diary_base.html" %}
 {% block diary_content %}
     <ol class="breadcrumb">
-        <li><a href="/">主页</a></li>
         <li><a href="{% url 'diary_index' %}">日记</a></li>
         <li><a href="{% url 'diary_list' %}">日记列表</a></li>
         <li><a href="">日记 #{{ diary.id }} {{ diary.date|date:'Y-m-j' }}</a></li>
     </ol>
-<h2>日程与提醒</h2>
-{% include 'diary/include/events_list.html' %}
+    <h3>日程与提醒</h3>
+    {% include 'diary/include/events_list_message.html' %}
+    {% include 'diary/include/events_list.html' %}
 
-
-<h2 id="diary-title">{{ diary.date|date:'Y-m-j' }}日记</h2>
-{% for content in diary.contents.all %}
-    {{ content.render }}
-{% endfor %}
-<ul class="nav nav-tabs" role="tablist">
-    <li role="presentation" class="active">
-        <a href="#add-text" aria-controls="add-text" role="tab" data-toggle="tab">添加文字</a>
-    </li>
-    <li>
-        <a href="#add-image" aria-controls="add-image" role="tab" data-toggle="tab">添加图片</a>
-    </li>
-</ul>
-<div class="tab-content">
-    <div role="tabpanel" class="tab-pane active" id="add-text" style="height: 350px;">
-        {% include "diary/include/diary_add_text.html" %}
+    <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }}日记</h2>
+    {% for content in diary.contents.all %}
+        {{ content.render }}
+    {% endfor %}
+    <ul class="nav nav-tabs" role="tablist">
+        <li role="presentation" class="active">
+            <a href="#add-text" aria-controls="add-text" role="tab" data-toggle="tab">添加文字</a>
+        </li>
+        <li>
+            <a href="#add-image" aria-controls="add-image" role="tab" data-toggle="tab">添加图片</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div role="tabpanel" class="tab-pane active" id="add-text" style="height: 350px;">
+            {% include "diary/include/diary_add_text.html" %}
+        </div>
+        <div role="tabpanel" class="tab-pane"  id="add-image" style="height: 350px;">
+            {% include "diary/include/diary_add_image.html" %}
+        </div>
     </div>
-    <div role="tabpanel" class="tab-pane"  id="add-image" style="height: 350px;">
-        {% include "diary/include/diary_add_image.html" %}
-    </div>
-</div>
-
 {% endblock %}
-
 
 {% block extra_js %}
     {{ block.super }}
@@ -48,6 +45,5 @@
     });
     </script>
     {% include "diary/include/events_list_js.html" %}
-
 {% endblock %}
 

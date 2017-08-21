@@ -19,6 +19,7 @@ def diary_index(request):
     events = get_events_by_date(today, commit=True)
     recent_diary_items = Diary.objects.all().order_by('-id')[:5]
     context = {
+        'hide_header_footer': True,
         'today_diary': today_diary,
         'weekday': WEEKDAY_DICT[str(today.weekday())],
         'events': events,
@@ -31,6 +32,7 @@ def diary_index(request):
 def diary_list(request):
     diary_items = Diary.objects.all().order_by('-id')
     context = {
+        'hide_header_footer': True,
         'diary_items': diary_items,
     }
     return render(request, 'diary/diary_list.html', context)
@@ -42,6 +44,7 @@ def diary_details(request, diary_id):
     events = get_events_by_date(diary.date, commit=True)
     editting = request.GET.get('editting', False)
     context = {
+        'hide_header_footer': True,
         'diary': diary,
         'weekday': WEEKDAY_DICT[str(diary.date.weekday())],
         'events': events,
@@ -70,6 +73,7 @@ def diary_add_text(request, diary_id):
     else:
         text_form = DiaryTextForm()
     context = {
+        'hide_header_footer': True,
         'diary': diary,
         'text_form': text_form,
     }
@@ -94,6 +98,7 @@ def diary_add_image(request, diary_id):
     else:
         image_form = DiaryImageForm()
     context = {
+        'hide_header_footer': True,
         'diary': diary,
         'image_form': image_form,
     }
@@ -117,6 +122,7 @@ def diary_edit_text(request, content_id):
     else:
         text_form = DiaryTextForm(instance=text_content)
     context = {
+        'hide_header_footer': True,
         'diary': diary,
         'text_content': text_content,
         'text_form': text_form,
@@ -140,6 +146,7 @@ def diary_events(request):
         })
 
     context = {
+        'hide_header_footer': True,
         'days_and_events': days_and_events,
     }
     return render(request, 'diary/events.html', context)

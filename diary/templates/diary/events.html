@@ -2,20 +2,17 @@
 
 {% block diary_content %}
     <ol class="breadcrumb">
-        <li><a href="/">主页</a></li>
         <li><a href="{% url 'diary_index' %}">日记</a></li>
         <li>Events</li>
     </ol>
 
-    <h2>Events</h2>
+    <h3>Events</h3>
 
     {% for day_and_events in days_and_events %}
-        <h2>{{ day_and_events.day }} {{ day_and_events.weekday }}</h2>
-        <ul>
-            {% for event in day_and_events.events %}
-                <li>{{ event.event }}</li>
-            {% endfor %}
-        </ul>
+        <h3>{{ day_and_events.day }} {{ day_and_events.weekday }}</h3>
+        {% with day_and_events.events as events %}
+            {% include 'diary/include/events_list.html' %}
+        {% endwith %}
     {% endfor %}
 
 

@@ -2,27 +2,22 @@
 
 {% block diary_content %}
     <ol class="breadcrumb">
-        <li><a href="/">主页</a></li>
         <li>日记</li>
     </ol>
-<h2>日程与提醒</h2>
+<h3>日程与提醒</h3>
+{% include 'diary/include/events_list_message.html' %}
 {% include 'diary/include/events_list.html' %}
 
-<h2>{{ today_diary.date|date:'Y-m-j' }} {{ weekday }}<a class="btn btn-default" href="{% url 'diary_details' today_diary.id %}?editting=1">编辑</a></h2>
+<h3>{{ today_diary.date|date:'Y-m-j' }} {{ weekday }}<a class="btn btn-default" href="{% url 'diary_details' today_diary.id %}?editting=1">编辑</a></h3>
 {% for content in today_diary.contents.all %}
     {{ content.render }}
 {% endfor %}
 
-<h2>最近日记列表</h2>
-<ul>
-    {% for diary in recent_diary_items %}
-        <li><a href="{% url 'diary_details' diary.id %}">{{ diary.date|date:'Y-m-j' }}</a></li>
-    {% endfor %}
-</ul>
 <p>
     更多:
     <a href="{% url 'diary_list' %}">日记列表</a> |
-    <a href="{% url 'diary_events' %}">Events</a>
+    <a href="{% url 'diary_events' %}">Events</a> |
+    <a href="/">主页</a>
 </p>
 
 {% endblock %}

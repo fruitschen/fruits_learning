@@ -2,11 +2,10 @@
 
 {% block diary_content %}
     <ol class="breadcrumb">
-        <li><a href="/">主页</a></li>
         <li><a href="{% url 'diary_index' %}">日记</a></li>
         <li>日记列表</li>
     </ol>
-<h1>日记列表</h1>
+<h4>日记列表</h4>
 <ul>
     {% for diary in diary_items %}
         <li><a href="{% url 'diary_details' diary.id %}">{{ diary.date|date:'Y-m-j' }}</a></li>

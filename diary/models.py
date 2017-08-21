@@ -138,6 +138,13 @@ class Event(BaseEventTemplate):
     def to_event(self):
         return self
 
+    def __unicode__(self):
+        event = '{}'.format(self.event)
+        if self.start_hour:
+            event += ' {}:{}'.format(self.start_hour, self.start_min or 0)
+        return event
+
+
 def generate_weekdays(**kwargs):
     days = range(0, 7)
     for weekday in days:
