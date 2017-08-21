@@ -8,15 +8,18 @@ from datetime import date
 
 from diary.models import Diary, DiaryText
 from diary.forms import DiaryTextForm, DiaryImageForm
+from diary.utils import get_events_by_date
 
 
 @staff_member_required
 def diary_index(request):
     today = date.today()
     today_diary, created = Diary.objects.all().get_or_create(date=today)
+    events = get_events_by_date(today)
     recent_diary_items = Diary.objects.all().order_by('-id')[:5]
     context = {
         'today_diary': today_diary,
+        'events': events,
         'recent_diary_items': recent_diary_items,
     }
     return render(request, 'diary/diary_index.html', context)
@@ -33,10 +36,13 @@ def diary_list(request):
 
 @staff_member_required
 def diary_details(request, diary_id):
+    today = date.today()
     diary = Diary.objects.get(id=diary_id)
+    events = get_events_by_date(today)
     editting = request.GET.get('editting', False)
     context = {
         'diary': diary,
+        'events': events,
         'text_form': DiaryTextForm(),
         'image_form': DiaryImageForm(),
         'editting': editting,

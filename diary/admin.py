@@ -1,3 +1,10 @@
 from django.contrib import admin
 
-# Register your models here.
+from diary.models import *
+
+
+class WeekdayEventTemplateAdmin(admin.ModelAdmin):
+    model = WeekdayEventTemplate
+    filter_horizontal = ['weekdays']
+
+admin.site.register(WeekdayEventTemplate, WeekdayEventTemplateAdmin)

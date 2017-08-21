@@ -8,8 +8,11 @@
     </ol>
 <h2>日程与提醒</h2>
 <ul>
-    <li>TODO</li>
+    {% for event in events %}
+        <li>{{ event }}</li>
+    {% endfor %}
 </ul>
+
 
 <h2 id="diary-title">{{ diary.date }}日记</h2>
 {% for content in diary.contents.all %}
