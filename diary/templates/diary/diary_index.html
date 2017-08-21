@@ -8,7 +8,7 @@
 <h2>日程与提醒</h2>
 <ul>
     {% for event in events %}
-        <li>{{ event }}</li>
+        <li>{{ event.event }}</li>
     {% endfor %}
 </ul>
 
@@ -25,7 +25,8 @@
 </ul>
 <p>
     更多:
-    <a href="{% url 'diary_list' %}">日记列表</a>
+    <a href="{% url 'diary_list' %}">日记列表</a> |
+    <a href="{% url 'diary_events' %}">Events</a>
 </p>
 
 {% endblock %}

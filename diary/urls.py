@@ -5,6 +5,7 @@ from diary.views import *
 urlpatterns = [
     url(r'^$', diary_index, name='diary_index'),
     url(r'^list/$', diary_list, name='diary_list'),
+    url(r'^events/$', diary_events, name='diary_events'),
     url(r'^details/(?P<diary_id>\d+)/$', diary_details, name='diary_details'),
     url(r'^details/(?P<diary_id>\d+)/add_text/$', diary_add_text, name='diary_add_text'),
     url(r'^details/(?P<diary_id>\d+)/add_image/$', diary_add_image, name='diary_add_image'),

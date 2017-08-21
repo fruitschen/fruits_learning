@@ -80,6 +80,7 @@ WEEKDAY_CHOICES = (
     ('5', u'星期六'),
     ('6', u'星期日'),
 )
+WEEKDAY_DICT = dict(WEEKDAY_CHOICES)
 
 
 class Weekday(models.Model):
@@ -97,17 +98,19 @@ class WeekdayEventTemplate(BaseEventTemplate):
     weekdays = models.ManyToManyField('Weekday')
 
     def __unicode__(self):
-        return '{} (Weekday Event Template)'.format(self.event, )
+        return '{} {} (Weekday Event Template)'.format(self.event, u'、'.join([w.get_weekday_display() for w in self.weekdays.all()]))
 
-u'''
-TODO:
+
+DAYS = [str(i) for i in range(1, 32)]
+DAY_CHOICES = zip(DAYS, DAYS)
+
+
 class MonthEventTemplate(BaseEventTemplate):
     event_type = 'month_event'
-    day = models.CharField('日', max_length=2)  # 31日表示最后一天
+    day = models.CharField('日', max_length=2, choices=DAY_CHOICES)  # 31日表示最后一天
 
-is_end_of_month
-
-'''
+    def __unicode__(self):
+        return u'{} {}日 (Month Event Template)'.format(self.event, self.day)
 
 
 def generate_weekdays(**kwargs):

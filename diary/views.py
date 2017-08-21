@@ -4,9 +4,9 @@ from django.shortcuts import redirect
 from django.contrib.admin.views.decorators import staff_member_required
 from rest_framework.reverse import reverse
 
-from datetime import date
+from datetime import date, timedelta
 
-from diary.models import Diary, DiaryText
+from diary.models import Diary, DiaryText, WEEKDAY_DICT
 from diary.forms import DiaryTextForm, DiaryImageForm
 from diary.utils import get_events_by_date
 
@@ -36,9 +36,8 @@ def diary_list(request):
 
 @staff_member_required
 def diary_details(request, diary_id):
-    today = date.today()
     diary = Diary.objects.get(id=diary_id)
-    events = get_events_by_date(today)
+    events = get_events_by_date(diary.date)
     editting = request.GET.get('editting', False)
     context = {
         'diary': diary,
@@ -120,3 +119,24 @@ def diary_edit_text(request, content_id):
         'text_form': text_form,
     }
     return render(request, 'diary/include/diary_edit_text.html', context)
+
+
+@staff_member_required
+def diary_events(request):
+    today = date.today()
+    days = []
+    days_and_events = []
+    for i in range(32):
+        days.append(today + timedelta(days=i))
+    for day in days:
+        events = get_events_by_date(day)
+        days_and_events.append({
+            'day': day,
+            'weekday': WEEKDAY_DICT[str(day.weekday())],
+            'events': events,
+        })
+
+    context = {
+        'days_and_events': days_and_events,
+    }
+    return render(request, 'diary/events.html', context)
