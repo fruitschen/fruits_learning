@@ -20,6 +20,7 @@ def diary_index(request):
     recent_diary_items = Diary.objects.all().order_by('-id')[:5]
     context = {
         'today_diary': today_diary,
+        'weekday': WEEKDAY_DICT[str(today.weekday())],
         'events': events,
         'recent_diary_items': recent_diary_items,
     }
@@ -42,6 +43,7 @@ def diary_details(request, diary_id):
     editting = request.GET.get('editting', False)
     context = {
         'diary': diary,
+        'weekday': WEEKDAY_DICT[str(diary.date.weekday())],
         'events': events,
         'text_form': DiaryTextForm(),
         'image_form': DiaryImageForm(),

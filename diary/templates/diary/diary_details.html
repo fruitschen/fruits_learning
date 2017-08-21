@@ -10,7 +10,7 @@
 {% include 'diary/include/events_list.html' %}
 
 
-<h2 id="diary-title">{{ diary.date }}日记</h2>
+<h2 id="diary-title">{{ diary.date|date:'Y-m-j' }}日记</h2>
 {% for content in diary.contents.all %}
     {{ content.render }}
 {% endfor %}
