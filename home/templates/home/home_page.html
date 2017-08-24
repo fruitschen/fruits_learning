@@ -6,10 +6,11 @@
 
 {% block content %}
     {{ page.body|richtext }}
-    <img src="{% static 'img/demo/playing-lego.jpg' %}">
+    <img src="{% static 'img/demo/playing-lego.jpg' %}" style="max-width: 300px;">
 
     {% if user.is_authenticated %}
         <p>
+            <a href="{% url 'diary_index' %}">Diary</a> |
             <a href="{% url 'info_reader' %}">Info Reader</a> |
             <a href="{% url 'my_feedreader' %}">RSS Reader</a> |
             <a href="{% url 'fund_value_estimation' %}">分级基金净值计算</a> |

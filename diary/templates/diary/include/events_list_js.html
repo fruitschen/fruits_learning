@@ -11,9 +11,11 @@
             function(data, status){
                 if (status == 'success'){
                     var message = $($('.alert-success')[0]).clone();
-                    message.show();
+                    var random_id = '' + parseInt(Math.random() * 1000);
+                    message.attr('id', random_id).show();
                     $(message).find('.message').html(data + ' ' + status);
                     $('#events-message-area').append(message);
+                    setTimeout('$("#' + random_id + '").hide()', 1000)
                 }
             });
         })

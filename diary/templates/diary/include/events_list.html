@@ -1,6 +1,6 @@
 <ul class="list-unstyled">
     {% for event in events %}
-        <li id="event-{{ event.id }}">
+        <li id="event-{{ event.id }}" style="{% if event.is_important %}font-weight:bold; color: red;{% endif %}">
             {% if event.is_task %}
                 <div class="checkbox">
                     <label>
@@ -12,6 +12,7 @@
                     {% endif %}
                 </div>
             {% else %}
+                <span class="glyphicon glyphicon-glass"></span>
                 {{ event }}
                 {% if event.memo %}
                     ： {{ event.memo }}

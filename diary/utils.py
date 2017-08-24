@@ -3,7 +3,7 @@ from datetime import timedelta
 
 
 def get_events_by_date(the_date, commit=False):
-    events_query = Event.objects.filter(event_date=the_date)
+    events_query = Event.objects.filter(event_date=the_date).order_by('priority')
     if events_query:
         return events_query
     weekday = Weekday.objects.get(weekday=str(the_date.weekday()))
@@ -11,6 +11,7 @@ def get_events_by_date(the_date, commit=False):
 
     month_event_templates = MonthEventTemplate.objects.filter(day=the_date.day)
     event_templates = list(weekday_event_templates) + list(month_event_templates)
+    event_templates = sorted(event_templates, key=lambda x:x.priority)
     events = []
     for tpl in event_templates:
         events.append(tpl.to_event(the_date, commit=commit))

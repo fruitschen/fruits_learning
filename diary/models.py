@@ -144,6 +144,10 @@ class Event(BaseEventTemplate):
             event += ' {}:{}'.format(self.start_hour, self.start_min or 0)
         return event
 
+    @property
+    def is_important(self):
+        return self.priority <= 10
+
 
 def generate_weekdays(**kwargs):
     days = range(0, 7)
