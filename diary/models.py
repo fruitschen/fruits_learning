@@ -6,6 +6,8 @@ from django.db import models
 from django.db.models.signals import post_migrate
 from django.template.loader import render_to_string
 
+from diary.rules import RULES_CHOICES
+import diary.rules
 
 class Diary(models.Model):
     date = models.DateField()
@@ -128,6 +130,26 @@ class MonthEventTemplate(BaseEventTemplate):
 
     def __unicode__(self):
         return u'{} {}日 (Month Event Template)'.format(self.event, self.day)
+
+
+class RuleEventTemplate(BaseEventTemplate):
+    event_type = 'rule_event'
+    rule = models.CharField(max_length=64, choices=RULES_CHOICES)
+    generate_event = models.BooleanField(default=False)
+
+    def applicable_to_date(self, the_date):
+        func = getattr(diary.rules, self.rule)
+        print func(the_date)
+        return func(the_date)
+
+    def to_event(self, event_date, commit=False):
+        if self.generate_event:
+            return super(RuleEventTemplate, self).to_event(event_date=event_date, commit=commit)
+        else:
+            return self
+
+    def __unicode__(self):
+        return u'{}'.format(self.event)
 
 
 class Event(BaseEventTemplate):
