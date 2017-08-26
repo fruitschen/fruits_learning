@@ -149,7 +149,6 @@ class RuleEventTemplate(BaseEventTemplate):
 
     def applicable_to_date(self, the_date):
         func = getattr(diary.rules, self.rule)
-        print func(the_date)
         return func(the_date)
 
     def to_event(self, event_date, commit=False):
