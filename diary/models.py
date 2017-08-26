@@ -29,6 +29,7 @@ class Diary(models.Model):
     class Meta:
         ordering = ['-date']
 
+
 class DiaryContent(models.Model):
     diary = models.ForeignKey('Diary', related_name='contents')
     order = models.IntegerField(null=True)
@@ -186,3 +187,11 @@ def generate_weekdays(**kwargs):
         Weekday.objects.get_or_create(weekday=weekday)
 
 post_migrate.connect(generate_weekdays, sender=Weekday._meta.app_config)
+
+
+EVENT_TYPES = [
+    MonthEventTemplate.event_type,
+    WeekdayEventTemplate.event_type,
+    RuleEventTemplate.event_type,
+    'manual',
+]

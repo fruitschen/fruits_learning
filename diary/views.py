@@ -7,7 +7,7 @@ from rest_framework.reverse import reverse
 
 from datetime import date, timedelta, datetime
 
-from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT
+from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES
 from diary.forms import DiaryTextForm, DiaryImageForm
 from diary.utils import get_events_by_date
 
@@ -16,6 +16,7 @@ from diary.utils import get_events_by_date
 def diary_index(request):
     today = date.today()
     return diary_details(request, today.strftime(DATE_FORMAT))
+
 
 @staff_member_required
 def diary_list(request):
@@ -131,22 +132,30 @@ def diary_edit_text(request, content_id):
 
 @staff_member_required
 def diary_events(request):
+    event_types = EVENT_TYPES
+    selected_type = request.GET.get('event_type', None)
+
     today = date.today()
     days = []
     days_and_events = []
-    for i in range(32):
+    for i in range(42):
         days.append(today + timedelta(days=i))
     for day in days:
         events = get_events_by_date(day)
-        days_and_events.append({
-            'day': day,
-            'weekday': WEEKDAY_DICT[str(day.weekday())],
-            'events': events,
-        })
+        if selected_type:
+            events = filter(lambda event:event.event_type==selected_type, events)
+        if events:
+            days_and_events.append({
+                'day': day,
+                'weekday': WEEKDAY_DICT[str(day.weekday())],
+                'events': events,
+            })
 
     context = {
         'hide_header_footer': True,
         'days_and_events': days_and_events,
+        'event_types': event_types,
+        'selected_type': selected_type,
     }
     return render(request, 'diary/events.html', context)
 

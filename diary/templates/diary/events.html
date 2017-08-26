@@ -8,6 +8,13 @@
 
     <h3>Events</h3>
 
+    <ul class="nav nav-pills">
+        <li role="presentation" {% if not selected_type %}class="active"{% endif %}><a href=".">全部</a></li>
+        {% for event_type in event_types %}
+            <li role="presentation" {% if selected_type == event_type %}class="active"{% endif %}><a href="?event_type={{ event_type }}">{{ event_type }}</a></li>
+        {% endfor %}
+    </ul>
+
     {% for day_and_events in days_and_events %}
         <h3>{{ day_and_events.day }} {{ day_and_events.weekday }}</h3>
         {% with day_and_events.events as events %}
