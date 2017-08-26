@@ -5,7 +5,10 @@
         <li><a href="{% url 'diary_list' %}">日记列表</a></li>
         <li><a href="">日记 {{ diary.date|date:'Y-m-j' }}</a></li>
     </ol>
-    <h3>日程与提醒</h3>
+    <h3>
+        日程与提醒
+        <a class="btn btn-default" href="{% url 'admin:diary_event_add' %}?event_date={{ diary.formatted_date }}&event_type=manual">添加日程</a>
+    </h3>
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
 
@@ -32,6 +35,14 @@
             </div>
         </div>
     {% endif %}
+
+    <p>
+        更多:
+        <a href="{% url 'diary_list' %}">日记列表</a> |
+        <a href="{% url 'diary_events' %}">Events</a> |
+        <a href="/">主页</a>
+    </p>
+
 {% endblock %}
 
 {% block extra_js %}
