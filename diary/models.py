@@ -9,6 +9,9 @@ from django.template.loader import render_to_string
 from diary.rules import RULES_CHOICES
 import diary.rules
 
+DATE_FORMAT = '%Y-%m-%d'
+
+
 class Diary(models.Model):
     date = models.DateField()
 
@@ -19,6 +22,12 @@ class Diary(models.Model):
         else:
             return self.contents.order_by('-order')[0].order
 
+    @property
+    def formatted_date(self):
+        return self.date.strftime(DATE_FORMAT)
+
+    class Meta:
+        ordering = ['-date']
 
 class DiaryContent(models.Model):
     diary = models.ForeignKey('Diary', related_name='contents')

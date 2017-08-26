@@ -5,9 +5,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.reverse import reverse
 
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
-from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event
+from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT
 from diary.forms import DiaryTextForm, DiaryImageForm
 from diary.utils import get_events_by_date
 
@@ -17,7 +17,7 @@ def diary_index(request):
     today = date.today()
     today_diary, created = Diary.objects.all().get_or_create(date=today)
     events = get_events_by_date(today, commit=True)
-    recent_diary_items = Diary.objects.all().order_by('-id')[:5]
+    recent_diary_items = Diary.objects.all().order_by('-date')[:5]
     context = {
         'hide_header_footer': True,
         'today_diary': today_diary,
@@ -30,7 +30,7 @@ def diary_index(request):
 
 @staff_member_required
 def diary_list(request):
-    diary_items = Diary.objects.all().order_by('-id')
+    diary_items = Diary.objects.all().order_by('-date')
     context = {
         'hide_header_footer': True,
         'diary_items': diary_items,
@@ -39,9 +39,19 @@ def diary_list(request):
 
 
 @staff_member_required
-def diary_details(request, diary_id):
-    diary = Diary.objects.get(id=diary_id)
-    events = get_events_by_date(diary.date, commit=True)
+def diary_details(request, diary_date):
+    diary_date = datetime.strptime(diary_date, DATE_FORMAT).date()
+    diary_query = Diary.objects.filter(date=diary_date)
+    commit = True
+    today = date.today()
+    if diary_query.exists():
+        diary = diary_query[0]
+    elif diary_date <= today:
+        diary = Diary.objects.create(date=diary_date)
+    elif diary_date > today:
+        diary = Diary(date=diary_date)
+        commit = False
+    events = get_events_by_date(diary.date, commit=commit)
     editting = request.GET.get('editting', False)
     context = {
         'hide_header_footer': True,

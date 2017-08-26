@@ -8,7 +8,7 @@
 <h4>日记列表</h4>
 <ul>
     {% for diary in diary_items %}
-        <li><a href="{% url 'diary_details' diary.id %}">{{ diary.date|date:'Y-m-j' }}</a></li>
+        <li><a href="{% url 'diary_details' diary.formatted_date %}">{{ diary.formatted_date }}</a></li>
     {% endfor %}
 </ul>
 
