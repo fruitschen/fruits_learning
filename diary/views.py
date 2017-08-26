@@ -78,7 +78,7 @@ def diary_add_text(request, diary_id):
             if request.is_ajax():
                 return HttpResponse(diary_content.render())
             else:
-                diary_details_url = reverse('diary_details', args=(diary_id, ))
+                diary_details_url = reverse('diary_details', args=(diary.formatted_date, ))
                 return redirect(diary_details_url)
     else:
         text_form = DiaryTextForm()
@@ -103,7 +103,7 @@ def diary_add_image(request, diary_id):
             if request.is_ajax():
                 return HttpResponse(diary_content.render())
             else:
-                diary_details_url = reverse('diary_details', args=(diary_id, ))
+                diary_details_url = reverse('diary_details', args=(diary.formatted_date, ))
                 return redirect(diary_details_url)
     else:
         image_form = DiaryImageForm()
@@ -127,7 +127,7 @@ def diary_edit_text(request, content_id):
             if request.is_ajax():
                 return HttpResponse(diary_content.render())
             else:
-                diary_details_url = reverse('diary_details', args=(diary.id, ))
+                diary_details_url = reverse('diary_details', args=(diary.formatted_date, ))
                 return redirect(diary_details_url)
     else:
         text_form = DiaryTextForm(instance=text_content)

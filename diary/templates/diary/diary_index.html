@@ -8,7 +8,7 @@
 {% include 'diary/include/events_list_message.html' %}
 {% include 'diary/include/events_list.html' %}
 
-<h3>{{ today_diary.date|date:'Y-m-j' }} {{ weekday }}<a class="btn btn-default" href="{% url 'diary_details' today_diary.id %}?editting=1">编辑</a></h3>
+<h3>{{ today_diary.date|date:'Y-m-j' }} {{ weekday }}<a class="btn btn-default" href="{% url 'diary_details' today_diary.formatted_date %}?editting=1">编辑</a></h3>
 {% for content in today_diary.contents.all %}
     {{ content.render }}
 {% endfor %}
