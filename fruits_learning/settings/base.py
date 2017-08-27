@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'crispy_forms',
     'django_backup',
     'markdownx',
+    'sorl.thumbnail',
 
     'django.contrib.admin',
     'django.contrib.auth',

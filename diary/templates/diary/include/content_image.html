@@ -1,4 +1,8 @@
+{% load thumbnail %}
+
+{% thumbnail content.image "500" as im %}
+    <p><img style="margin:{{ im|margin:"500" }}"  src="{{ im.url }}" width="{{ im.x }}" height="{{ im.y }}" /></p>
+{% endthumbnail %}
 {% if content.title %}
     <h4>{{ content.title }}</h4>
 {% endif %}
-<p><img src="{{ MEDIA_URL }}{{ content.image }}" /></p>
