@@ -188,9 +188,11 @@ def generate_weekdays(**kwargs):
 post_migrate.connect(generate_weekdays, sender=Weekday._meta.app_config)
 
 
-EVENT_TYPES = [
+AUTO_EVENT_TYPES = [
     MonthEventTemplate.event_type,
     WeekdayEventTemplate.event_type,
     RuleEventTemplate.event_type,
+]
+EVENT_TYPES = AUTO_EVENT_TYPES + [
     'manual',
 ]

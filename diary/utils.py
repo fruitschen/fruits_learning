@@ -1,4 +1,4 @@
-from diary.models import WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate
+from diary.models import WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate, AUTO_EVENT_TYPES
 from datetime import timedelta
 
 
@@ -11,7 +11,7 @@ def get_events_by_date(the_date, commit=False):
         if tpl.applicable_to_date(the_date):
             rule_events.append(tpl.to_event(the_date, commit=commit))
 
-    if events_query:
+    if events_query.filter(event_type__in=AUTO_EVENT_TYPES).exists():
         return list(events_query) + rule_events
 
     weekday = Weekday.objects.get(weekday=str(the_date.weekday()))
@@ -19,12 +19,12 @@ def get_events_by_date(the_date, commit=False):
 
     month_event_templates = MonthEventTemplate.objects.filter(day=the_date.day)
     event_templates = list(weekday_event_templates) + list(month_event_templates)
-    event_templates = sorted(event_templates, key=lambda x:x.priority)
-    events = []
+    events = list(events_query)
     for tpl in event_templates:
         events.append(tpl.to_event(the_date, commit=commit))
 
     events.extend(rule_events)
+    events = sorted(events, key=lambda x:x.priority)
 
     return events
 
