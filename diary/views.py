@@ -42,6 +42,8 @@ def diary_details(request, diary_date):
         diary = Diary(date=diary_date)
         commit = False
     events = get_events_by_date(diary.date, commit=commit)
+    tasks = filter(lambda event: event.is_task, events)
+    tasks_all_done = not filter(lambda task: not task.is_done,tasks)
     editting = request.GET.get('editting', False)
     context = {
         'hide_header_footer': True,
@@ -51,6 +53,7 @@ def diary_details(request, diary_date):
         'text_form': DiaryTextForm(),
         'image_form': DiaryImageForm(),
         'editting': editting,
+        'tasks_all_done': tasks_all_done,
     }
     return render(request, 'diary/diary_details.html', context)
 

@@ -7,7 +7,7 @@
     </ol>
     <h3>
         日程与提醒
-        <a class="btn btn-default" href="{% url 'admin:diary_event_add' %}?event_date={{ diary.formatted_date }}&event_type=manual">添加日程</a>
+        <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}?event_date={{ diary.formatted_date }}&event_type=manual">添加日程</a>
     </h3>
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
