@@ -26,6 +26,10 @@ class Diary(models.Model):
     def formatted_date(self):
         return self.date.strftime(DATE_FORMAT)
 
+    @property
+    def weekday(self):
+        return WEEKDAY_DICT[str(self.date.weekday())]
+
     class Meta:
         ordering = ['-date']
 

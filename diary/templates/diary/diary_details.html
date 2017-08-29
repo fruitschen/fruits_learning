@@ -3,7 +3,7 @@
     <ol class="breadcrumb">
         <li><a href="{% url 'diary_index' %}">日记</a></li>
         <li><a href="{% url 'diary_list' %}">日记列表</a></li>
-        <li><a href="">日记 {{ diary.date|date:'Y-m-j' }}</a></li>
+        <li><a href="">日记 {{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</a></li>
     </ol>
     <h3>
         日程与提醒
@@ -12,7 +12,7 @@
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
 
-    <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }}日记</h2>
+    <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</h2>
     {% for content in diary.contents.all %}
         {{ content.render }}
     {% endfor %}

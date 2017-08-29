@@ -16,7 +16,7 @@
     </ul>
 
     {% for day_and_events in days_and_events %}
-        <h3>{{ day_and_events.day }} {{ day_and_events.weekday }}</h3>
+        <h3>{{ day_and_events.day|date:'Y-m-j' }} {{ day_and_events.weekday }}</h3>
         {% with day_and_events.events as events %}
             {% include 'diary/include/events_list.html' %}
         {% endwith %}
