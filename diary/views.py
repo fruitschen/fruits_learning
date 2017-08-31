@@ -12,6 +12,16 @@ from diary.forms import DiaryTextForm, DiaryImageForm
 from diary.utils import get_events_by_date
 
 
+def base_diary_context():
+    today = date.today()
+    yesterday = today - timedelta(days=1)
+    tomorrow = today + timedelta(days=1)
+    return {
+        'today': today.strftime(DATE_FORMAT),
+        'yesterday': yesterday.strftime(DATE_FORMAT),
+        'tomorrow': tomorrow.strftime(DATE_FORMAT),
+    }
+
 @staff_member_required
 def diary_index(request):
     today = date.today()
@@ -25,6 +35,7 @@ def diary_list(request):
         'hide_header_footer': True,
         'diary_items': diary_items,
     }
+    context.update(base_diary_context())
     return render(request, 'diary/diary_list.html', context)
 
 
@@ -55,6 +66,7 @@ def diary_details(request, diary_date):
         'editting': editting,
         'tasks_all_done': tasks_all_done,
     }
+    context.update(base_diary_context())
     return render(request, 'diary/diary_details.html', context)
 
 
@@ -160,6 +172,7 @@ def diary_events(request):
         'event_types': event_types,
         'selected_type': selected_type,
     }
+    context.update(base_diary_context())
     return render(request, 'diary/events.html', context)
 
 

@@ -30,6 +30,10 @@ class Diary(models.Model):
     def weekday(self):
         return WEEKDAY_DICT[str(self.date.weekday())]
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('diary_details', args=[self.formatted_date])
+
     class Meta:
         ordering = ['-date']
 
