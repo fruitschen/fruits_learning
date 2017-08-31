@@ -157,6 +157,9 @@ class RuleEventTemplate(BaseEventTemplate):
 
     def to_event(self, event_date, commit=False):
         if self.generate_event:
+            query = Event.objects.filter(event_date=event_date, event_type=self.event_type, event=self.event)
+            if query:
+                return query[0]
             return super(RuleEventTemplate, self).to_event(event_date=event_date, commit=commit)
         else:
             return self
