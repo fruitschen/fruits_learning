@@ -16,3 +16,8 @@ class DiaryImageForm(forms.ModelForm):
     class Meta:
         model = DiaryImage
         fields = ['image', 'title']
+
+
+class EventsRangeForm(forms.Form):
+    start = forms.DateField(required=False)
+    end = forms.DateField(required=False)

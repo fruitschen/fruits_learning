@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
@@ -8,7 +9,7 @@ from rest_framework.reverse import reverse
 from datetime import date, timedelta, datetime
 
 from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES
-from diary.forms import DiaryTextForm, DiaryImageForm
+from diary.forms import DiaryTextForm, DiaryImageForm, EventsRangeForm
 from diary.utils import get_events_by_date
 
 
@@ -151,10 +152,30 @@ def diary_events(request):
     selected_type = request.GET.get('event_type', None)
 
     today = date.today()
+    default_start = today
+    default_end = default_start + timedelta(days=42)
+    form = EventsRangeForm(initial={'start': default_start, 'end': default_end})
+    if request.GET:
+        form = EventsRangeForm(request.GET)
+        form.is_valid()
+        start = form.cleaned_data.get('start', None) or default_start
+        default_end = start + timedelta(days=42)
+        end = form.cleaned_data.get('end', None) or default_end
+    else:
+        start = default_start
+        end = default_end
+
+    shortcuts = [
+        [u'一周以前', today - timedelta(days=7),],
+        [u'一月以前', today - timedelta(days=30),],
+    ]
+
+    current_day = start
     days = []
     days_and_events = []
-    for i in range(42):
-        days.append(today + timedelta(days=i))
+    while current_day < end:
+        days.append(current_day)
+        current_day += timedelta(days=1)
     for day in days:
         events = get_events_by_date(day)
         if selected_type:
@@ -171,6 +192,8 @@ def diary_events(request):
         'days_and_events': days_and_events,
         'event_types': event_types,
         'selected_type': selected_type,
+        'form': form,
+        'shortcuts': shortcuts,
     }
     context.update(base_diary_context())
     return render(request, 'diary/events.html', context)

@@ -1,4 +1,5 @@
 {% extends "diary/diary_base.html" %}
+{% load crispy_forms_tags %}
 
 {% block diary_content %}
     <ol class="breadcrumb">
@@ -14,6 +15,14 @@
             <li role="presentation" {% if selected_type == event_type %}class="active"{% endif %}><a href="?event_type={{ event_type }}">{{ event_type }}</a></li>
         {% endfor %}
     </ul>
+
+    <form method="get" action=".">
+        {{ form.start }} ~ {{ form.end }}
+        <input type="submit" value="改日期" />
+        {% for shortcut in shortcuts %}
+            <a href=".?start={{ shortcut.1|date:'Y-m-j' }}" class="btn btn-default">{{ shortcut.0 }}</a>
+        {% endfor %}
+    </form>
 
     {% for day_and_events in days_and_events %}
         <h3>{{ day_and_events.day|date:'Y-m-j' }} {{ day_and_events.weekday }}</h3>
