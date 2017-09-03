@@ -6,7 +6,7 @@
     </ol>
     <h3>
         TODO
-        <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}&event_type=manual">添加条目</a>
+        <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}?event_type=manual">添加条目</a>
     </h3>
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
