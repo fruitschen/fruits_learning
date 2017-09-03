@@ -1,0 +1,20 @@
+{% extends "diary/diary_base.html" %}
+{% block diary_content %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'diary_index' %}">日记</a></li>
+        <li><a href="{% url 'diary_todo' %}">TODO</a></li>
+    </ol>
+    <h3>
+        TODO
+        <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}&event_type=manual">添加条目</a>
+    </h3>
+    {% include 'diary/include/events_list_message.html' %}
+    {% include 'diary/include/events_list.html' %}
+
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+    {% include "diary/include/events_list_js.html" %}
+{% endblock %}
+

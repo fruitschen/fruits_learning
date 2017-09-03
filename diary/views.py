@@ -211,3 +211,14 @@ def update_task(request):
         task.is_done = False
     task.save()
     return HttpResponse('Task Updated. ')
+
+
+@staff_member_required
+def diary_todo(request):
+    todo_items = Event.objects.filter(event_date__isnull=True)
+    context = {
+        'hide_header_footer': True,
+        'events': todo_items,
+    }
+    context.update(base_diary_context())
+    return render(request, 'diary/todo.html', context)
