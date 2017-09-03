@@ -19,10 +19,23 @@ def last_trading_day(the_date):
     return trading_day == the_date
 
 
+def last_sunday(the_date):
+    if the_date.weekday() != 6:
+        return False
+    new_date = the_date
+    the_last_sunday = the_date
+    while new_date.month == the_date.month:
+        if new_date.weekday() == 6:  # Sunday
+            the_last_sunday = new_date
+        new_date = new_date + timedelta(days=1)
+    return the_last_sunday == the_date
+
+
 rules = [
     'first_20_days',
     'not_first_20_days',
     'last_trading_day',
+    'last_sunday',
 ]
 
 
