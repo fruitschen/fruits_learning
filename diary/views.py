@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.admin.views.decorators import staff_member_required
+from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.reverse import reverse
 
@@ -54,11 +55,28 @@ def diary_details(request, diary_date):
         diary = Diary(date=diary_date)
         commit = False
     events = get_events_by_date(diary.date, commit=commit)
+
     tasks = filter(lambda event: event.is_task, events)
     tasks_all_done = not filter(lambda task: not task.is_done,tasks)
+    now = timezone.now()
+    hidden_events_count = 0
+    for event in events:
+        if tasks_all_done and getattr(event, 'is_done', False):
+            event.hidden = True
+        if today == diary_date and event.end_hour:
+            if now > timezone.datetime(
+                    now.year, now.month, now.day,
+                    int(event.end_hour),
+                    int(event.end_min or 0),
+                    tzinfo=timezone.get_current_timezone()
+            ):
+                event.hidden = True
+        if getattr(event, 'hidden', False):
+            hidden_events_count += 1
     editting = request.GET.get('editting', False)
     context = {
         'hide_header_footer': True,
+        'hidden_events_count': hidden_events_count,
         'diary': diary,
         'weekday': WEEKDAY_DICT[str(diary.date.weekday())],
         'events': events,

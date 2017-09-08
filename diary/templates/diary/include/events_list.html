@@ -1,10 +1,10 @@
-{% if tasks_all_done %}
-    <a href="#" class="btn btn-sm btn-primary" onclick="$('.collapse').collapse('toggle')">任务完成!</a>
+{% if hidden_events_count %}
+    <a href="#" class="btn btn-sm btn-primary" onclick="$('.collapse').collapse('toggle')">显示隐藏</a>
 {% endif %}
 <ul class="list-unstyled">
     {% for event in events %}
         <li id="event-{{ event.id }}" style="{% if event.is_important %}font-weight:bold; color: red;{% endif %}"
-            {% if event.is_task and tasks_all_done %}class="collapse"{% endif %}
+            {% if event.hidden %}class="collapse"{% endif %}
         >
             <div class="checkbox">
                 {% if event.is_task %}
