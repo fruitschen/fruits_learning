@@ -47,12 +47,19 @@ class DiaryList(View):
 
 
 class DiaryDetails(View):
+
+
     @method_decorator(staff_member_required)
     def get(self, request, diary_date):
+        context = self.get_context(request, diary_date)
+        return render(request, 'diary/diary_details.html', context)
+
+    def get_context(self, request, diary_date):
         diary_date = datetime.strptime(diary_date, DATE_FORMAT).date()
         diary_query = Diary.objects.filter(date=diary_date)
         commit = True
         today = date.today()
+        diary = None
         if diary_query.exists():
             diary = diary_query[0]
         elif diary_date <= today:
@@ -62,19 +69,19 @@ class DiaryDetails(View):
             commit = False
         events = get_events_by_date(diary.date, commit=commit)
 
-        tasks = filter(lambda event: event.is_task, events)
-        tasks_all_done = not filter(lambda task: not task.is_done,tasks)
-        now = timezone.now()
+        tasks = filter(lambda e: e.is_task, events)
+        tasks_all_done = not filter(lambda task: not task.is_done, tasks)
+        now = datetime.now()
         hidden_events_count = 0
         for event in events:
+            event.hidden = False
             if tasks_all_done and getattr(event, 'is_done', False):
                 event.hidden = True
             if today == diary_date and event.end_hour:
-                if now > timezone.datetime(
+                if now > datetime(
                         now.year, now.month, now.day,
                         int(event.end_hour),
-                        int(event.end_min or 0),
-                        tzinfo=timezone.get_current_timezone()
+                        int(event.end_min or 0)
                 ):
                     event.hidden = True
             if getattr(event, 'hidden', False):
@@ -92,7 +99,7 @@ class DiaryDetails(View):
             'tasks_all_done': tasks_all_done,
         }
         context.update(base_diary_context())
-        return render(request, 'diary/diary_details.html', context)
+        return context
 
 
 diary_details = DiaryDetails.as_view()
@@ -286,3 +293,5 @@ class DiaryTodo(View):
         }
         context.update(base_diary_context())
         return render(request, 'diary/todo.html', context)
+
+
