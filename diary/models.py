@@ -53,6 +53,11 @@ class DiaryContent(models.Model):
         content_obj = getattr(self, self.content_attr)
         return content_obj.render()
 
+    @property
+    def as_dict(self):
+        content_obj = getattr(self, self.content_attr)
+        return content_obj.as_dict
+
     class Meta:
         ordering = ['order']
 
@@ -63,12 +68,27 @@ class DiaryText(DiaryContent):
     def render(self):
         return render_to_string('diary/include/content_text.html', {'content': self, })
 
+    @property
+    def as_dict(self):
+        return {
+            'title': self.title,
+            'content': self.text,
+            'type': 'text',
+        }
 
 class DiaryImage(DiaryContent):
     image = models.ImageField(upload_to='diary')
 
     def render(self):
         return render_to_string('diary/include/content_image.html', {'content': self, 'MEDIA_URL': settings.MEDIA_URL })
+
+    @property
+    def as_dict(self):
+        return {
+            'title': self.title,
+            'content': self.image.url,
+            'type': 'text',
+        }
 
 
 HOURS = [str(i) for i in range(1, 25)]
@@ -154,6 +174,11 @@ class RuleEventTemplate(BaseEventTemplate):
     event_type = 'rule_event'
     rule = models.CharField(max_length=64, choices=RULES_CHOICES)
     generate_event = models.BooleanField(default=False)
+
+    @property
+    def is_done(self):
+        # just a dummy property
+        return False
 
     def applicable_to_date(self, the_date):
         func = getattr(diary.rules, self.rule)

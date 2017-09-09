@@ -3,7 +3,6 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.admin.views.decorators import staff_member_required
-from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
@@ -293,5 +292,4 @@ class DiaryTodo(View):
         }
         context.update(base_diary_context())
         return render(request, 'diary/todo.html', context)
-
 
