@@ -19,7 +19,7 @@ class RuleEventTemplateAdmin(admin.ModelAdmin):
 class EventAdmin(admin.ModelAdmin):
     model = Event
     list_display = ['event', 'event_date', 'is_task', 'is_done']
-    list_filter = ['is_task']
+    list_filter = ['is_task', 'is_done', 'event_date', 'event_type', ]
 
 
 admin.site.register(WeekdayEventTemplate, WeekdayEventTemplateAdmin)
