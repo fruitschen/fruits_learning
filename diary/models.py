@@ -232,3 +232,34 @@ AUTO_EVENT_TYPES = [
 EVENT_TYPES = AUTO_EVENT_TYPES + [
     'manual',
 ]
+
+
+class Exercise(models.Model):
+    name = models.CharField(u'事件', max_length=128)
+    order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ['order']
+
+
+class ExerciseLog(models.Model):
+    exercise = models.ForeignKey(Exercise, on_delete=models.PROTECT)
+    times = models.IntegerField(default=0)
+    date = models.DateField()
+
+    @property
+    def range(self):
+        return range(self.times)
+
+
+def generate_exercises(**kwargs):
+    default_exercises = [
+        u'平板支撑',
+        u'平躺抬腿',
+        u'深蹲',
+    ]
+    for ex in default_exercises:
+        Exercise.objects.get_or_create(name=ex)
+
+post_migrate.connect(generate_exercises, sender=Exercise._meta.app_config)
+

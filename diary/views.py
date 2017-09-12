@@ -10,7 +10,7 @@ from rest_framework.reverse import reverse
 
 from datetime import date, timedelta, datetime
 
-from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES
+from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog
 from diary.forms import DiaryTextForm, DiaryImageForm, EventsRangeForm
 from diary.utils import get_events_by_date
 
@@ -69,25 +69,35 @@ class DiaryDetails(View):
         elif diary_date > today:
             diary = Diary(date=diary_date)
             commit = False
-        events = get_events_by_date(diary.date, commit=commit)
-
-        tasks = filter(lambda e: e.is_task, events)
-        tasks_all_done = not filter(lambda task: not task.is_done, tasks)
-        now = datetime.now()
+        events = []
         hidden_events_count = 0
-        for event in events:
-            event.hidden = False
-            if tasks_all_done and getattr(event, 'is_done', False):
-                event.hidden = True
-            if today == diary_date and event.end_hour:
-                if now > datetime(
-                        now.year, now.month, now.day,
-                        int(event.end_hour),
-                        int(event.end_min or 0)
-                ):
+        if True:
+            events = get_events_by_date(diary.date, commit=commit)
+
+            tasks = filter(lambda e: e.is_task, events)
+            tasks_all_done = not filter(lambda task: not task.is_done, tasks)
+            now = datetime.now()
+            for event in events:
+                event.hidden = False
+                if tasks_all_done and getattr(event, 'is_done', False):
                     event.hidden = True
-            if getattr(event, 'hidden', False):
-                hidden_events_count += 1
+                if today == diary_date and event.end_hour:
+                    if now > datetime(
+                            now.year, now.month, now.day,
+                            int(event.end_hour),
+                            int(event.end_min or 0)
+                    ):
+                        event.hidden = True
+                if getattr(event, 'hidden', False):
+                    hidden_events_count += 1
+
+        exercises_logs = ExerciseLog.objects.filter(date=diary_date)
+        if date == today and not exercises_logs:
+            exercises = Exercise.objects.all()
+            for exercise in exercises:
+                ExerciseLog.objects.get_or_create(exercise=exercise, date=diary_date)
+            exercises_logs = ExerciseLog.objects.filter(date=diary_date)
+
         editting = request.GET.get('editting', False)
         context = {
             'title': title,
@@ -100,6 +110,7 @@ class DiaryDetails(View):
             'image_form': DiaryImageForm(),
             'editting': editting,
             'tasks_all_done': tasks_all_done,
+            'exercises_logs': exercises_logs,
         }
         context.update(base_diary_context())
         return context
@@ -297,3 +308,17 @@ class DiaryTodo(View):
         context.update(base_diary_context())
         return render(request, 'diary/todo.html', context)
 
+
+class UpdateExerciseLogView(View):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(UpdateExerciseLogView, self).dispatch(request, *args, **kwargs)
+
+    @method_decorator(staff_member_required)
+    def post(self, request):
+        log_id = request.POST.get('log_id', None)
+        ex_log = ExerciseLog.objects.get(id=log_id)
+        ex_log.times += 1
+        ex_log.save()
+        return HttpResponse('Exercise Log Updated. ')

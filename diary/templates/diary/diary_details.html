@@ -8,8 +8,28 @@
     </ol>
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
-    <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}?event_date={{ diary.formatted_date }}&event_type=manual">添加日程</a>
 
+    <table class="table table-condensed">
+    {% for ex_log in exercises_logs %}
+        <tr id="ex_log-{{ ex_log.id }}">
+            <th style="width: 8em;">
+                {{ ex_log.exercise.name }}
+            </th>
+            <td id="ex_log_stars{{ ex_log.id }}">
+                {% for i in ex_log.range %}
+                    <span class="glyphicon glyphicon-star"></span>
+                {% endfor %}
+
+                <a href="#" class="do_exercise" data-log_id="{{ ex_log.id }}">
+                    <span class="glyphicon glyphicon-plus"></span>
+                </a>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+
+
+    <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}?event_date={{ diary.formatted_date }}&event_type=manual">添加日程</a>
     <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</h2>
     {% for content in diary.contents.all %}
         {{ content.render }}
@@ -45,8 +65,30 @@
         $('#diary-title').append('<a href="#" id="edit-button" class="btn btn-default">编辑</a>')
         $('#edit-button').click(function(){
             $('.edit').toggle()
-        })
+        });
+
+        $('.do_exercise').click(function(e){
+            e.preventDefault();
+            var log_id = $(this).data('log_id');
+            $.post('{% url 'update_exercise_log' %}', {
+                  log_id: log_id,
+            },
+            function(data, status){
+                if (status == 'success'){
+                    $('#ex_log_stars' + log_id).prepend('<span class="glyphicon glyphicon-star"></span>');
+                    var message = $($('.alert-success')[0]).clone();
+                    var random_id = '' + parseInt(Math.random() * 1000);
+                    message.attr('id', random_id).show();
+                    $(message).find('.message').html(data + ' ' + status);
+                    $('#events-message-area').append(message);
+                    setTimeout('$("#' + random_id + '").hide()', 1000)
+                }
+            });
+        });
     });
+
+
+
     </script>
     {% include "diary/include/events_list_js.html" %}
 {% endblock %}
