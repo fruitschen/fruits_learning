@@ -257,6 +257,7 @@ def generate_exercises(**kwargs):
         u'平板支撑',
         u'平躺抬腿',
         u'深蹲',
+        u'跳绳100',
     ]
     for ex in default_exercises:
         Exercise.objects.get_or_create(name=ex)

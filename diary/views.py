@@ -92,7 +92,7 @@ class DiaryDetails(View):
                     hidden_events_count += 1
 
         exercises_logs = ExerciseLog.objects.filter(date=diary_date)
-        if date == today and not exercises_logs:
+        if diary_date == today and not exercises_logs:
             exercises = Exercise.objects.all()
             for exercise in exercises:
                 ExerciseLog.objects.get_or_create(exercise=exercise, date=diary_date)
