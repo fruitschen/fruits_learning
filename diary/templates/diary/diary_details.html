@@ -1,16 +1,14 @@
 {% extends "diary/diary_base.html" %}
+
 {% block diary_content %}
     <ol class="breadcrumb">
         <li><a href="{% url 'diary_index' %}">日记</a></li>
         <li><a href="{% url 'diary_list' %}">日记列表</a></li>
         <li><a href="{{ diary.get_absolute_url }}">日记 {{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</a></li>
     </ol>
-    <h3>
-        日程与提醒
-        <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}?event_date={{ diary.formatted_date }}&event_type=manual">添加日程</a>
-    </h3>
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
+    <a class="btn btn-default btn-sm" target="_blank" href="{% url 'admin:diary_event_add' %}?event_date={{ diary.formatted_date }}&event_type=manual">添加日程</a>
 
     <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</h2>
     {% for content in diary.contents.all %}

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}
+    {{ title|default:"Diary APP" }}
+{% endblock %}
+
 {% block outter_content %}
     <div class="content-wrap container" id="diary_container">
         <div class="row">

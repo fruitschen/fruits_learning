@@ -47,7 +47,6 @@ class DiaryList(View):
 
 class DiaryDetails(View):
 
-
     @method_decorator(staff_member_required)
     def get(self, request, diary_date):
         context = self.get_context(request, diary_date)
@@ -58,6 +57,10 @@ class DiaryDetails(View):
         diary_query = Diary.objects.filter(date=diary_date)
         commit = True
         today = date.today()
+        if diary_date == today:
+            title = 'Diary, today'
+        else:
+            title = 'Diary, {}'.format(date.strftime(diary_date, '%Y-%m-%d'))
         diary = None
         if diary_query.exists():
             diary = diary_query[0]
@@ -87,6 +90,7 @@ class DiaryDetails(View):
                 hidden_events_count += 1
         editting = request.GET.get('editting', False)
         context = {
+            'title': title,
             'hide_header_footer': True,
             'hidden_events_count': hidden_events_count,
             'diary': diary,
