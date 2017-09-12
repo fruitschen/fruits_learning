@@ -38,6 +38,7 @@ class DiaryList(View):
     def get(self, request):
         diary_items = Diary.objects.all().order_by('-date')
         context = {
+            'title': u'日记列表',
             'hide_header_footer': True,
             'diary_items': diary_items,
         }
@@ -267,6 +268,7 @@ class DiaryEvents(View):
                 })
 
         context = {
+            'title': u'日记 - 事件列表',
             'hide_header_footer': True,
             'days_and_events': days_and_events,
             'event_types': event_types,
