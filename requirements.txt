@@ -26,5 +26,5 @@ lxml==3.7.3
 tushare==0.7.5
 django-markdownx==2.0.21
 sorl-thumbnail==12.3
-
+dj-pagination==2.3.0
 -e git+https://github.com/django-backup/django-backup.git@develop#egg=django-backup

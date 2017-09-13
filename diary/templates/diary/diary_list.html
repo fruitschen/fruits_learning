@@ -1,4 +1,5 @@
 {% extends "diary/diary_base.html" %}
+{% load pagination_tags %}
 
 {% block diary_content %}
     <ol class="breadcrumb">
@@ -6,11 +7,18 @@
         <li>日记列表</li>
     </ol>
 <h4>日记列表</h4>
-<ul>
+<div>
+    {% autopaginate diary_items 10 %}
     {% for diary in diary_items %}
-        <li><a href="{% url 'diary_details' diary.formatted_date %}">{{ diary.formatted_date }} {{ diary.weekday }}</a></li>
+        <h2 id="diary-title">
+            <a href="{% url 'diary_details' diary.formatted_date %}">{{ diary.formatted_date }} {{ diary.weekday }}</a>
+        </h2>
+        {% for content in diary.contents.all %}
+            {{ content.render }}
+        {% endfor %}
     {% endfor %}
-</ul>
+    {% paginate %}
+</div>
 
 
 {% endblock %}

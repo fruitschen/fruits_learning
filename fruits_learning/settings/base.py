@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'django_backup',
     'markdownx',
     'sorl.thumbnail',
+    'dj_pagination',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -82,6 +83,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'dj_pagination.middleware.PaginationMiddleware',
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
