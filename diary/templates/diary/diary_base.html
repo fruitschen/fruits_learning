@@ -12,9 +12,9 @@
                 {% block diary_content %}
                 {% endblock %}
                 <div class="btn-group" role="group"  style="padding-bottom: 150px;">
-                    <a href="{% url 'diary_details' yesterday %}" class="btn btn-default">昨天</a>
-                    <a href="{% url 'diary_details' today %}" class="btn btn-default">今天</a>
-                    <a href="{% url 'diary_details' tomorrow %}" class="btn btn-default">明天</a>
+                    <a href="{% url 'diary_details' yesterday %}{% if tag %}?tag={{ tag }}{% endif %}" class="btn btn-default">昨天</a>
+                    <a href="{% url 'diary_details' today %}{% if tag %}?tag={{ tag }}{% endif %}" class="btn btn-default">今天</a>
+                    <a href="{% url 'diary_details' tomorrow %}{% if tag %}?tag={{ tag }}{% endif %}" class="btn btn-default">明天</a>
                     <div class="btn-group" role="group">
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             更多

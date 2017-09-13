@@ -106,9 +106,16 @@ class BaseEventTemplate(models.Model):
     end_hour = models.CharField(max_length=2, choices=HOUR_CHOICES, blank=True)
     end_min = models.CharField(max_length=2, choices=MIN_CHOICES, blank=True)
     memo = models.TextField(blank=True)
+    tags = models.CharField(max_length=128, default='', blank=True)
 
     class Meta:
         abstract = True
+
+    @property
+    def tags_list(self):
+        if not self.tags:
+            return []
+        return self.tags.split(',')
 
     def to_event(self, event_date, commit=False):
         event = Event(
@@ -122,6 +129,7 @@ class BaseEventTemplate(models.Model):
             memo=self.memo,
             event_date=event_date,
             event_type=self.event_type,
+            tags=self.tags,
         )
         if commit:
             event.save()

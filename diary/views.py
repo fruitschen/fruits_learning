@@ -72,9 +72,9 @@ class DiaryDetails(View):
             commit = False
         events = []
         hidden_events_count = 0
+        tag = request.GET.get('tag', '')
         if True:
-            events = get_events_by_date(diary.date, commit=commit)
-
+            events = get_events_by_date(diary.date, tag=tag, commit=commit)
             tasks = filter(lambda e: e.is_task, events)
             tasks_all_done = not filter(lambda task: not task.is_done, tasks)
             now = datetime.now()
@@ -102,6 +102,7 @@ class DiaryDetails(View):
         editting = request.GET.get('editting', False)
         context = {
             'title': title,
+            'tag': tag,
             'hide_header_footer': True,
             'hidden_events_count': hidden_events_count,
             'diary': diary,

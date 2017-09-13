@@ -2,7 +2,7 @@ from diary.models import WeekdayEventTemplate, Weekday, MonthEventTemplate, Even
 from datetime import timedelta
 
 
-def get_events_by_date(the_date, commit=False):
+def get_events_by_date(the_date, tag='', commit=False):
     events_query = Event.objects.filter(event_date=the_date).order_by('priority')
     # TODO: This should be explicit
     events_generated = events_query.filter(event_type__in=AUTO_EVENT_TYPES).exists()
@@ -14,25 +14,27 @@ def get_events_by_date(the_date, commit=False):
             rule_events_tpls.append(tpl)
 
     if events_generated:
-        return list(events_query) + rule_events_tpls
+        events = list(events_query) + rule_events_tpls
+    else:
+        weekday = Weekday.objects.get(weekday=str(the_date.weekday()))
+        weekday_event_templates = weekday.weekdayeventtemplate_set.all()
 
-    weekday = Weekday.objects.get(weekday=str(the_date.weekday()))
-    weekday_event_templates = weekday.weekdayeventtemplate_set.all()
+        month_event_templates = MonthEventTemplate.objects.filter(day=the_date.day)
+        event_templates = list(weekday_event_templates) + list(month_event_templates)
 
-    month_event_templates = MonthEventTemplate.objects.filter(day=the_date.day)
-    event_templates = list(weekday_event_templates) + list(month_event_templates)
+        for tpl in rule_event_templates:
+            if tpl.generate_event and tpl.applicable_to_date(the_date):
+                event_templates.append(tpl)
 
-    for tpl in rule_event_templates:
-        if tpl.generate_event and tpl.applicable_to_date(the_date):
-            event_templates.append(tpl)
+        events = list(events_query)
+        for tpl in event_templates:
+            events.append(tpl.to_event(the_date, commit=commit))
 
-    events = list(events_query)
-    for tpl in event_templates:
-        events.append(tpl.to_event(the_date, commit=commit))
+        events.extend(rule_events_tpls)
+        events = sorted(events, key=lambda x:x.priority)
 
-    events.extend(rule_events_tpls)
-    events = sorted(events, key=lambda x:x.priority)
-
+    if tag:
+        events = filter(lambda x: tag in x.tags, events)
     return events
 
 
