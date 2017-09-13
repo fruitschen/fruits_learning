@@ -10,7 +10,9 @@ from rest_framework.reverse import reverse
 
 from datetime import date, timedelta, datetime
 
-from diary.models import Diary, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog
+from diary.models import (
+    Diary, DiaryContent, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog
+)
 from diary.forms import DiaryTextForm, DiaryImageForm, EventsRangeForm
 from diary.utils import get_events_by_date
 
@@ -100,8 +102,17 @@ class DiaryDetails(View):
             exercises_logs = ExerciseLog.objects.filter(date=diary_date)
 
         editting = request.GET.get('editting', False)
+
+        warnings = []
+
+        yesterday = today - timedelta(days=1)
+        if not DiaryContent.objects.filter(diary__date=yesterday).exists():
+            warnings.append(u'昨天还没记日记!')
+        if now.hour > 19 and diary_date == today and not diary.contents.all().exists():
+            warnings.append(u'今天还没记日记!')
         context = {
             'title': title,
+            'warnings': warnings,
             'tag': tag,
             'hide_header_footer': True,
             'hidden_events_count': hidden_events_count,
