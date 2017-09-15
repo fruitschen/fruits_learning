@@ -6,6 +6,8 @@ from django.db import models
 from django.db.models.signals import post_migrate
 from django.template.loader import render_to_string
 
+from datetime import date
+
 from diary.rules import RULES_CHOICES
 import diary.rules
 
@@ -107,6 +109,9 @@ class BaseEventTemplate(models.Model):
     end_min = models.CharField(max_length=2, choices=MIN_CHOICES, blank=True)
     memo = models.TextField(blank=True)
     tags = models.CharField(max_length=128, default='', blank=True)
+    mandatory = models.BooleanField(
+        u'必须完成?', default=False, help_text=u'过去未完成的mandatory任务会继续显示在今日任务里。'
+    )
 
     class Meta:
         abstract = True
@@ -130,6 +135,7 @@ class BaseEventTemplate(models.Model):
             event_date=event_date,
             event_type=self.event_type,
             tags=self.tags,
+            mandatory=self.mandatory,
         )
         if commit:
             event.save()
@@ -222,6 +228,13 @@ class Event(BaseEventTemplate):
     @property
     def is_important(self):
         return self.priority <= 10
+
+    @property
+    def is_delayed_mandatory(self):
+        if not self.mandatory or not self.event_date:
+            return False
+        today = date.today()
+        return not self.is_done and self.event_date < today
 
 
 def generate_weekdays(**kwargs):

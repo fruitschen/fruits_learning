@@ -12,7 +12,7 @@
 {% endif %}
 <ul class="list-unstyled">
     {% for event in events %}
-        <li id="event-{{ event.id }}" style="{% if event.is_important %}font-weight:bold; color: red;{% endif %}"
+        <li id="event-{{ event.id }}" style="{% if event.is_important or event.is_delayed_mandatory %}font-weight:bold; color: red;{% endif %}"
             {% if event.hidden %}class="collapse"{% endif %}>
             <div class="checkbox">
                 {% if event.is_task %}

@@ -1,5 +1,5 @@
 from diary.models import WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate, AUTO_EVENT_TYPES
-from datetime import timedelta
+from datetime import timedelta, date
 
 
 def get_events_by_date(the_date, tag='', commit=False):
@@ -31,7 +31,10 @@ def get_events_by_date(the_date, tag='', commit=False):
             events.append(tpl.to_event(the_date, commit=commit))
 
         events.extend(rule_events_tpls)
-        events = sorted(events, key=lambda x:x.priority)
+
+    unfinished_mandatory_events = Event.objects.filter(mandatory=True, is_done=False, event_date__lt=the_date)
+    events += unfinished_mandatory_events
+    events = sorted(events, key=lambda x: x.priority)
 
     if tag:
         events = filter(lambda x: tag in x.tags, events)
