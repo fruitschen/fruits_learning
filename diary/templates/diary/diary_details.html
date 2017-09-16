@@ -11,6 +11,7 @@
         <div class="alert alert-info alert-dismissible fade in" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
             <strong class="message">{{ tip }}</strong>
+            {% if tip.long_tip %}{{ tip.long_tip.text|linebreaks }}{% endif %}
         </div>
     {% endif %}
 
