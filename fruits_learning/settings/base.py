@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     'reads',
     'stocks',
     'diary',
+    'tips',
     'weibo_backup',
 
 ]

@@ -6,8 +6,17 @@
         <li><a href="{% url 'diary_list' %}">日记列表</a></li>
         <li><a href="{{ diary.get_absolute_url }}">日记 {{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</a></li>
     </ol>
+
+    {% if tip %}
+        <div class="alert alert-info alert-dismissible fade in" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <strong class="message">{{ tip }}</strong>
+        </div>
+    {% endif %}
+
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
+
 
     <!--<h4>Exercises</h4>-->
     <table class="table table-condensed">

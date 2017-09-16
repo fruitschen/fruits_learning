@@ -15,7 +15,7 @@ from diary.models import (
 )
 from diary.forms import DiaryTextForm, DiaryImageForm, EventsRangeForm
 from diary.utils import get_events_by_date
-
+from tips.models import get_random_tip
 
 def base_diary_context():
     today = date.today()
@@ -110,6 +110,11 @@ class DiaryDetails(View):
             warnings.append(u'昨天还没记日记!')
         if now.hour > 19 and diary_date == today and not diary.contents.all().exists():
             warnings.append(u'今天还没记日记!')
+
+        tip = None
+        if request.user.id == 1:
+            tip = get_random_tip()
+
         context = {
             'title': title,
             'warnings': warnings,
@@ -124,6 +129,7 @@ class DiaryDetails(View):
             'editting': editting,
             'tasks_all_done': tasks_all_done,
             'exercises_logs': exercises_logs,
+            'tip': tip,
         }
         context.update(base_diary_context())
         return context
