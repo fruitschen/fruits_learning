@@ -31,5 +31,5 @@ SYNCS = {
     ],
 }
 
-# Set this to True if this setup should run the info crawlers. 
+# Set this to True if this setup should run the info crawlers.
 RUN_INFO_CRAWLERS = True or False

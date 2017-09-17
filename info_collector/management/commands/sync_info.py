@@ -17,6 +17,7 @@ import logging
 
 logger = logging.getLogger('info_collector')
 
+
 class Command(BaseCommand):
     args = 'none'
     help = 'sync the info data between desktop and server.'
@@ -30,8 +31,8 @@ class Command(BaseCommand):
         )
         open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'author.json'), 'w').write(author_data)
 
-        two_weeks_ago = timezone.now() - timedelta(days=14)
-        recent_items = Info.objects.filter(timestamp__gt=two_weeks_ago)
+        a_week_ago = timezone.now() - timedelta(days=7)
+        recent_items = Info.objects.filter(timestamp__gt=a_week_ago)
         if verbosity:
             print('exporting %d items' % (recent_items.count()))
         fields = [f.name for f in Info._meta.fields]
@@ -50,7 +51,6 @@ class Command(BaseCommand):
             "json", reads_items, indent=2, fields=fields, use_natural_foreign_keys=True
         )
         open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'reads.json'), 'w').write(data)
-
 
         cmd = 'rsync -rave ssh {} {}:{}'.format(
             settings.INFO_SYNC['DUMP_TO'], settings.INFO_SYNC['SERVER'], settings.INFO_SYNC['LOAD_FROM']
