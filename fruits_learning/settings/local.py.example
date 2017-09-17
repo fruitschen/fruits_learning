@@ -19,3 +19,14 @@ BACKUP_DATABASE_COPIES = {
 }
 
 SECRET_KEY = 'Enter something here...'
+
+SYNCS = {
+    # a command to pull the backups from server to localhost
+    'pull_server_backups': 'rsync -rave ssh {server}:{backups_path} {local_backups_path}',
+
+    'sync_stocks_to_server': [
+        'python manage.py dumpdata stocks --indent 4 > ~/stocks.json',
+        'scp ~/stocks.json {server}:',
+        'ssh {server} "cd {project_path}; python manage.py loaddata ~/stocks.json;"',
+    ],
+}

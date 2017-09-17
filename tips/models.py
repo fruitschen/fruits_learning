@@ -39,4 +39,3 @@ def get_random_tip():
     random_id = random.randint(1, max_id)
     tip = Tip.objects.filter(id__lte=random_id).order_by('-id')[0]
     return tip
-

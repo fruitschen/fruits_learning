@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
+from django.conf import settings
 from django.core.management import call_command
 from django.utils import timezone
-
 
 def poll_feeds():
     call_command('poll_feeds')
@@ -41,6 +41,15 @@ def auto_update_price():
         call_command('get_price')
 
 
+def pull_server_backups():
+    SYNCS = getattr(settings, 'SYNCS', None)
+    if SYNCS and SYNCS.get('pull_server_backups', False):
+        cmd = SYNCS.get('pull_server_backups', False)
+        if cmd:
+            import os
+            os.system(cmd)
+
+
 cron_jobs = [
     dict(
         cron_string='0 * * * *',                # An hourly job
@@ -77,6 +86,14 @@ cron_jobs = [
     dict(
         cron_string='0 11 * * *',
         func=run_backup,
+        args=[],
+        kwargs={},
+        repeat=None,
+        queue_name='default'
+    ),
+    dict(
+        cron_string='20 * * * *',
+        func=pull_server_backups,
         args=[],
         kwargs={},
         repeat=None,
