@@ -17,6 +17,8 @@ def run_backup():
 
 
 def run_crawlers():
+    if not settings.RUN_INFO_CRAWLERS:
+        return
     from info_collector import crawlers
     info_crawlers = (
         crawlers.TechQQCrawler(),

@@ -205,3 +205,5 @@ REST_FRAMEWORK = {
 }
 
 DATA_DIR = os.path.join(BASE_DIR, 'stuff', 'data')
+
+RUN_INFO_CRAWLERS = False

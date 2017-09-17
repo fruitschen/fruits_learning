@@ -30,3 +30,6 @@ SYNCS = {
         'ssh {server} "cd {project_path}; python manage.py loaddata ~/stocks.json;"',
     ],
 }
+
+# Set this to True if this setup should run the info crawlers. 
+RUN_INFO_CRAWLERS = True or False
