@@ -114,3 +114,14 @@ class Info(models.Model):
 
 class Content(models.Model):
     content = models.TextField(blank=True)
+
+
+class SyncLog(models.Model):
+    action = models.CharField(max_length=64)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __unicode__(self):
+        return '{} {}'.format(self.action, self.timestamp)
+
+    class Meta:
+        ordering = ['-id']

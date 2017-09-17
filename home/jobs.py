@@ -2,6 +2,7 @@
 from django.conf import settings
 from django.core.management import call_command
 from django.utils import timezone
+from datetime import timedelta
 
 def poll_feeds():
     call_command('poll_feeds')
@@ -52,6 +53,31 @@ def pull_server_backups():
             os.system(cmd)
 
 
+def pull_recent_read_info_items():
+    """定期从服务器下载已读的info"""
+    SYNCS = getattr(settings, 'SYNCS', None)
+    if SYNCS and SYNCS.get('enable_pull_recent_read_info_items', False):
+        from info_collector.models import SyncLog, Info
+        from diary.models import DATE_FORMAT
+        from info_collector.views import ReadInfoSerializer
+        import requests
+        start_date_str = '2017-09-01'
+        if SyncLog.objects.filter(action='server_to_local').exists():
+            last_sync_time = SyncLog.objects.filter(action='server_to_local')[0].timestamp
+            start_date_str = (last_sync_time - timedelta(days=1)).strftime(DATE_FORMAT)
+        url = 'http://www.fruitschen.com/info/reader/recent_read_items/?start_date={}'.format(start_date_str)
+        response = requests.get(url)
+        serializer = ReadInfoSerializer(data=response.json(), many=True)
+        if serializer.is_valid():
+            for read_info in serializer.validated_data:
+                info_item = Info.objects.get(id=read_info['id'])
+                if not info_item.is_read:
+                    info_item.is_read = True
+                    info_item.read_at = read_info['read_at']
+                    info_item.save()
+            SyncLog.objects.create(action='server_to_local')
+
+
 cron_jobs = [
     dict(
         cron_string='0 * * * *',                # An hourly job
@@ -96,6 +122,14 @@ cron_jobs = [
     dict(
         cron_string='20 * * * *',
         func=pull_server_backups,
+        args=[],
+        kwargs={},
+        repeat=None,
+        queue_name='default'
+    ),
+    dict(
+        cron_string='10 */2 * * *',
+        func=pull_recent_read_info_items,
         args=[],
         kwargs={},
         repeat=None,

@@ -10,8 +10,9 @@ from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 
-from ...models import Info, Author
+from ...models import Info, Author, SyncLog
 from reads.models import Read
+from home.jobs import pull_recent_read_info_items
 
 import logging
 
@@ -25,6 +26,12 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         verbosity = options.get('verbosity')
 
+        if verbosity:
+            print('Pulling read info items.')
+        pull_recent_read_info_items()
+        if verbosity:
+            print('Done pulling read info items.')
+
         authors = Author.objects.all()
         author_data = serializers.serialize(
             "json", authors, indent=2, use_natural_foreign_keys=True, use_natural_primary_keys=True
@@ -32,7 +39,11 @@ class Command(BaseCommand):
         open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'author.json'), 'w').write(author_data)
 
         a_week_ago = timezone.now() - timedelta(days=7)
-        recent_items = Info.objects.filter(timestamp__gt=a_week_ago)
+        start = a_week_ago
+        if SyncLog.objects.filter(action='local_to_server').exists():
+            last_sync_time = SyncLog.objects.filter(action='local_to_server')[0].timestamp
+            start = last_sync_time - timedelta(days=1)
+        recent_items = Info.objects.filter(timestamp__gt=start)
         if verbosity:
             print('exporting %d items' % (recent_items.count()))
         fields = [f.name for f in Info._meta.fields]
@@ -66,3 +77,5 @@ class Command(BaseCommand):
             print(cmd)
         ret = os.system(cmd)
         logger.info('sync_info completed successfully')
+
+        SyncLog.objects.create(action='local_to_server')
