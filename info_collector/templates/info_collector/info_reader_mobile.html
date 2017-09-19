@@ -1,0 +1,51 @@
+{% extends "raw_base.html" %}
+{% load static %}
+
+{% block body_class %}info-reader-mobile{% endblock %}
+
+{% block content %}
+{% verbatim %}
+<div id="app">
+    <ol>
+        <li v-for="info_item in info_items">
+            {{ info_item }}
+        </li>
+    </ol>
+</div>
+{% endverbatim %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/vue"></script>
+<script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/jquery_ajax_csrf.js' %}"></script>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            page: 1,
+            info_items: [],
+            previous: null,
+            next: null,
+        }
+    })
+    $.ajax({
+      url: '/api/info/',
+      data: {
+        page: app.$data.page,
+      },
+      dataType: 'json',
+      cache: false,
+      success: function(data) {
+        let count = data.count;
+        app.$data.info_items = data.results
+        app.$data.previous = data.previous
+        app.$data.next = data.next
+        app.$data.total = data.count
+      }.bind(this),
+      error: function(xhr, status, err) {
+        console.error(url, status, err.toString());
+      }.bind(this)
+    });
+</script>
+{% endblock %}

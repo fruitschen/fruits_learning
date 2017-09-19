@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 
 from info_collector.models import Info, InfoSource
-from info_collector.views import info_reader, info_reader_read_items
+from info_collector.views import info_reader, info_reader_mobile, info_reader_read_items
 
 
 class InfoSerializer(serializers.HyperlinkedModelSerializer):
@@ -112,6 +112,6 @@ class InfoSourceViewSet(viewsets.ModelViewSet):
 
 urlpatterns = [
     url(r'^reader/$', info_reader, name='info_reader'),
+    url(r'^reader/mobile/$', info_reader_mobile, name='info_reader_mobile'),
     url(r'^reader/recent_read_items/$', info_reader_read_items, name='info_reader_read_items'),
-
 ]

@@ -20,22 +20,19 @@
         <meta name="description" content="" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-        {# Global stylesheets #}
-        <link rel="stylesheet" type="text/css" href="{% static 'css/fruits_learning.css' %}">
-
         {% block extra_css %}
             {# Override this in templates to add extra stylesheets #}
         {% endblock %}
     </head>
 
     <body class="{% block body_class %}{% endblock %}">
-        <ol class="breadcrumb">
-            <li><a href="/">主页</a></li>
-        </ol>
         {% block content %}{% endblock %}
 
         {% block extra_js %}
             {# Override this in templates to add extra javascript #}
         {% endblock %}
+
+        {% if not request.user.is_authenticated %}<a href="/">主页</a>{% endif %}
+
     </body>
 </html>

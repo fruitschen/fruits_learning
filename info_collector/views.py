@@ -32,3 +32,10 @@ def info_reader_read_items(request):
 class ReadInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     read_at = serializers.DateTimeField()
+
+
+def info_reader_mobile(request):
+    context = {
+
+    }
+    return render(request, 'info_collector/info_reader_mobile.html', context)
