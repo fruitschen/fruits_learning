@@ -1,34 +1,61 @@
 {% extends "raw_base.html" %}
 {% load static %}
 
+{% block extra_css %}
+<link href="{% static "bootstrap-3.3.7-dist/css/bootstrap.min.css" %}" rel="stylesheet">
+{% endblock %}
+
 {% block body_class %}info-reader-mobile{% endblock %}
 
 {% block content %}
 {% verbatim %}
-<div id="app">
+<div id="app" style="padding: 5px;">
     <div>
-        <div v-for="info_item in info_items">
+        <nav>
+            <ul class="pager">
+                <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
+                <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
+                <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
+                <li v-if="pages > page">...</li>
+                <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
+            </ul>
+        </nav>
+        <div v-for="(info_item, index) in info_items" v-bind:style=" index % 2 == 0 ? { backgroundColor: '#fff' } : { backgroundColor: '#eee' } ">
             <div>
-                <h3>
-                    <button v-on:click="markAsRead(info_item, $event)">
+                <h4>
+                    <button class="btn btn-primary" v-on:click="markAsRead(info_item, $event)">
                         Mark Read
                     </button>
+                    <span v-if="info_item.author_name">[{{ info_item.author_name }}]</span>
                     <span>[{{ info_item.source_name }}]</span>
-                    <strong style="color:red;" v-if="info_item.tags">[{ info_item.tags }] </strong>
+                    <strong style="color:red;" v-if="info_item.tags">[{{ info_item.tags }}] </strong>
                     <a :href="info_item.url" target="_blank">
                         {{ info_item.title }}
                     </a>
-                </h3>
+                </h4>
                 <p v-html="info_item.content" v-if="info_item.content"></p>
             </div>
         </div>
+    </div>
+    <hr />
+    <div>
+    <nav>
+        <ul class="pager">
+            <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
+            <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
+            <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
+            <li v-if="pages > page">...</li>
+            <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
+        </ul>
+    </nav>
+        <button class="btn btn-default" @click.prevent="markAllAsRead">全部标记为已读</button>
     </div>
 </div>
 {% endverbatim %}
 {% endblock %}
 
 {% block extra_js %}
-<script src="https://unpkg.com/vue"></script>
+<script src="{% static 'js/vue.js' %}"></script>
 <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery_ajax_csrf.js' %}"></script>
 <script>
@@ -38,7 +65,17 @@
             page: 1,
             info_items: [],
             previous: null,
-            next: null
+            next: null,
+            count: null,
+        },
+        computed: {
+            pages: function(){
+                pages = this.count / 50;
+                if( pages > parseInt(pages)){
+                    pages = parseInt(pages) + 1;
+                }
+                return pages;
+            }
         },
         methods: {
             markAsRead: function(info_item, event){
@@ -48,30 +85,71 @@
                   url: info_item.mark_as_read,
                   data: {},
                   success: function(data){
+                      this.count --;
                       this.info_items.splice(this.info_items.indexOf(info_item), 1);
                   }.bind(this)
                 });
+            },
+            markAllAsRead: function(){
+                var index = 0;
+                var ids = []
+                var yes = confirm('确定标记全部已读?');
+                if (!yes){
+                    return ;
+                }
+                for (index in this.info_items){
+                    var info_item = this.info_items[index];
+                    ids.push(info_item.id)
+                }
+                var url = '/api/info/mark_all_as_read/';
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: url,
+                    data: {ids:ids},
+                    success: function(data){
+                        this.page = 1
+                        this.loadInfo()
+                    }.bind(this)
+                });
+            },
+            loadInfo: function(){
+                $.ajax({
+                    url: '/api/info/',
+                    data: {
+                        page: this.page,
+                        // info_source: 1, // for debugging
+                        is_read: false
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data) {
+                        var count = data.count;
+                        this.$data.info_items = data.results;
+                        this.$data.previous = data.previous;
+                        this.$data.next = data.next;
+                        this.$data.count = data.count;
+                    }.bind(this),
+                        error: function(xhr, status, err) {
+                        console.error('/api/info/', status, err.toString());
+                    }.bind(this)
+                });
+            },
+            loadPrevious: function(){
+                this.page--;
+                this.loadInfo();
+            },
+            loadNext: function(){
+                this.page++;
+                this.loadInfo();
+            },
+            loadLast: function(){
+                this.page = this.pages;
+                this.loadInfo();
             }
         }
     })
-    $.ajax({
-      url: '/api/info/',
-      data: {
-        page: app.$data.page,
-        is_read: false
-      },
-      dataType: 'json',
-      cache: false,
-      success: function(data) {
-        var count = data.count;
-        app.$data.info_items = data.results;
-        app.$data.previous = data.previous;
-        app.$data.next = data.next;
-        app.$data.total = data.count;
-      }.bind(this),
-      error: function(xhr, status, err) {
-        console.error(url, status, err.toString());
-      }.bind(this)
-    });
+    app.loadInfo();
+
 </script>
 {% endblock %}
