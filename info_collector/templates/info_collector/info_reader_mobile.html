@@ -6,11 +6,23 @@
 {% block content %}
 {% verbatim %}
 <div id="app">
-    <ol>
-        <li v-for="info_item in info_items">
-            {{ info_item }}
-        </li>
-    </ol>
+    <div>
+        <div v-for="info_item in info_items">
+            <div>
+                <h3>
+                    <button v-on:click="markAsRead(info_item, $event)">
+                        Mark Read
+                    </button>
+                    <span>[{{ info_item.source_name }}]</span>
+                    <strong style="color:red;" v-if="info_item.tags">[{ info_item.tags }] </strong>
+                    <a :href="info_item.url" target="_blank">
+                        {{ info_item.title }}
+                    </a>
+                </h3>
+                <p v-html="info_item.content" v-if="info_item.content"></p>
+            </div>
+        </div>
+    </div>
 </div>
 {% endverbatim %}
 {% endblock %}
@@ -27,12 +39,26 @@
             info_items: [],
             previous: null,
             next: null,
+        },
+        methods: {
+            markAsRead: function(info_item, event){
+                $.ajax({
+                  type: 'POST',
+                  dataType: 'json',
+                  url: info_item.mark_as_read,
+                  data: {},
+                  success: function(data){
+                      this.info_items.splice(this.info_items.indexOf(info_item), 1)
+                  }.bind(this)
+                });
+            }
         }
     })
     $.ajax({
       url: '/api/info/',
       data: {
         page: app.$data.page,
+        is_read: false
       },
       dataType: 'json',
       cache: false,
