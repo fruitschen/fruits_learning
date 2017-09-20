@@ -7,6 +7,7 @@ import os
 from django.core.management.base import BaseCommand
 from django.core import serializers
 from django.conf import settings
+from django.db.models import Q
 from django.utils import timezone
 from datetime import timedelta
 
@@ -43,7 +44,7 @@ class Command(BaseCommand):
         if SyncLog.objects.filter(action='local_to_server').exists():
             last_sync_time = SyncLog.objects.filter(action='local_to_server')[0].timestamp
             start = last_sync_time - timedelta(days=1)
-        recent_items = Info.objects.filter(timestamp__gt=start)
+        recent_items = Info.objects.filter(Q(timestamp__gt=start) | Q(read_at__gte=start))
         if verbosity:
             print('exporting %d items' % (recent_items.count()))
         fields = [f.name for f in Info._meta.fields]
