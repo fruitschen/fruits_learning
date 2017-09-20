@@ -38,7 +38,7 @@
             page: 1,
             info_items: [],
             previous: null,
-            next: null,
+            next: null
         },
         methods: {
             markAsRead: function(info_item, event){
@@ -48,7 +48,7 @@
                   url: info_item.mark_as_read,
                   data: {},
                   success: function(data){
-                      this.info_items.splice(this.info_items.indexOf(info_item), 1)
+                      this.info_items.splice(this.info_items.indexOf(info_item), 1);
                   }.bind(this)
                 });
             }
@@ -63,11 +63,11 @@
       dataType: 'json',
       cache: false,
       success: function(data) {
-        let count = data.count;
-        app.$data.info_items = data.results
-        app.$data.previous = data.previous
-        app.$data.next = data.next
-        app.$data.total = data.count
+        var count = data.count;
+        app.$data.info_items = data.results;
+        app.$data.previous = data.previous;
+        app.$data.next = data.next;
+        app.$data.total = data.count;
       }.bind(this),
       error: function(xhr, status, err) {
         console.error(url, status, err.toString());
