@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
         authors = Author.objects.all()
         author_data = serializers.serialize(
-            "json", authors, indent=2, use_natural_foreign_keys=True, use_natural_primary_keys=True
+            "json", authors, indent=2
         )
         open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'author.json'), 'w').write(author_data)
 
@@ -48,9 +48,9 @@ class Command(BaseCommand):
         if verbosity:
             print('exporting %d items' % (recent_items.count()))
         fields = [f.name for f in Info._meta.fields]
-        fields = filter(lambda x: x not in ['id', 'content'], fields)
+        fields = filter(lambda x: x not in ['content'], fields)
         data = serializers.serialize(
-            "json", recent_items, indent=2, fields=fields, use_natural_foreign_keys=True, use_natural_primary_keys=True
+            "json", recent_items, indent=2, fields=fields
         )
         open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'info.json'), 'w').write(data)
 
@@ -58,9 +58,8 @@ class Command(BaseCommand):
         if verbosity:
             print('exporting %d items' % (reads_items.count()))
         fields = [f.name for f in Read._meta.fields]
-        fields = filter(lambda x: x not in ['id', ], fields)
         data = serializers.serialize(
-            "json", reads_items, indent=2, fields=fields, use_natural_foreign_keys=True
+            "json", reads_items, indent=2, fields=fields
         )
         open(os.path.join(settings.INFO_SYNC['DUMP_TO'], 'reads.json'), 'w').write(data)
 

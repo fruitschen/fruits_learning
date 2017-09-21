@@ -79,6 +79,8 @@ def pull_recent_read_info_items():
                         info_item.starred = True
                     info_item.save()
             SyncLog.objects.create(action='server_to_local')
+        else:
+            raise RuntimeError('Info Collector failed to sync from server. ')
 
 
 cron_jobs = [

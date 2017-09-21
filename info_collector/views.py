@@ -8,6 +8,7 @@ from info_collector.models import Info
 from rest_framework.renderers import JSONRenderer
 from rest_framework import serializers
 from diary.models import DATE_FORMAT
+from django.db.models import Q
 
 
 def info_reader(request):
@@ -24,7 +25,7 @@ def info_reader_read_items(request):
         start_date = request.GET.get('start_date')
         start_date = datetime.strptime(start_date, DATE_FORMAT).date()
         start = start_date
-    recent_read_items = Info.objects.filter(read_at__gte=start, is_read=True)
+    recent_read_items = Info.objects.filter(Q(read_at__gte=start, is_read=True) | Q(starred_at__gte=start))
     serializer = ReadInfoSerializer(recent_read_items, many=True)
     return HttpResponse(JSONRenderer().render(serializer.data))
 
@@ -32,7 +33,7 @@ def info_reader_read_items(request):
 class ReadInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     read_at = serializers.DateTimeField()
-    starred_at = serializers.DateTimeField()
+    starred_at = serializers.DateTimeField(allow_null=True)
     starred = serializers.BooleanField()
 
 def info_reader_mobile(request):
