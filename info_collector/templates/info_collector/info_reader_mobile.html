@@ -23,8 +23,14 @@
         <div v-for="(info_item, index) in info_items" v-bind:style=" index % 2 == 0 ? { backgroundColor: '#fff' } : { backgroundColor: '#eee' } ">
             <div>
                 <h4>
-                    <button class="btn btn-primary" v-on:click="markAsRead(info_item, $event)">
-                        Mark Read
+                    <button class="btn btn-default" @click.prevent="markAsRead(info_item, $event)">
+                        <span class="glyphicon glyphicon-ok"></span>
+                    </button>
+                    <button class="btn btn-default" @click.prevent="star(info_item, $event)" v-if="! info_item.starred">
+                        <span class="glyphicon glyphicon-star-empty"></span>
+                    </button>
+                    <button class="btn btn-primary"  @click.prevent="unstar(info_item, $event)" v-if="info_item.starred">
+                        <span class="glyphicon glyphicon-star"></span>
                     </button>
                     <span v-if="info_item.author_name">[{{ info_item.author_name }}]</span>
                     <span>[{{ info_item.source_name }}]</span>
@@ -88,6 +94,28 @@
                       this.count --;
                       this.info_items.splice(this.info_items.indexOf(info_item), 1);
                   }.bind(this)
+                });
+            },
+            star: function(info_item, event) {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: info_item.star_url,
+                    data: {},
+                    success: function(data){
+                        info_item.starred = true;
+                    }.bind(this)
+                });
+            },
+            unstar: function(info_item, event) {
+                $.ajax({
+                    type: 'POST',
+                    dataType: 'json',
+                    url: info_item.unstar_url,
+                    data: {},
+                    success: function(data){
+                        info_item.starred = false;
+                    }.bind(this)
                 });
             },
             markAllAsRead: function(){

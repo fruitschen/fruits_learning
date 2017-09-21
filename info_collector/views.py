@@ -32,7 +32,8 @@ def info_reader_read_items(request):
 class ReadInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     read_at = serializers.DateTimeField()
-
+    starred_at = serializers.DateTimeField()
+    starred = serializers.BooleanField()
 
 def info_reader_mobile(request):
     context = {
