@@ -72,8 +72,9 @@ def pull_recent_read_info_items():
             for read_info in serializer.validated_data:
                 info_item = Info.objects.get(id=read_info['id'])
                 if not info_item.is_read:
-                    info_item.is_read = True
-                    info_item.read_at = read_info['read_at']
+                    if read_info['read_at']:
+                        info_item.is_read = True
+                        info_item.read_at = read_info['read_at']
                     if read_info['starred_at']:
                         info_item.starred_at = read_info['starred_at']
                         info_item.starred = True

@@ -32,7 +32,7 @@ def info_reader_read_items(request):
 
 class ReadInfoSerializer(serializers.Serializer):
     id = serializers.IntegerField()
-    read_at = serializers.DateTimeField()
+    read_at = serializers.DateTimeField(allow_null=True)
     starred_at = serializers.DateTimeField(allow_null=True)
     starred = serializers.BooleanField()
 
