@@ -3,6 +3,11 @@
 
 {% block extra_css %}
 <link href="{% static "bootstrap-3.3.7-dist/css/bootstrap.min.css" %}" rel="stylesheet">
+<style>
+[v-cloak] {
+    display: none;
+}
+</style>
 {% endblock %}
 
 {% block body_class %}info-reader-mobile{% endblock %}
@@ -10,52 +15,59 @@
 {% block content %}
 {% verbatim %}
 <div id="app" style="padding: 5px;">
-    <div>
-        <nav>
-            <ul class="pager">
-                <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
-                <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
-                <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
-                <li v-if="pages > page">...</li>
-                <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
-            </ul>
-        </nav>
-        <div v-for="(info_item, index) in info_items" :key="info_item.id" v-bind:style=" index % 2 == 0 ? { backgroundColor: '#fff' } : { backgroundColor: '#eee' } ">
-            <div>
-                <h4>
-                    <button v-show="info_item.loading"><span class="glyphicon glyphicon-hourglass"></span></button>
-                    <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="markAsRead(info_item, $event)">
-                        <span class="glyphicon glyphicon-ok"></span>
-                    </button>
-                    <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="star(info_item, $event)" v-if="! info_item.starred">
-                        <span class="glyphicon glyphicon-star-empty"></span>
-                    </button>
-                    <button class="btn btn-primary"  @click.prevent="unstar(info_item, $event)" v-if="info_item.starred">
-                        <span class="glyphicon glyphicon-star"></span>
-                    </button>
-                    <span v-if="info_item.author_name">[{{ info_item.author_name }}]</span>
-                    <span>[{{ info_item.source_name }}]</span>
-                    <strong style="color:red;" v-if="info_item.tags">[{{ info_item.tags }}] </strong>
-                    <a :href="info_item.url" target="_blank">
-                        {{ info_item.title }}
-                    </a>
-                </h4>
-                <p v-html="info_item.content" v-if="info_item.content"></p>
-            </div>
+    <div class="row" v-show="count == null">
+        <div style="height:100px; font-size: 100px;" class="glyphicon glyphicon-cloud-download col-xs-12 col-md-12 text-center">
+
         </div>
     </div>
-    <hr />
-    <div>
-    <nav>
-        <ul class="pager">
-            <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
-            <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
-            <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
-            <li v-if="pages > page">...</li>
-            <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
-        </ul>
-    </nav>
-        <button class="btn btn-default" @click.prevent="markAllAsRead">全部标记为已读</button>
+    <div v-cloak v-show="count != null">
+        <div>
+            <nav>
+                <ul class="pager">
+                    <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
+                    <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
+                    <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
+                    <li v-if="pages > page">...</li>
+                    <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
+                </ul>
+            </nav>
+            <div v-for="(info_item, index) in info_items" :key="info_item.id" v-bind:style=" index % 2 == 0 ? { backgroundColor: '#fff' } : { backgroundColor: '#eee' } ">
+                <div>
+                    <h4>
+                        <button v-show="info_item.loading"><span class="glyphicon glyphicon-hourglass"></span></button>
+                        <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="markAsRead(info_item, $event)">
+                            <span class="glyphicon glyphicon-ok"></span>
+                        </button>
+                        <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="star(info_item, $event)" v-if="! info_item.starred">
+                            <span class="glyphicon glyphicon-star-empty"></span>
+                        </button>
+                        <button class="btn btn-primary"  @click.prevent="unstar(info_item, $event)" v-if="info_item.starred">
+                            <span class="glyphicon glyphicon-star"></span>
+                        </button>
+                        <span v-if="info_item.author_name">[{{ info_item.author_name }}]</span>
+                        <span>[{{ info_item.source_name }}]</span>
+                        <strong style="color:red;" v-if="info_item.tags">[{{ info_item.tags }}] </strong>
+                        <a :href="info_item.url" target="_blank">
+                            {{ info_item.title }}
+                        </a>
+                    </h4>
+                    <p v-html="info_item.content" v-if="info_item.content"></p>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div>
+            <nav>
+                <ul class="pager">
+                    <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
+                    <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
+                    <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
+                    <li v-if="pages > page">...</li>
+                    <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
+                </ul>
+            </nav>
+            <button class="btn btn-default" @click.prevent="markAllAsRead">全部标记为已读</button>
+        </div>
     </div>
 </div>
 {% endverbatim %}
@@ -66,6 +78,7 @@
 <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery_ajax_csrf.js' %}"></script>
 <script>
+function init_reader(){
     var app = new Vue({
         el: '#app',
         data: {
@@ -137,6 +150,7 @@
                 if (!yes){
                     return ;
                 }
+                this.count = null;
                 for (index in this.info_items){
                     var info_item = this.info_items[index];
                     ids.push(info_item.id)
@@ -190,6 +204,8 @@
         }
     })
     app.loadInfo();
-
+}
+init_reader()
+// setTimeout(init_reader, 1000) // for debugging.
 </script>
 {% endblock %}
