@@ -321,6 +321,7 @@ class DiaryTodo(View):
     @method_decorator(staff_member_required)
     def get(self, request):
         todo_items = Event.objects.filter(event_date__isnull=True)
+        todo_items = sorted(todo_items, key=lambda x:  x.priority)
         todo_items = sorted(todo_items, key=lambda x:  x.is_done)
         context = {
             'hide_header_footer': True,

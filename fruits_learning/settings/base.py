@@ -47,7 +47,6 @@ INSTALLED_APPS = [
     'django_rq',
     'webpack_loader',
     'rest_framework',
-    'crispy_forms',
     'django_filters',
     'django_backup',
     'markdownx',
