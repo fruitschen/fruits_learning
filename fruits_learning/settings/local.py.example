@@ -36,3 +36,9 @@ SYNCS = {
 
 # Set this to True if this setup should run the info crawlers.
 RUN_INFO_CRAWLERS = True or False
+
+SERVER_EMAIL = 'admin@example.com'
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = 'emailuser'
+EMAIL_HOST_PASSWORD = 'password'

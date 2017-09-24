@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^investing/', include('investing.urls')),
     url(r'^reads/', include('reads.urls')),
     url(r'^diary/', include('diary.urls')),
+    url(r'^contacts/', include('contacts.urls')),
     url(r'^tweets/$', weibo_backup.views.tweets, name='tweets'),
 
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),

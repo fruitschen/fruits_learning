@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'markdownx',
     'sorl.thumbnail',
     'dj_pagination',
+    'dal',
+    'dal_select2',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -70,8 +72,8 @@ INSTALLED_APPS = [
     'stocks',
     'diary',
     'tips',
+    'contacts',
     'weibo_backup',
-
 ]
 
 MIDDLEWARE = [
