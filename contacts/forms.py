@@ -11,7 +11,7 @@ class EmailForm(autocomplete.FutureModelForm):
         model = Email
         exclude = ['is_mailed', 'mailed_at', ]
         widgets = {
-            'recipients': autocomplete.ModelSelect2(
+            'recipients': autocomplete.ModelSelect2Multiple(
                 'contacts-autocomplete'
             )
         }
