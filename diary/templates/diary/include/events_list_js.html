@@ -1,6 +1,7 @@
 <script>
     $(function() {
-        $('.event-checkbox').change(function(){
+        $('.event-checkbox').change(function(e){
+            var item = $(this);
             var checked = $(this).prop('checked');
             var dom_id = $(this).attr('id')
             var event_id = $(this).data('event_id');
@@ -10,12 +11,13 @@
             },
             function(data, status){
                 if (status == 'success'){
-                    var message = $($('.alert-success')[0]).clone();
-                    var random_id = '' + parseInt(Math.random() * 1000);
-                    message.attr('id', random_id).show();
-                    $(message).find('.message').html(data + ' ' + status);
-                    $('#events-message-area').append(message);
-                    setTimeout('$("#' + random_id + '").hide()', 1000)
+                    var item_id = $(item).attr('id');
+                    var tooptip_content = data + ' ' + status;
+                    $(item).attr('title', tooptip_content)
+                    $(item).data('placement', 'right')
+                    $(item).data('trigger', 'manual')
+                    $(item).tooltip('show');
+                    setTimeout('$("#' + item_id + '").tooltip("destroy")', 1000)
                 }
             });
         })

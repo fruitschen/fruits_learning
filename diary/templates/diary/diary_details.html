@@ -8,8 +8,7 @@
     </ol>
 
     {% if tip %}
-        <div class="alert alert-info alert-dismissible fade in" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <div class="alert alert-info" role="alert">
             <strong class="message">{{ tip }}</strong>
             {% if tip.long_tip %}{{ tip.long_tip.text|linebreaks }}{% endif %}
         </div>
@@ -31,7 +30,7 @@
                         <span class="glyphicon glyphicon-star"></span>
                     {% endfor %}
 
-                    <a href="#" class="do_exercise" data-log_id="{{ ex_log.id }}">
+                    <a href="#" class="do_exercise" data-log_id="{{ ex_log.id }}" id="ex_plus_{{ ex_log.id }}">
                         <span class="glyphicon glyphicon-plus"></span>
                     </a>
                 </td>
@@ -77,6 +76,7 @@
         });
 
         $('.do_exercise').click(function(e){
+            var item = $(this);
             e.preventDefault();
             var log_id = $(this).data('log_id');
             $.post('{% url 'update_exercise_log' %}', {
@@ -85,12 +85,13 @@
             function(data, status){
                 if (status == 'success'){
                     $('#ex_log_stars' + log_id).prepend('<span class="glyphicon glyphicon-star"></span>');
-                    var message = $($('.alert-success')[0]).clone();
-                    var random_id = '' + parseInt(Math.random() * 1000);
-                    message.attr('id', random_id).show();
-                    $(message).find('.message').html(data + ' ' + status);
-                    $('#events-message-area').append(message);
-                    setTimeout('$("#' + random_id + '").hide()', 1000)
+                    var tooptip_content = data + ' ' + status;
+                    var item_id = $(item).attr('id');
+                    $(item).attr('title', tooptip_content);
+                    $(item).data('placement', 'right')
+                    $(item).data('trigger', 'manual')
+                    $(item).tooltip('show');
+                    setTimeout('$("#' + item_id + '").tooltip("destroy")', 1500)
                 }
             });
         });
