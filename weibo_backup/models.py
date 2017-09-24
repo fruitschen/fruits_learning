@@ -46,7 +46,10 @@ class Tweet(models.Model):
             if not self.t_time[:4].isdigit():
                 now = timezone.now()
                 self.t_time = '{}-{}'.format(now.year, self.t_time)
-            published = datetime.strptime(self.t_time, '%Y-%m-%d %H:%M')
+            try:
+                published = datetime.strptime(self.t_time, '%Y-%m-%d %H:%M')
+            except ValueError:
+                published = datetime.strptime(self.t_time, '%Y-%m-%d')
             self.published = timezone.datetime(published.year, published.month, published.day, published.hour,
                                                published.minute, tzinfo=timezone.get_current_timezone())
 
