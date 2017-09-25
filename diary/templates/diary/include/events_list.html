@@ -10,31 +10,17 @@
 {% if tasks_all_done %}
     <a class="btn btn-primary btn-sm" href="{% url 'diary_todo' %}">今日任务完成! 查看TODO</a>
 {% endif %}
-<ul class="list-unstyled">
-    {% for event in events %}
-        <li id="event-{{ event.id }}" style="{% if event.is_important or event.is_delayed_mandatory %}font-weight:bold; color: red;{% endif %}"
-            {% if event.hidden %}class="collapse"{% endif %}>
-            <div class="checkbox">
-                {% if event.is_task %}
-                    <label>
-                        <input type="checkbox" data-event_id="{{ event.id }}" class="event-checkbox" id="event-checkbox-{{ event.id }}" {% if event.is_done %}checked="checked"{% endif %}>
-                        {{ event }}
-                    </label>
-                    {% if event.memo %}
-                        ： {{ event.memo }}
-                    {% endif %}
-                {% else %}
-                    {% if event.event_type == "rule_event" %}
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                    {% else %}
-                        <span class="glyphicon glyphicon-stop"></span>
-                    {% endif %}
-                    {{ event }}
-                    {% if event.memo %}
-                        ： {{ event.memo }}
-                    {% endif %}
-                {% endif %}
+
+{% if events_by_groups %}
+    {% for item in events_by_groups %}
+        <h4 class="">{{ item.group|default:"无" }}</h4>
+        {% with item.events as events %}
+            <div style="padding-left: 10px;">
+                {% include "diary/include/events_inner_list.html" %}
             </div>
-        </li>
+        {% endwith %}
     {% endfor %}
-</ul>
+{% else %}
+    {% include "diary/include/events_inner_list.html" %}
+{% endif %}
+

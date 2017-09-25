@@ -1,0 +1,28 @@
+<ul class="list-unstyled">
+    {% for event in events %}
+        <li id="event-{{ event.id }}" style="{% if event.is_important or event.is_delayed_mandatory %}font-weight:bold; color: red;{% endif %}"
+            {% if event.hidden %}class="collapse"{% endif %}>
+            <div class="checkbox">
+                {% if event.is_task %}
+                    <label>
+                        <input type="checkbox" data-event_id="{{ event.id }}" class="event-checkbox" id="event-checkbox-{{ event.id }}" {% if event.is_done %}checked="checked"{% endif %}>
+                        {{ event }}
+                    </label>
+                    {% if event.memo %}
+                        ： {{ event.memo }}
+                    {% endif %}
+                {% else %}
+                    {% if event.event_type == "rule_event" %}
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                    {% else %}
+                        <span class="glyphicon glyphicon-stop"></span>
+                    {% endif %}
+                    {{ event }}
+                    {% if event.memo %}
+                        ： {{ event.memo }}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </li>
+    {% endfor %}
+</ul>

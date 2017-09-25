@@ -11,11 +11,12 @@ from rest_framework.reverse import reverse
 from datetime import date, timedelta, datetime
 
 from diary.models import (
-    Diary, DiaryContent, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog
+    Diary, DiaryContent, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog, EventGroup
 )
 from diary.forms import DiaryTextForm, DiaryImageForm, EventsRangeForm
 from diary.utils import get_events_by_date
 from tips.models import get_random_tip
+
 
 def base_diary_context():
     today = date.today()
@@ -75,24 +76,32 @@ class DiaryDetails(View):
         events = []
         hidden_events_count = 0
         tag = request.GET.get('tag', '')
-        if True:
-            events = get_events_by_date(diary.date, tag=tag, commit=commit)
-            tasks = filter(lambda e: e.is_task, events)
-            tasks_all_done = not filter(lambda task: not task.is_done, tasks)
-            now = datetime.now()
-            for event in events:
-                event.hidden = False
-                if tasks_all_done and getattr(event, 'is_done', False):
+        events = get_events_by_date(diary.date, tag=tag, commit=commit)
+        tasks = filter(lambda e: e.is_task, events)
+        tasks_all_done = not filter(lambda task: not task.is_done, tasks)
+        now = datetime.now()
+        for event in events:
+            event.hidden = False
+            if tasks_all_done and getattr(event, 'is_done', False):
+                event.hidden = True
+            if today == diary_date and event.end_hour:
+                if now > datetime(
+                        now.year, now.month, now.day,
+                        int(event.end_hour),
+                        int(event.end_min or 0)
+                ):
                     event.hidden = True
-                if today == diary_date and event.end_hour:
-                    if now > datetime(
-                            now.year, now.month, now.day,
-                            int(event.end_hour),
-                            int(event.end_min or 0)
-                    ):
-                        event.hidden = True
-                if getattr(event, 'hidden', False):
-                    hidden_events_count += 1
+            if getattr(event, 'hidden', False):
+                hidden_events_count += 1
+
+        events_by_groups = []
+        event_groups = EventGroup.objects.all()
+        for group in list(event_groups) + [None]:
+            group_events = filter(lambda e: e.group == group, events)
+            events_by_groups.append({
+                'group': group,
+                'events': group_events,
+            })
 
         exercises_logs = ExerciseLog.objects.filter(date=diary_date)
         if diary_date == today and not exercises_logs:
@@ -124,6 +133,7 @@ class DiaryDetails(View):
             'diary': diary,
             'weekday': WEEKDAY_DICT[str(diary.date.weekday())],
             'events': events,
+            'events_by_groups': events_by_groups,
             'text_form': DiaryTextForm(),
             'image_form': DiaryImageForm(),
             'editting': editting,

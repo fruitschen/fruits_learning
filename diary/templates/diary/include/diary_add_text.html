@@ -1,6 +1,6 @@
 <form method="post" action="{% url 'diary_add_text' diary.id %}">
     {% csrf_token %}
-    <table class="table">
+    <table class="table table-condensed">
         {{ text_form.as_table }}
         <tr>
             <td colspan="2">

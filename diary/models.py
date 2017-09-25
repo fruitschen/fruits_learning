@@ -78,6 +78,7 @@ class DiaryText(DiaryContent):
             'type': 'text',
         }
 
+
 class DiaryImage(DiaryContent):
     image = models.ImageField(upload_to='diary')
 
@@ -93,6 +94,17 @@ class DiaryImage(DiaryContent):
         }
 
 
+class EventGroup(models.Model):
+    name = models.CharField(max_length=64, )
+    order = models.PositiveIntegerField(default=1)
+
+    class Meta:
+        ordering = ['order', ]
+
+    def __unicode__(self):
+        return self.name
+
+
 HOURS = [str(i) for i in range(1, 25)]
 MINS = [str(i) for i in range(60)]
 HOUR_CHOICES = zip(HOURS, HOURS)
@@ -100,6 +112,7 @@ MIN_CHOICES = zip(MINS, MINS)
 
 
 class BaseEventTemplate(models.Model):
+    group = models.ForeignKey(EventGroup, null=True, blank=True)
     event = models.CharField(u'事件', max_length=128)
     is_task = models.BooleanField(u'是否是任务', default=False)
     priority = models.IntegerField(default=100)
@@ -124,6 +137,7 @@ class BaseEventTemplate(models.Model):
 
     def to_event(self, event_date, commit=False):
         event = Event(
+            group=self.group,
             event=self.event,
             is_task=self.is_task,
             priority=self.priority,
@@ -169,7 +183,9 @@ class WeekdayEventTemplate(BaseEventTemplate):
     weekdays = models.ManyToManyField('Weekday')
 
     def __unicode__(self):
-        return '{} {} (Weekday Event Template)'.format(self.event, u'、'.join([w.get_weekday_display() for w in self.weekdays.all()]))
+        return '{} {} (Weekday Event Template)'.format(self.event, u'、'.join(
+            [w.get_weekday_display() for w in self.weekdays.all()])
+        )
 
 
 DAYS = [str(i) for i in range(1, 32)]
@@ -284,4 +300,3 @@ def generate_exercises(**kwargs):
         Exercise.objects.get_or_create(name=ex)
 
 post_migrate.connect(generate_exercises, sender=Exercise._meta.app_config)
-
