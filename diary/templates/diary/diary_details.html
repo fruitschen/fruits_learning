@@ -17,9 +17,19 @@
     {% include 'diary/include/events_list_message.html' %}
     {% include 'diary/include/events_list.html' %}
 
+    {% if not done_any_exercise %}
+        <div class="alert alert-warning" role="alert">
+            <h4>运动</h4>
+            没做任何运动。
+            <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#ex_log_table" aria-expanded="false" aria-controls="ex_log_table">
+                记录
+            </button>
+        </div>
+    {% else %}
+        <h4>运动</h4>
+    {% endif %}
 
-    <!--<h4>Exercises</h4>-->
-    <table class="table table-condensed">
+    <table class="table table-condensed{% if not done_any_exercise %} collapse{% endif %}" id="ex_log_table">
         {% for ex_log in exercises_logs %}
             <tr id="ex_log-{{ ex_log.id }}">
                 <th style="width: 8em;">

@@ -13,12 +13,14 @@
 
 {% if events_by_groups %}
     {% for item in events_by_groups %}
-        <h4 class="">{{ item.group|default:"无" }}</h4>
-        {% with item.events as events %}
-            <div style="padding-left: 10px;">
-                {% include "diary/include/events_inner_list.html" %}
+        <div class="panel panel-default">
+            <div class="panel-heading">{{ item.group|default:"无" }}</div>
+            <div class="panel-body">
+                {% with item.events as events %}
+                    {% include "diary/include/events_inner_list.html" %}
+                {% endwith %}
             </div>
-        {% endwith %}
+        </div>
     {% endfor %}
 {% else %}
     {% include "diary/include/events_inner_list.html" %}

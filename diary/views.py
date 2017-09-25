@@ -73,7 +73,6 @@ class DiaryDetails(View):
         elif diary_date > today:
             diary = Diary(date=diary_date)
             commit = False
-        events = []
         hidden_events_count = 0
         tag = request.GET.get('tag', '')
         events = get_events_by_date(diary.date, tag=tag, commit=commit)
@@ -98,17 +97,20 @@ class DiaryDetails(View):
         event_groups = EventGroup.objects.all()
         for group in list(event_groups) + [None]:
             group_events = filter(lambda e: e.group == group, events)
-            events_by_groups.append({
-                'group': group,
-                'events': group_events,
-            })
+            if group_events:
+                events_by_groups.append({
+                    'group': group,
+                    'events': group_events,
+                })
 
         exercises_logs = ExerciseLog.objects.filter(date=diary_date)
+        done_any_exercise = False
         if diary_date == today and not exercises_logs:
             exercises = Exercise.objects.all()
             for exercise in exercises:
-                ExerciseLog.objects.get_or_create(exercise=exercise, date=diary_date)
+                ex_log, created = ExerciseLog.objects.get_or_create(exercise=exercise, date=diary_date)
             exercises_logs = ExerciseLog.objects.filter(date=diary_date)
+        done_any_exercise = exercises_logs.filter(times__gt=0).exists()
 
         editting = request.GET.get('editting', False)
 
@@ -139,6 +141,7 @@ class DiaryDetails(View):
             'editting': editting,
             'tasks_all_done': tasks_all_done,
             'exercises_logs': exercises_logs,
+            'done_any_exercise': done_any_exercise,
             'tip': tip,
         }
         context.update(base_diary_context())
