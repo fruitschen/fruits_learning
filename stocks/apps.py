@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 from django.apps import AppConfig
 from django.core.checks import Error, register
-
+from django.db.utils import OperationalError
 from decimal import Decimal
 
 
@@ -12,7 +12,11 @@ def snapshots_check(app_configs, **kwargs):
     """自动检查过去snapshots的净值。必须确保代码修改不会不小心造成账户净值出错。"""
     from stocks.models import Account, Snapshot
     errors = []
-    public_account = Account.objects.get(id=4)
+    try:
+        public_account = Account.objects.get(id=4)
+    except (OperationalError, Account.DoesNotExist):
+        return []  # skip if database is not created yet, or account doesn't exit.
+
     snapshots = public_account.snapshots.all()[:13]
     expected_net_assets = [
         Decimal('402409.11'), Decimal('418005.48'), Decimal('448114.82'), Decimal('460585.62'),
