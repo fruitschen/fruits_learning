@@ -12,8 +12,11 @@ def not_first_20_days(the_date):
 def last_trading_day(the_date):
     new_date = the_date
     trading_day = the_date
+    mon_to_fri = [0, 1, 2, 3, 4]
+    if the_date.weekday() not in mon_to_fri:
+        return False
     while new_date.month == the_date.month:
-        if new_date.weekday() in [0, 1, 2, 3, 4]:  # Mon through Fri
+        if new_date.weekday() in mon_to_fri:  # Mon through Fri
             trading_day = new_date
         new_date = new_date + timedelta(days=1)
     return trading_day == the_date
