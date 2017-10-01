@@ -1,0 +1,74 @@
+{% load wagtailcore_tags wagtailimages_tags static %}
+
+<div class="stream-field">
+    {% for child in content %}
+        {% if child.block_type == 'image_list' %}
+            <div class="img-list">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-12 text-center">
+                            {{ child.value.caption|richtext }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for image_item in child.value.image_list %}
+                            {% image image_item.image width-360 as theimage %}
+                            <div class="col-sm-4 img-list-item">
+                                <a href="{{ image_item.page.url }}" class="img-list-link" data-toggle="modal">
+                                    <div class="caption">
+                                        <div class="caption-content">
+                                            <i class="fa fa-search-plus fa-3x"></i>
+                                        </div>
+                                    </div>
+                                    <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}" />
+                                </a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="section {% if child.value.css_class %}{{ child.value.css_class }}{% endif %}">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-lg-8 col-lg-offset-2 text-center">
+                            {% if child.block_type == 'intro' %}
+                                <div class="intro">{{ child.value.content }}</div>
+                            {% elif child.block_type == 'aligned_html' %}
+                                {% if child.value.alignment == 'normal' %}
+                                    {{ child.value.bound_blocks.html.render }}
+                                {% else %}
+                                    {{ child.value.bound_blocks.html.render }}
+                                {% endif %}
+                            {% elif child.block_type == 'pullquote' %}
+                                <blockquote>
+                                    {{ child.value.quote }}
+                                    {% if child.value.attribution %}<span>- {{ child.value.attribution }}</span>{% endif %}
+                                </blockquote>
+                            {% elif child.block_type == 'paragraph' %}
+                                {{ child.value.content|richtext }}
+                            {% elif child.block_type == 'aligned_image' %}
+                                <div class="img-wrapper {{ child.value.alignment }}">
+                                    {% if child.value.alignment == "left" or child.value.alignment == "right" %}
+                                        {% image child.value.image width-300 as theimage %}
+                                    {% else %}
+                                        {% image child.value.image width-1280 as theimage %}
+                                    {% endif %}
+
+                                    <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}" />
+                                    {% if child.value.caption %}
+                                        <div class="caption">
+                                            {{ child.value.caption|richtext }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            {% else %}
+                                {{ child }}
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>

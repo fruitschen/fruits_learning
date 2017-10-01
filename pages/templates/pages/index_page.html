@@ -1,0 +1,29 @@
+{% extends "pages/pages_base.html" %}
+{% load pages_tags static %}
+
+{% block heading %}
+    <header>
+        <div class="header-content">
+            <div class="header-content-inner">
+                <h1 id="homeHeading">一些网页设计的练习</h1>
+                <hr>
+                <p>
+                    尝试实现一些比较常见的页面设计。这是一个单栏的主页设计。
+                </p>
+                <a href="/" class="btn btn-primary btn-xl">了解详情</a>
+            </div>
+        </div>
+    </header>
+{% endblock %}
+
+{% block outter_content %}
+
+    {% if self.body %}
+        {% include "pages/includes/streamfield.html" with content=self.body %}
+    {% endif %}
+
+    {% person_listing_homepage %}
+
+    {% include "pages/includes/carousel.html" with carousel_items=self.carousel_items.all only %}
+
+{% endblock %}

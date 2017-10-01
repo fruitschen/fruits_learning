@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'dj_pagination',
     'dal',
     'dal_select2',
+    'compressor',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -72,6 +73,7 @@ INSTALLED_APPS = [
     'diary',
     'tips',
     'contacts',
+    'pages',
     'weibo_backup',
 ]
 
