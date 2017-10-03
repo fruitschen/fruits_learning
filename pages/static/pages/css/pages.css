@@ -15,6 +15,9 @@ body {
 body {
   font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif;
 }
+#content-container{
+    margin-top: 40px;
+}
 hr {
   border-color: #18bc9c;
   border-width: 3px;
@@ -115,6 +118,10 @@ aside {
 }
 @media (min-width: 768px) {
   .navbar-default {
+    background-color: black;
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+  .homepage .navbar-default {
     background-color: transparent;
     border-color: rgba(255, 255, 255, 0.3);
   }
@@ -134,7 +141,7 @@ aside {
     color: white;
   }
   .navbar-default.affix {
-    background-color: white;
+    background-color: rgba(255,255,255,0.97);
     border-color: rgba(34, 34, 34, 0.05);
   }
   .navbar-default.affix .navbar-header .navbar-brand {

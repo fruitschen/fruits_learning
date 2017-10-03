@@ -1,7 +1,10 @@
 {% extends "pages/pages_base.html" %}
 {% load pages_tags static %}
 
-{% block heading %}
+{% block body_class %}homepage{% endblock %}
+
+
+{% block outter_content %}
     <header>
         <div class="header-content">
             <div class="header-content-inner">
@@ -14,9 +17,6 @@
             </div>
         </div>
     </header>
-{% endblock %}
-
-{% block outter_content %}
 
     {% if self.body %}
         {% include "pages/includes/streamfield.html" with content=self.body %}

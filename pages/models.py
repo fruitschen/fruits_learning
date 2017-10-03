@@ -410,3 +410,83 @@ FormPage.content_panels = [
         FieldPanel('subject'),
     ], "Email"),
 ]
+
+
+
+
+# Game index page
+
+class GameIndexPageRelatedLink(Orderable, RelatedLink):
+    page = ParentalKey('pages.GameIndexPage', related_name='related_links')
+
+
+class GameIndexPage(Page):
+    intro = RichTextField(blank=True)
+    feed_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    search_fields = Page.search_fields + [
+        index.SearchField('intro'),
+    ]
+
+    api_fields = ['intro', 'feed_image']
+
+GameIndexPage.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('intro', classname="full"),
+    InlinePanel('related_links', label="Related links"),
+]
+
+GameIndexPage.promote_panels = Page.promote_panels + [
+    ImageChooserPanel('feed_image'),
+]
+
+
+# Game page
+
+class GamePageRelatedLink(Orderable, RelatedLink):
+    page = ParentalKey('pages.GamePage', related_name='related_links')
+
+
+class GamePage(Page, ContactFields):
+    intro = RichTextField(blank=True)
+    body = RichTextField(blank=True)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    feed_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    search_fields = Page.search_fields + [
+        index.SearchField('name'),
+        index.SearchField('intro'),
+        index.SearchField('body'),
+    ]
+
+    api_fields = ['intro', 'body', 'image', 'feed_image'] + ['related_links']
+
+GamePage.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('intro', classname="full"),
+    FieldPanel('body', classname="full"),
+    ImageChooserPanel('image'),
+    InlinePanel('related_links', label="Related links"),
+]
+
+GamePage.promote_panels = Page.promote_panels + [
+    ImageChooserPanel('feed_image'),
+]
