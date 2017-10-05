@@ -1,6 +1,8 @@
 {% extends "pages/pages_base.html" %}
 {% load wagtailcore_tags wagtailimages_tags pages_tags %}
 
+{% block body_class %}game-index-page{% endblock %}
+
 {% block header %}
     <div class="section section-header section-md">
         <div class="info">
@@ -12,7 +14,8 @@
     </div>
 {% endblock header %}
 
-{% block content %}
+{% block outter_content %}
+<div class="container content-container">
     {% with page.get_children.live as pages %}
     {% if pages %}
         <div class="col-md-10 col-md-offset-1">
@@ -40,4 +43,5 @@
     {% endwith %}
 
     {% include "pages/includes/related_links.html" with related_links=self.related_links.all only %}
-{% endblock %}
+</div>
+{% endblock outter_content %}

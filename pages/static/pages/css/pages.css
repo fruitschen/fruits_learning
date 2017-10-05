@@ -120,7 +120,7 @@ aside {
 }
 @media (min-width: 768px) {
   .navbar-default {
-    background-color: black;
+    background-color: #666666;
     border-color: rgba(255, 255, 255, 0.3);
   }
   .homepage .navbar-default {
