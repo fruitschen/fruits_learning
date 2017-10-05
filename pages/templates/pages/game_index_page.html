@@ -1,22 +1,40 @@
 {% extends "pages/pages_base.html" %}
 {% load wagtailcore_tags wagtailimages_tags pages_tags %}
 
-{% block content %}
-    {% include "pages/includes/intro.html" with intro=self.intro only %}
+{% block header %}
+    <div class="section section-header section-md">
+        <div class="info">
+            <h1>{{ self.title }}</h1>
+            {% if intro %}
+                {{ intro|richtext }}
+            {% endif %}
+        </div>
+    </div>
+{% endblock header %}
 
+{% block content %}
     {% with page.get_children.live as pages %}
     {% if pages %}
-        <div class="row">
-            {% for page in pages %}
-                <div class="col-xs-12 col-sm-6  col-md-6 col-lg-6 ">
-                    {% image page.specific.image min-540x400 as theimage %}
-                    <img src="{{ theimage.url }}"  alt="{{ theimage.alt }}" />
-
-                    <a class="list-group-item" href="{% pageurl page %}">
-                        <h4 class="list-group-item-heading">{{ page.title }}</h4>
-                    </a>
-                </div>
-            {% endfor %}
+        <div class="col-md-10 col-md-offset-1">
+            <div class="row">
+                {% for page in pages %}
+                    <div class="col-xs-12 col-sm-6  col-md-6 col-lg-6">
+                        <div class="card">
+                            <div class="thumbnail">
+                                {% image page.specific.image fill-455x260 as theimage %}
+                                <a href="{% pageurl page %}">
+                                    <img src="{{ theimage.url }}"  alt="{{ theimage.alt }}" />
+                                </a>
+                            </div>
+                            <div class="card-info">
+                                <a href="{% pageurl page %}">
+                                    <h3>{{ page.title }}</h3>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
         </div>
     {% endif %}
     {% endwith %}

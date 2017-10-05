@@ -14,7 +14,7 @@
         <meta name="description" content="{% if self.search_description %}{{ self.search_description }}{% endif %}">
 
         {# External stylesheets #}
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
 
         {# Local static assets such as css, images and javascrpt should be stored at [yourapp]/static/[yourapp]/... #}
         {% compress css %}
@@ -42,15 +42,24 @@
             {% top_menu parent=site_root calling_page=self %}
         {% endblock %}
 
+        {% block header %}
+            <div class="container content-container">
+                <div class="col-md-10 col-md-offset-1">
+                    <div class="page-header">
+                        <h1>{{ self.title }}</h1>
+                    </div>
+                </div>
+            </div>
+        {% endblock header %}
+
+
         {% block outter_content %}
-        <div class="container" id="content-container">
-            <div class="page-header">
-                <h1>{{ self.title }}</h1>
-            </div>
-            {% breadcrumbs %}
+        <div class="container content-container">
             {% block content %}{% endblock %}
-            </div>
+        </div>
         {% endblock %}
+
+        {% comment %}{% breadcrumbs %}{% endcomment %}
 
         {% include 'pages/includes/prev_next.html' %}
 

@@ -15,8 +15,10 @@ body {
 body {
   font-family: 'Merriweather', 'Helvetica Neue', Arial, sans-serif;
 }
-#content-container{
+.content-container{
     margin-top: 40px;
+    padding-left:0;
+    padding-right:0;
 }
 hr {
   border-color: #18bc9c;
@@ -270,6 +272,59 @@ header .header-content .header-content-inner p {
   .img-list .img-list-item {
     margin: 0 0 30px;
   }
+}
+.section-header.section-md {
+    height: 360px;
+}
+.section-header {
+    height: 330px;
+    background-color: #333333;
+}
+.section {
+    margin: 0;
+    position: relative;
+    overflow: hidden;
+}
+.section-header .info {
+    max-width: 720px;
+    text-shadow: none;
+    margin: 120px auto;
+    position: relative;
+    z-index: 1;
+    margin-top: 80px;
+    color: #FFFFFF;
+    text-align: center;
+    width: 100%;
+    text-shadow: 0 1px 3px rgba(33,33,33,0.38);
+}
+.card {
+    border-radius: 8px;
+    position: relative;
+    margin-bottom: 60px;
+}
+.card .thumbnail {
+    border: 0 none;
+    padding: 0;
+    margin: 0;
+    min-height: 250px;
+    position: relative;
+    background: transparent;
+}
+.card .thumbnail>img, .card .thumbnail a>img {
+    border-radius: 8px 8px;
+    box-shadow: 0 25px 20px -21px rgba(0,0,0,0.57);
+}
+.card .card-info {
+    padding: 15px;
+    border-radius: 0 0 12px 12px;
+}
+.card-info a:not(.btn) {
+    color: #434343;
+}
+.card-info h3 {
+    margin-top: 10px;
+    margin-bottom: 5px;
+    font-size: 22px;
 }
 .section-heading {
   margin-top: 0;

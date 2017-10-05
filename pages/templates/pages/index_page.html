@@ -3,8 +3,7 @@
 
 {% block body_class %}homepage{% endblock %}
 
-
-{% block outter_content %}
+{% block header %}
     <header>
         <div class="header-content">
             <div class="header-content-inner">
@@ -17,6 +16,9 @@
             </div>
         </div>
     </header>
+{% endblock header %}
+
+{% block outter_content %}
 
     {% if self.body %}
         {% include "pages/includes/streamfield.html" with content=self.body %}
