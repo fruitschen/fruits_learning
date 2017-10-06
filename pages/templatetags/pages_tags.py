@@ -2,7 +2,7 @@ from datetime import date
 from django import template
 from django.conf import settings
 
-from pages.models import PersonPage, Page
+from pages.models import PersonPage, GamePage, Page
 
 register = template.Library()
 
@@ -50,6 +50,22 @@ def top_menu_children(context, parent):
         # required by the pageurl tag that we want to use within this template
         'request': context['request'],
     }
+
+
+
+# Game feed for home page
+@register.inclusion_tag(
+    'pages/tags/game_listing_homepage.html',
+    takes_context=True
+)
+def game_listing_homepage(context, count=2):
+    games = GamePage.objects.live().order_by('-id')
+    return {
+        'games': games[:count].select_related('image'),
+        # required by the pageurl tag that we want to use within this template
+        'request': context['request'],
+    }
+
 
 
 # Retrieves all live pages which are children of the calling page

@@ -24,6 +24,8 @@
         {% include "pages/includes/streamfield.html" with content=self.body %}
     {% endif %}
 
+    {% game_listing_homepage 3 %}
+
     {% person_listing_homepage %}
 
     {% include "pages/includes/carousel.html" with carousel_items=self.carousel_items.all only %}

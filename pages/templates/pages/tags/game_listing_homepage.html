@@ -1,0 +1,26 @@
+{% load wagtailcore_tags wagtailimages_tags pages_tags %}
+<div class="img-list">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12 text-center">
+                <h2>Games</h2>
+                <hr />
+            </div>
+        </div>
+        <div class="row">
+            {% for page in games %}
+                {% image page.specific.image fill-360x260 as theimage %}
+                <div class="col-sm-4 img-list-item">
+                    <a href="{% pageurl page %}" class="img-list-link" data-toggle="modal">
+                        <div class="caption">
+                            <div class="caption-content">
+                                <i class="fa fa-search-plus fa-3x">{{ page.title }}</i>
+                            </div>
+                        </div>
+                        <img src="{{ theimage.url }}" width="{{ theimage.width }}" height="{{ theimage.height }}" alt="{{ theimage.alt }}" />
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
