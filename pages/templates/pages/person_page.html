@@ -1,0 +1,40 @@
+{% extends "pages/pages_base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block body_class %}person-page{% endblock %}
+
+{% block header %}
+<div class="profile-background">
+    <div class="filter-black"></div>
+</div>
+{% endblock header %}
+
+
+{% block content %}
+
+    <div class="row owner">
+        <div class="col-md-2 col-md-offset-5 col-sm-4 col-sm-offset-4 col-xs-6 col-xs-offset-3 text-center">
+            <div class="avatar">
+                {% image self.image width-300 as theimage %}
+                <img src="{{ theimage.url }}" alt="Circle Image" class="img-circle img-no-padding img-responsive">
+            </div>
+            <div class="name">
+                <h4>{{ self.title }}<br /><small>人物职位</small></h4>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3 text-center">
+            {% if self.intro %}
+                {{ self.intro|richtext }}
+            {% endif %}
+        </div>
+    </div>
+
+    {% if self.body %}
+        <div class="body-content">
+            {{ self.body|richtext }}
+        </div>
+    {% endif %}
+
+{% endblock %}
