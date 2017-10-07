@@ -16,6 +16,7 @@ from diary.models import (
 from diary.forms import DiaryTextForm, DiaryImageForm, EventsRangeForm
 from diary.utils import get_events_by_date
 from tips.models import get_random_tip
+from info_collector.models import Info
 
 
 def base_diary_context():
@@ -126,6 +127,8 @@ class DiaryDetails(View):
         if request.user.id == 1:
             tip = get_random_tip()
 
+        unread_info_count = Info.objects.filter(is_read=False).count()
+
         context = {
             'title': title,
             'warnings': warnings,
@@ -143,6 +146,7 @@ class DiaryDetails(View):
             'exercises_logs': exercises_logs,
             'done_any_exercise': done_any_exercise,
             'tip': tip,
+            'unread_info_count': unread_info_count,
         }
         context.update(base_diary_context())
         return context

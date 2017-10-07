@@ -31,7 +31,7 @@
                 <br>
                 <div class="btn-group" role="group"  style="padding: 20px 0;">
                     <!-- shortcuts -->
-                    <a href="{% url 'info_reader_mobile' %}" class="btn btn-default">Reader</a>
+                    <a href="{% url 'info_reader_mobile' %}" class="btn btn-default">Reader<span class="badge">{{ unread_info_count }}</span></a>
                     <a href="{% url 'contacts_send_email' %}" class="btn btn-default">发邮件</a>
                     <a href="{% url 'account_details' 'public' %}" class="btn btn-default">公开账户</a>
                     <a href="{% url 'admin:index' %}" class="btn btn-default">Admin</a>

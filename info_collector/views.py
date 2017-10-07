@@ -36,6 +36,7 @@ class ReadInfoSerializer(serializers.Serializer):
     starred_at = serializers.DateTimeField(allow_null=True)
     starred = serializers.BooleanField()
 
+
 def info_reader_mobile(request):
     context = {
 
