@@ -27,6 +27,10 @@ SYNCS = {
     # enable this locally and it will download read items from server
     'enable_pull_recent_read_info_items': True or False,
 
+    # enable this locally and it will upload info items to server
+    # enable for local setup where crawler runs, disable it on server and other setups.
+    'enable_push_info_items': True or False,
+
     'sync_stocks_to_server': [
         'python manage.py dumpdata stocks --indent 4 > ~/stocks.json',
         'scp ~/stocks.json {server}:',

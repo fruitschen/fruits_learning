@@ -53,6 +53,12 @@ def pull_server_backups():
             os.system(cmd)
 
 
+def sync_info():
+    SYNCS = getattr(settings, 'SYNCS', None)
+    if SYNCS and SYNCS.get('enable_push_info_items', False):
+        call_command('sync_info')
+
+
 def pull_recent_read_info_items():
     """定期从服务器下载已读的info"""
     SYNCS = getattr(settings, 'SYNCS', None)
@@ -135,7 +141,7 @@ cron_jobs = [
     ),
     dict(
         cron_string='10 */2 * * *',
-        func=pull_recent_read_info_items,
+        func=sync_info,
         args=[],
         kwargs={},
         repeat=None,
