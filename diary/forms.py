@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 
-from diary.models import DiaryText, DiaryImage, DiaryAudio
+from diary.models import DiaryText, DiaryImage, DiaryAudio, Event
 
 
 class DiaryTextForm(forms.ModelForm):
@@ -11,7 +11,7 @@ class DiaryTextForm(forms.ModelForm):
         fields = ['text', 'title']
         widgets = {
             'text': forms.Textarea(attrs={
-                'cols': 60, 'rows': 10,
+                'cols': 30, 'rows': 10,
                 'style': 'max-width:100%;',
                 'placeholder': u'早上干啥了？出门去哪里了？上课没，上课发生什么事了？玩什么玩具了吗？讲什么书了？'
             }),
@@ -36,3 +36,15 @@ class DiaryAudioForm(forms.ModelForm):
 class EventsRangeForm(forms.Form):
     start = forms.DateField(required=False)
     end = forms.DateField(required=False)
+
+
+class EventForm(forms.ModelForm):
+
+    class Meta:
+        model = Event
+        fields = ['group', 'event_date', 'event', 'is_task', 'mandatory', 'priority', 'memo', 'tags', ]
+        widgets = {
+            'memo': forms.Textarea(attrs={
+                'cols': 30, 'rows': 10,
+            })
+        }

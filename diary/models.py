@@ -282,6 +282,10 @@ class Event(BaseEventTemplate):
         today = date.today()
         return not self.is_done and self.event_date < today
 
+    @property
+    def formatted_date(self):
+        return self.event_date.strftime(DATE_FORMAT)
+
 
 def generate_weekdays(**kwargs):
     days = range(0, 7)

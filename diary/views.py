@@ -13,7 +13,7 @@ from datetime import date, timedelta, datetime
 from diary.models import (
     Diary, DiaryContent, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog, EventGroup
 )
-from diary.forms import DiaryTextForm, DiaryImageForm, DiaryAudioForm, EventsRangeForm
+from diary.forms import DiaryTextForm, DiaryImageForm, DiaryAudioForm, EventsRangeForm, EventForm
 from diary.utils import get_events_by_date
 from tips.models import get_random_tip
 from info_collector.models import Info
@@ -128,6 +128,7 @@ class DiaryDetails(View):
             tip = get_random_tip()
 
         unread_info_count = Info.objects.filter(is_read=False).count()
+        event_form = EventForm(initial={'event_date': diary.date})
 
         context = {
             'title': title,
@@ -142,6 +143,7 @@ class DiaryDetails(View):
             'text_form': DiaryTextForm(),
             'image_form': DiaryImageForm(),
             'audio_form': DiaryAudioForm(),
+            'event_form': event_form,
             'editting': editting,
             'tasks_all_done': tasks_all_done,
             'exercises_logs': exercises_logs,
@@ -397,3 +399,33 @@ class UpdateExerciseLogView(View):
         ex_log.times += 1
         ex_log.save()
         return HttpResponse('Exercise Log Updated. ')
+
+
+class AddEvent(View):
+    @method_decorator(staff_member_required)
+    def get(self, request):
+        initial = {
+            'event_date': date.today(),
+        }
+        event_form = EventForm(initial=initial)
+        context = {
+            'hide_header_footer': True,
+            'event_form': event_form,
+        }
+        return render(request, 'diary/include/add_event_form.html', context)
+
+    @method_decorator(staff_member_required)
+    def post(self, request):
+        event_form = EventForm(request.POST)
+        if event_form.is_valid():
+            event = event_form.save(commit=False)
+            event.event_type = 'manual'
+            event.save()
+            diary_details_url = reverse('diary_details', args=(event.formatted_date,))
+            return redirect(diary_details_url)
+        else:
+            context = {
+                'hide_header_footer': True,
+                'event_form': event_form,
+            }
+            return render(request, 'diary/include/add_event_form.html', context)

@@ -64,16 +64,22 @@
             <li>
                 <a href="#add-audio" aria-controls="add-audio" role="tab" data-toggle="tab">添加音频</a>
             </li>
+            <li>
+                <a href="#add-event" aria-controls="add-event" role="tab" data-toggle="tab">添加日程</a>
+            </li>
         </ul>
         <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="add-text" style="height: 350px;">
+            <div role="tabpanel" class="tab-pane active" id="add-text" >
                 {% include "diary/include/diary_add_text.html" %}
             </div>
-            <div role="tabpanel" class="tab-pane"  id="add-image" style="height: 350px;">
+            <div role="tabpanel" class="tab-pane"  id="add-image" >
                 {% include "diary/include/diary_add_image.html" %}
             </div>
-            <div role="tabpanel" class="tab-pane"  id="add-audio" style="height: 350px;">
+            <div role="tabpanel" class="tab-pane"  id="add-audio" >
                 {% include "diary/include/diary_add_audio.html" %}
+            </div>
+            <div role="tabpanel" class="tab-pane"  id="add-event" >
+                {% include "diary/include/add_event_form.html" %}
             </div>
         </div>
     {% endif %}
