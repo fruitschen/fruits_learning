@@ -2,6 +2,9 @@
 from __future__ import unicode_literals
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models.signals import post_migrate
 from django.template.loader import render_to_string
@@ -147,6 +150,7 @@ class BaseEventTemplate(models.Model):
     mandatory = models.BooleanField(
         u'必须完成?', default=False, help_text=u'过去未完成的mandatory任务会继续显示在今日任务里。'
     )
+    events = GenericRelation('Event')
 
     class Meta:
         abstract = True
@@ -174,6 +178,7 @@ class BaseEventTemplate(models.Model):
             mandatory=self.mandatory,
         )
         if commit:
+            event.event_template = self
             event.save()
         return event
 
@@ -253,6 +258,9 @@ class Event(BaseEventTemplate):
     event_date = models.DateField(blank=True, null=True)
     is_done = models.BooleanField(default=False)
     event_type = models.CharField(max_length=64)
+    content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT, null=True, blank=True)
+    object_id = models.PositiveIntegerField(null=True, blank=True)
+    event_template = GenericForeignKey('content_type', 'object_id')
 
     def to_event(self):
         return self
