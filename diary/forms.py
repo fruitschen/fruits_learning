@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django import forms
 
-from diary.models import DiaryText, DiaryImage
+from diary.models import DiaryText, DiaryImage, DiaryAudio
 
 
 class DiaryTextForm(forms.ModelForm):
@@ -17,11 +17,20 @@ class DiaryTextForm(forms.ModelForm):
             }),
         }
 
+
 class DiaryImageForm(forms.ModelForm):
 
     class Meta:
         model = DiaryImage
         fields = ['image', 'title']
+
+
+
+class DiaryAudioForm(forms.ModelForm):
+
+    class Meta:
+        model = DiaryAudio
+        fields = ['audio', 'title']
 
 
 class EventsRangeForm(forms.Form):

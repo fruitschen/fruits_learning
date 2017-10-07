@@ -13,7 +13,7 @@ from datetime import date, timedelta, datetime
 from diary.models import (
     Diary, DiaryContent, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog, EventGroup
 )
-from diary.forms import DiaryTextForm, DiaryImageForm, EventsRangeForm
+from diary.forms import DiaryTextForm, DiaryImageForm, DiaryAudioForm, EventsRangeForm
 from diary.utils import get_events_by_date
 from tips.models import get_random_tip
 from info_collector.models import Info
@@ -141,6 +141,7 @@ class DiaryDetails(View):
             'events_by_groups': events_by_groups,
             'text_form': DiaryTextForm(),
             'image_form': DiaryImageForm(),
+            'audio_form': DiaryAudioForm(),
             'editting': editting,
             'tasks_all_done': tasks_all_done,
             'exercises_logs': exercises_logs,
@@ -222,6 +223,40 @@ class DiaryAddImage(View):
             'image_form': image_form,
         }
         return render(request, 'diary/include/diary_add_image.html', context)
+
+
+class DiaryAddAudio(View):
+    @method_decorator(staff_member_required)
+    def get(self, request, diary_id):
+        diary = Diary.objects.get(id=diary_id)
+        audio_form = DiaryAudioForm()
+        context = {
+            'hide_header_footer': True,
+            'diary': diary,
+            'audio_form': audio_form,
+        }
+        return render(request, 'diary/include/diary_add_audio.html', context)
+
+    @method_decorator(staff_member_required)
+    def post(self, request, diary_id):
+        diary = Diary.objects.get(id=diary_id)
+        audio_form = DiaryAudioForm(request.POST, request.FILES)
+        if audio_form.is_valid():
+            diary_content = audio_form.save(commit=False)
+            diary_content.diary = diary
+            diary_content.content_attr = 'diaryaudio'
+            diary_content.save()
+            if request.is_ajax():
+                return HttpResponse(diary_content.render())
+            else:
+                diary_details_url = reverse('diary_details', args=(diary.formatted_date,))
+                return redirect(diary_details_url)
+        context = {
+            'hide_header_footer': True,
+            'diary': diary,
+            'audio_form': audio_form,
+        }
+        return render(request, 'diary/include/diary_add_audio.html', context)
 
 
 class DiaryEditText(View):

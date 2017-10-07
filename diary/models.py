@@ -6,6 +6,7 @@ from django.db import models
 from django.db.models.signals import post_migrate
 from django.template.loader import render_to_string
 
+import os
 from datetime import date
 
 from diary.rules import RULES_CHOICES
@@ -38,6 +39,12 @@ class Diary(models.Model):
 
     class Meta:
         ordering = ['-date']
+
+
+def get_diary_media_path(instance, filename):
+    diary = instance.diary
+    path = os.path.join('diary', str(diary.date.year), str(diary.date.month), filename)
+    return path
 
 
 class DiaryContent(models.Model):
@@ -80,7 +87,7 @@ class DiaryText(DiaryContent):
 
 
 class DiaryImage(DiaryContent):
-    image = models.ImageField(upload_to='diary')
+    image = models.ImageField(upload_to=get_diary_media_path)
 
     def render(self):
         return render_to_string('diary/include/content_image.html', {'content': self, 'MEDIA_URL': settings.MEDIA_URL })
@@ -90,7 +97,22 @@ class DiaryImage(DiaryContent):
         return {
             'title': self.title,
             'content': self.image.url,
-            'type': 'text',
+            'type': 'image',
+        }
+
+
+class DiaryAudio(DiaryContent):
+    audio = models.FileField(upload_to=get_diary_media_path)
+
+    def render(self):
+        return render_to_string('diary/include/content_audio.html', {'content': self, 'MEDIA_URL': settings.MEDIA_URL })
+
+    @property
+    def as_dict(self):
+        return {
+            'title': self.title,
+            'content': self.audio.url,
+            'type': 'audio',
         }
 
 

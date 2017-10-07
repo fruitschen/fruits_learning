@@ -1,0 +1,8 @@
+{% load thumbnail %}
+
+{% if content.title %}
+    <h4>{{ content.title }}</h4>
+{% endif %}
+<audio controls src="{{ MEDIA_URL }}{{ content.audio }}">
+您的浏览器不支持 audio 标签。
+</audio>

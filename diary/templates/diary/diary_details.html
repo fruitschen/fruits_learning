@@ -61,6 +61,9 @@
             <li>
                 <a href="#add-image" aria-controls="add-image" role="tab" data-toggle="tab">添加图片</a>
             </li>
+            <li>
+                <a href="#add-audio" aria-controls="add-audio" role="tab" data-toggle="tab">添加音频</a>
+            </li>
         </ul>
         <div class="tab-content">
             <div role="tabpanel" class="tab-pane active" id="add-text" style="height: 350px;">
@@ -68,6 +71,9 @@
             </div>
             <div role="tabpanel" class="tab-pane"  id="add-image" style="height: 350px;">
                 {% include "diary/include/diary_add_image.html" %}
+            </div>
+            <div role="tabpanel" class="tab-pane"  id="add-audio" style="height: 350px;">
+                {% include "diary/include/diary_add_audio.html" %}
             </div>
         </div>
     {% endif %}
