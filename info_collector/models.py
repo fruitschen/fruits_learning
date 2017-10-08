@@ -108,6 +108,13 @@ class Info(models.Model):
         self.save()
 
     @property
+    def safe_content(self):
+        if self.content:
+            return self.content
+        else:
+            return ''
+
+    @property
     def create_read_url(self):
         return '{}?info={}'.format(reverse('admin:reads_read_add'), self.id)
 

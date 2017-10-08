@@ -17,7 +17,7 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
     star_url = serializers.HyperlinkedIdentityField(view_name='info-star', read_only=True)
     unstar_url = serializers.HyperlinkedIdentityField(view_name='info-unstar', read_only=True)
     source_name = serializers.EmailField(source='info_source.name')
-    content = serializers.CharField(source='content.content')
+    content = serializers.CharField(source='safe_content')
     author_name = serializers.CharField(source='author.name')
     author_avatar = serializers.CharField(source='author.avatar_url')
 
