@@ -30,6 +30,13 @@ class Command(BaseCommand):
         for author in authors:
             author.save()
 
+        content_data = open(os.path.join(settings.INFO_SYNC['LOAD_FROM'], 'content.json'), 'r').read()
+        content_items = serializers.deserialize(
+            "json", content_data, indent=2
+        )
+        for content in content_items:
+            content.save()
+
         info_data = open(os.path.join(settings.INFO_SYNC['LOAD_FROM'], 'info.json'), 'r').read()
         info_items = serializers.deserialize(
             "json", info_data, indent=2, use_natural_foreign_keys=True, use_natural_primary_keys=True
