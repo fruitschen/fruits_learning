@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 from diary.models import WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate, AUTO_EVENT_TYPES
 from datetime import timedelta, date
 
@@ -32,8 +33,11 @@ def get_events_by_date(the_date, tag='', commit=False):
 
         events.extend(rule_events_tpls)
 
-    unfinished_mandatory_events = Event.objects.filter(mandatory=True, is_done=False, event_date__lt=the_date)
-    events += unfinished_mandatory_events
+    today = date.today()
+    if today == the_date:
+        # only show unfinished_mandatory_events for today.
+        unfinished_mandatory_events = Event.objects.filter(mandatory=True, is_done=False, event_date__lt=today)
+        events += unfinished_mandatory_events
     events = sorted(events, key=lambda x: x.priority)
 
     if tag:
