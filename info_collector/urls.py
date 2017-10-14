@@ -17,7 +17,9 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
     star_url = serializers.HyperlinkedIdentityField(view_name='info-star', read_only=True)
     unstar_url = serializers.HyperlinkedIdentityField(view_name='info-unstar', read_only=True)
     source_name = serializers.EmailField(source='info_source.name')
+    source_id = serializers.EmailField(source='info_source.id')
     content = serializers.CharField(source='safe_content')
+    author_id = serializers.CharField(source='author.id')
     author_name = serializers.CharField(source='author.name')
     author_avatar = serializers.CharField(source='author.avatar_url')
 
@@ -25,8 +27,8 @@ class InfoSerializer(serializers.HyperlinkedModelSerializer):
         model = Info
         fields = (
             'absolute_url', 'info_source', 'id', 'url', 'title', 'timestamp', 'original_timestamp', 'read_at', 'tags',
-            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'starred', 'is_read', 'content',
-            'author_name', 'author_avatar', 'create_read_url', 'important',
+            'mark_as_read', 'star_url', 'unstar_url', 'source_name', 'source_id', 'starred', 'is_read', 'content',
+            'author_id', 'author_name', 'author_avatar', 'create_read_url', 'important',
         )
 
 
@@ -41,6 +43,7 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
             'starred': ['exact', ],
             'important': ['exact', ],
             'info_source': ['exact', ],
+            'author': ['exact', ],
         }
 
 

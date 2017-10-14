@@ -110,7 +110,7 @@ class Info(models.Model):
     @property
     def safe_content(self):
         if self.content:
-            return self.content
+            return self.content.content
         else:
             return ''
 

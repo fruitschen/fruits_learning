@@ -44,8 +44,8 @@
                         <button class="btn btn-primary"  @click.prevent="unstar(info_item, $event)" v-if="info_item.starred">
                             <span class="glyphicon glyphicon-star"></span>
                         </button>
-                        <span v-if="info_item.author_name">[{{ info_item.author_name }}]</span>
-                        <span>[{{ info_item.source_name }}]</span>
+                        <span v-if="info_item.author_name">[<a href="#" @click.prevent="filterAuthor(info_item.author_id)">{{ info_item.author_name }}]</a></span>
+                        <span><a href="#" @click.prevent="filterSource(info_item.source_id)">[{{ info_item.source_name }}]</span>
                         <strong style="color:red;" v-if="info_item.tags">[{{ info_item.tags }}] </strong>
                         <a :href="info_item.url" target="_blank">
                             {{ info_item.title }}
@@ -66,10 +66,23 @@
                     <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
                 </ul>
             </nav>
-            <button class="btn btn-default" @click.prevent="markAllAsRead">全部标记为已读</button>
         </div>
+        <br />
+        <br />
     </div>
+
+    <nav class="navbar navbar-default navbar-fixed-bottom">
+      <div class="container">
+        <ul class="nav navbar-nav">
+            <li><button class="btn btn-default navbar-btn" @click.prevent="markAllAsRead">全部标记为已读</button></li>
+            <li v-if="author"><button class="btn btn-default navbar-btn" @click.prevent="clearAuthor()">所有作者</button></li>
+            <li v-if="source"><button class="btn btn-default navbar-btn" @click.prevent="clearSource()">所有信息源</button></li>
+        </ul>
+      </div>
+    </nav>
+
 </div>
+
 {% endverbatim %}
 {% endblock %}
 
@@ -86,7 +99,9 @@ function init_reader(){
             info_items: [],
             previous: null,
             next: null,
+            source: null,
             count: null,
+            author: null
         },
         computed: {
             pages: function(){
@@ -143,6 +158,22 @@ function init_reader(){
                     }.bind(this)
                 });
             },
+            filterAuthor: function(author_id, event){
+                this.author = author_id;
+                this.loadInfo()
+            },
+            clearAuthor: function(event){
+                this.author = null;
+                this.loadInfo()
+            },
+            filterSource: function(source, event){
+                this.source = source;
+                this.loadInfo()
+            },
+            clearSource: function(event){
+                this.source = null;
+                this.loadInfo()
+            },
             markAllAsRead: function(){
                 var index = 0;
                 var ids = []
@@ -172,7 +203,8 @@ function init_reader(){
                     url: '/api/info/',
                     data: {
                         page: this.page,
-                        // info_source: 1, // for debugging
+                        author: this.author,
+                        info_source: this.source,
                         is_read: false
                     },
                     dataType: 'json',
