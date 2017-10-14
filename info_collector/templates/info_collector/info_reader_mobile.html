@@ -74,9 +74,11 @@
     <nav class="navbar navbar-default navbar-fixed-bottom">
       <div class="container">
         <ul class="nav navbar-nav">
-            <li><button class="btn btn-default navbar-btn" @click.prevent="markAllAsRead">全部标记为已读</button></li>
-            <li v-if="author"><button class="btn btn-default navbar-btn" @click.prevent="clearAuthor()">所有作者</button></li>
-            <li v-if="source"><button class="btn btn-default navbar-btn" @click.prevent="clearSource()">所有信息源</button></li>
+            <li>
+                <button class="btn btn-default navbar-btn" @click.prevent="markAllAsRead">全部标记为已读</button>
+                <button v-if="author" class="btn btn-default navbar-btn" @click.prevent="clearAuthor()">所有作者</button>
+                <button v-if="source" class="btn btn-default navbar-btn" @click.prevent="clearSource()">所有信息源</button>
+            </li>
         </ul>
       </div>
     </nav>

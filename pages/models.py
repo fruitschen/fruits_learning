@@ -472,7 +472,6 @@ class GamePage(Page, ContactFields):
     )
 
     search_fields = Page.search_fields + [
-        index.SearchField('name'),
         index.SearchField('intro'),
         index.SearchField('body'),
     ]
