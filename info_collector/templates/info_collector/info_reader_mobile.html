@@ -7,6 +7,9 @@
 [v-cloak] {
     display: none;
 }
+#app img{
+    max-width: 100%;
+}
 </style>
 {% endblock %}
 
@@ -15,60 +18,62 @@
 {% block content %}
 {% verbatim %}
 <div id="app" style="padding: 5px;">
-    <div class="row" v-show="count == null">
-        <div style="height:100px; font-size: 100px;" class="glyphicon glyphicon-cloud-download col-xs-12 col-md-12 text-center">
+    <div class="container" style="padding:0;">
+        <div class="row" v-show="count == null">
+            <div style="height:100px; font-size: 100px;" class="glyphicon glyphicon-cloud-download col-xs-12 col-md-12 text-center">
 
-        </div>
-    </div>
-    <div v-cloak v-show="count != null">
-        <div>
-            <nav>
-                <ul class="pager">
-                    <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
-                    <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
-                    <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
-                    <li v-if="pages > page">...</li>
-                    <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
-                </ul>
-            </nav>
-            <div v-for="(info_item, index) in info_items" :key="info_item.id" v-bind:style=" index % 2 == 0 ? { backgroundColor: '#fff' } : { backgroundColor: '#eee' } ">
-                <div>
-                    <h4>
-                        <button v-show="info_item.loading"><span class="glyphicon glyphicon-hourglass"></span></button>
-                        <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="markAsRead(info_item, $event)">
-                            <span class="glyphicon glyphicon-ok"></span>
-                        </button>
-                        <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="star(info_item, $event)" v-if="! info_item.starred">
-                            <span class="glyphicon glyphicon-star-empty"></span>
-                        </button>
-                        <button class="btn btn-primary"  @click.prevent="unstar(info_item, $event)" v-if="info_item.starred">
-                            <span class="glyphicon glyphicon-star"></span>
-                        </button>
-                        <span v-if="info_item.author_name">[<a href="#" @click.prevent="filterAuthor(info_item.author_id)">{{ info_item.author_name }}]</a></span>
-                        <span><a href="#" @click.prevent="filterSource(info_item.source_id)">[{{ info_item.source_name }}]</span>
-                        <strong style="color:red;" v-if="info_item.tags">[{{ info_item.tags }}] </strong>
-                        <a :href="info_item.url" target="_blank">
-                            {{ info_item.title }}
-                        </a>
-                    </h4>
-                    <p v-html="info_item.content" v-if="info_item.content"></p>
-                </div>
             </div>
         </div>
-        <hr />
-        <div>
-            <nav>
-                <ul class="pager">
-                    <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
-                    <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
-                    <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
-                    <li v-if="pages > page">...</li>
-                    <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
-                </ul>
-            </nav>
+        <div v-cloak v-show="count != null">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0">
+                <nav>
+                    <ul class="pager">
+                        <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
+                        <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
+                        <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
+                        <li v-if="pages > page">...</li>
+                        <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
+                    </ul>
+                </nav>
+                <div v-for="(info_item, index) in info_items" :key="info_item.id" v-bind:style=" index % 2 == 0 ? { backgroundColor: '#fff' } : { backgroundColor: '#eee' } ">
+                    <div>
+                        <h4>
+                            <button v-show="info_item.loading"><span class="glyphicon glyphicon-hourglass"></span></button>
+                            <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="markAsRead(info_item, $event)">
+                                <span class="glyphicon glyphicon-ok"></span>
+                            </button>
+                            <button v-show="! info_item.loading" class="btn btn-default" @click.prevent="star(info_item, $event)" v-if="! info_item.starred">
+                                <span class="glyphicon glyphicon-star-empty"></span>
+                            </button>
+                            <button class="btn btn-primary"  @click.prevent="unstar(info_item, $event)" v-if="info_item.starred">
+                                <span class="glyphicon glyphicon-star"></span>
+                            </button>
+                            <span v-if="info_item.author_name">[<a href="#" @click.prevent="filterAuthor(info_item.author_id)">{{ info_item.author_name }}]</a></span>
+                            <span><a href="#" @click.prevent="filterSource(info_item.source_id)">[{{ info_item.source_name }}]</span>
+                            <strong style="color:red;" v-if="info_item.tags">[{{ info_item.tags }}] </strong>
+                            <a :href="info_item.url" target="_blank">
+                                {{ info_item.title }}
+                            </a>
+                        </h4>
+                        <div style="max-height: 200px; overflow:auto;" v-html="info_item.content" v-if="info_item.content"></div>
+                    </div>
+                </div>
+                <div>
+                    <nav>
+                        <ul class="pager">
+                            <li v-if="previous"><a href="#" @click.prevent="loadPrevious()">Previous</a></li>
+                            <li>{{ count }}条, {{ page }}/{{ pages }}页</li>
+                            <li v-if="next"><a href="#" @click.prevent="loadNext()">Next</a></li>
+                            <li v-if="pages > page">...</li>
+                            <li v-if="pages > page"><a href="#" @click.prevent="loadLast()">最后一页</a></li>
+                        </ul>
+                    </nav>
+                    <br />
+                    <br />
+                </div>
+            </div>
+            <hr />
         </div>
-        <br />
-        <br />
     </div>
 
     <nav class="navbar navbar-default navbar-fixed-bottom">
