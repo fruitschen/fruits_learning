@@ -77,15 +77,57 @@
     </div>
 
     <nav class="navbar navbar-default navbar-fixed-bottom">
-      <div class="container">
-        <ul class="nav navbar-nav">
+      <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <button class="btn btn-default navbar-btn" @click.prevent="markAllAsRead">全部标记为已读</button>
+          <button v-if="author" class="btn btn-default navbar-btn" @click.prevent="clearAuthor()">所有作者</button>
+        </div>
+
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+          <ul class="nav navbar-nav">
+                    <li v-for="(info_source, index) in info_sources" :key="info_source.id">
+                        <a href="#" @click.prevent="filterSource(info_source.id)">{{ info_source.name }}</a>
+                    </li>
+                    <li>
+                        <a href="#" v-if="source"  @click.prevent="clearSource()">所有信息源</a>
+                    </li>
             <li>
-                <button class="btn btn-default navbar-btn" @click.prevent="markAllAsRead">全部标记为已读</button>
-                <button v-if="author" class="btn btn-default navbar-btn" @click.prevent="clearAuthor()">所有作者</button>
-                <button v-if="source" class="btn btn-default navbar-btn" @click.prevent="clearSource()">所有信息源</button>
-                <a class="btn btn-default navbar-btn" style="padding:6px; display:inline;" href="/diary/">Diary</a>
+                <a href="/diary/">Diary</a>
             </li>
-        </ul>
+            <!--
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">更多 <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    <li v-for="(info_source, index) in info_sources" :key="info_source.id">
+                        <a href="#" @click.prevent="filterSource(info_source.id)">{{ info_source.name }}</a>
+                    </li>
+                    <li>
+                        <a href="#" v-if="source"  @click.prevent="clearSource()">所有信息源</a>
+                    </li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">Separated link</a></li>
+                    <li role="separator" class="divider"></li>
+                    <li><a href="#">One more separated link</a></li>
+                </ul>
+            </li>
+            -->
+          </ul>
+          <form class="navbar-form collapsed navbar-right" role="search" @submit.prevent="loadInfo()">
+            <div class="input-group">
+              <input type="text" class="form-control" v-model="search_title" @change.prevent="loadInfo()" placeholder="Search for...">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button"  @click.prevent="clearTitle()">Clear</button>
+              </span>
+            </div>
+          </form>
+        </div>
       </div>
     </nav>
 
@@ -97,6 +139,7 @@
 {% block extra_js %}
 <script src="{% static 'js/vue.js' %}"></script>
 <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
+<script src="{% static "bootstrap-3.3.7-dist/js/bootstrap.min.js" %}"></script>
 <script type="text/javascript" src="{% static 'js/jquery_ajax_csrf.js' %}"></script>
 <script>
 function init_reader(){
@@ -105,6 +148,8 @@ function init_reader(){
         data: {
             page: 1,
             info_items: [],
+            info_sources: [],
+            search_title: null,
             previous: null,
             next: null,
             source: null,
@@ -180,7 +225,11 @@ function init_reader(){
             },
             clearSource: function(event){
                 this.source = null;
-                this.loadInfo()
+                this.loadInfo();
+            },
+            clearTitle: function(){
+                this.search_title = null;
+                this.loadInfo();
             },
             markAllAsRead: function(){
                 var index = 0;
@@ -213,6 +262,7 @@ function init_reader(){
                         page: this.page,
                         author: this.author,
                         info_source: this.source,
+                        title__contains: this.search_title,
                         is_read: false
                     },
                     dataType: 'json',
@@ -224,8 +274,22 @@ function init_reader(){
                         this.$data.next = data.next;
                         this.$data.count = data.count;
                     }.bind(this),
-                        error: function(xhr, status, err) {
+                    error: function(xhr, status, err) {
                         console.error('/api/info/', status, err.toString());
+                    }.bind(this)
+                });
+            },
+            loadSources: function(){
+                $.ajax({
+                    url: '/api/info-source/',
+                    data: {},
+                    dataType: 'json',
+                    cache: false,
+                    success: function(data) {
+                        this.info_sources = data.results
+                    }.bind(this),
+                    error: function(xhr, status, err) {
+                        console.error('/api/info-source/', status, err.toString());
                     }.bind(this)
                 });
             },
@@ -244,6 +308,7 @@ function init_reader(){
         }
     })
     app.loadInfo();
+    app.loadSources();
 }
 init_reader()
 // setTimeout(init_reader, 1000) // for debugging.
