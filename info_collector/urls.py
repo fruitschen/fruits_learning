@@ -48,10 +48,16 @@ class InfoFilter(django_filters.rest_framework.FilterSet):
 
 
 class InfoViewSet(viewsets.ModelViewSet):
-    queryset = Info.objects.all().filter(is_deleted=False).select_related('author')
     serializer_class = InfoSerializer
     # filter_fields = ('read_at', )
     filter_class = InfoFilter
+
+    def get_queryset(self):
+        ordering = self.request.GET.get('ordering', None)
+        query = Info.objects.all().filter(is_deleted=False).select_related('author')
+        if ordering:
+            query = query.order_by(ordering)
+        return query
 
     @list_route(methods=['post'])
     def mark_all_as_read(self, request):

@@ -16,7 +16,7 @@ from rest_framework import routers
 from info_collector.urls import InfoViewSet, InfoSourceViewSet
 from my_feedreader.api import FeedViewSet, EntryViewSet
 router = routers.DefaultRouter()
-router.register(r'info', InfoViewSet)
+router.register(r'info', InfoViewSet, base_name='info')
 router.register(r'info-source', InfoSourceViewSet)
 router.register(r'feed', FeedViewSet)
 router.register(r'entry', EntryViewSet)
