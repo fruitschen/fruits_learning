@@ -23,6 +23,11 @@
             <div style="height:100px; font-size: 100px;" class="glyphicon glyphicon-cloud-download col-xs-12 col-md-12 text-center">
 
             </div>
+            <div class="col-xs-12 col-md-12 text-center">
+                <button class="btn btn-default" @click.prevent="loadInfo()">
+                    <span class="glyphicon glyphicon-refresh"></span>
+                </button>
+            </div>
         </div>
         <div v-cloak v-show="count != null">
             <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0">
@@ -272,6 +277,7 @@ function init_reader(){
                     this.page --;
                 }
                 var url = '/api/info/mark_all_as_read/';
+                this.count = null;
                 $.ajax({
                     type: 'POST',
                     dataType: 'json',
