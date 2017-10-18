@@ -92,6 +92,7 @@ class Info(models.Model):
     starred = models.BooleanField(default=False)
     important = models.BooleanField(default=False)
     is_deleted = models.BooleanField(default=False)
+    length = models.IntegerField(default=None, null=True, blank=True)
 
     class Meta:
         unique_together = (('info_source', 'identifier'),)
@@ -117,6 +118,11 @@ class Info(models.Model):
     @property
     def create_read_url(self):
         return '{}?info={}'.format(reverse('admin:reads_read_add'), self.id)
+
+    def save(self, **kwargs):
+        if not self.length and self.content:
+            self.length = len(self.content.content)
+        super(Info, self).save(**kwargs)
 
 
 class Content(models.Model):

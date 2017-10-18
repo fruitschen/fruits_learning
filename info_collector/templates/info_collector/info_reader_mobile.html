@@ -10,6 +10,9 @@
 #app img{
     max-width: 100%;
 }
+.timestamp, .extra-info{
+    color: #666; font-size:14px;
+}
 </style>
 {% endblock %}
 
@@ -30,7 +33,7 @@
             </div>
         </div>
         <div v-cloak v-show="count != null">
-            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0">
+            <div class="col-lg-8 col-lg-offset-2    col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0">
                 <nav>
                     <ul class="pager">
                         <li v-if="! is_first"><a href="#" @click.prevent="loadPage(1)">1</a></li>
@@ -60,6 +63,8 @@
                             <a :href="info_item.url" target="_blank">
                                 {{ info_item.title }}
                             </a>
+                            <span class="timestamp">{{ info_item.timestamp.split('T')[0] }}</span>
+                            <span class="extra-info" v-if="info_item.length">{{ info_item.length }}字</span>
                         </h4>
                         <div style="max-height: 200px; overflow:auto;" v-html="info_item.content" v-if="info_item.content"></div>
                     </div>
@@ -137,6 +142,7 @@
             <div class="input-group">
               <input type="text" class="form-control" v-model="search_title" @change.prevent="loadInfo()" placeholder="Search for...">
               <span class="input-group-btn">
+                <button class="btn btn-default" type="submit" >Submit</button>
                 <button class="btn btn-default" type="button"  @click.prevent="clearTitle()">Clear</button>
               </span>
             </div>
