@@ -22,6 +22,15 @@
             });
         })
 
+
+        $('.show-delete-event-btn').click(function(e){
+            e.preventDefault();
+            var event_id = $(this).data('event');
+            $('#event-' + event_id).find('.delete-event-btn').show()
+            $(this).hide();
+        })
+
+
         $('.delete-event-btn').click(function(e){
             e.preventDefault();
             var event_id = $(this).data('event');
@@ -31,14 +40,14 @@
             },
             function(data, status){
                 if (status == 'success'){
-                    var item = $('#event-' + event_id);
+                    var item = $('#event-' + event_id).find('input');
                     var tooptip_content = data + ' ' + status;
                     $(item).attr('title', tooptip_content)
                     $(item).data('placement', 'right')
                     $(item).data('trigger', 'manual')
                     $(item).tooltip('show');
-                    setTimeout('$("#event-' + event_id + '").tooltip("destroy")',200)
-                    setTimeout('$("#event-' + event_id + '").remove()', 500)
+                    setTimeout('$("#event-' + event_id + '").tooltip("destroy")',1000)
+                    setTimeout('$("#event-' + event_id + '").remove()', 1000)
                 }
             });
         })
