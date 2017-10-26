@@ -264,6 +264,9 @@ class Event(BaseEventTemplate):
     object_id = models.PositiveIntegerField(null=True, blank=True)
     event_template = GenericForeignKey('content_type', 'object_id')
 
+    is_deleted = models.BooleanField(default=False)
+    is_event_instance = True
+
     def to_event(self):
         return self
 

@@ -14,6 +14,7 @@ urlpatterns = [
     url(r'^details/(?P<diary_id>\d+)/add_audio/$', DiaryAddAudio.as_view(), name='diary_add_audio'),
     url(r'^edit_text/(?P<content_id>\d+)/$', DiaryEditText.as_view(), name='diary_edit_text'),
     url(r'^update_task/$', UpdateTaskView.as_view(), name='update_task'),
+    url(r'^delete_task/$', DeleteTaskView.as_view(), name='delete_task'),
     url(r'^update_exercise_log/$', UpdateExerciseLogView.as_view(), name='update_exercise_log'),
     url(r'^wechat/', include('diary.urls_wechat')),
 ]

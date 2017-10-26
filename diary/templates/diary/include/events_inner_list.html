@@ -25,6 +25,9 @@
                         ： {{ event.memo }}
                     {% endif %}
                 {% endif %}
+                {% if event.is_event_instance and event.id %}
+                    <span class="glyphicon glyphicon-minus btn btn-sm delete-event-btn" data-event="{{ event.id }}"></span>
+                {% endif %}
             </div>
         </li>
     {% endfor %}

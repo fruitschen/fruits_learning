@@ -33,7 +33,7 @@ class EventAdmin(admin.ModelAdmin):
     model = Event
     list_editable = ['tags', 'group', ]
     list_display = ['event', 'event_date', 'is_task', 'is_done', 'tags', 'group']
-    list_filter = ['is_task', 'is_done', 'event_date', 'event_type', ]
+    list_filter = ['is_task', 'is_done', 'event_date', 'event_type', 'is_deleted']
 
 
 class DiaryAdmin(admin.ModelAdmin):

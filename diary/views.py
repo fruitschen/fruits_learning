@@ -382,6 +382,23 @@ class UpdateTaskView(View):
         return HttpResponse('Task Updated. ')
 
 
+class DeleteTaskView(View):
+
+    @method_decorator(csrf_exempt)
+    def dispatch(self, request, *args, **kwargs):
+        return super(DeleteTaskView, self).dispatch(request, *args, **kwargs)
+
+    @method_decorator(staff_member_required)
+    def post(self, request):
+        task_id = request.POST.get('event_id', None)
+        task = Event.objects.get(id=task_id)
+        delete = request.POST.get('delete', False)
+        if delete:
+            task.is_deleted = True
+            task.save()
+            return HttpResponse('Task Deleted. ')
+
+
 class DiaryTodo(View):
     @method_decorator(staff_member_required)
     def get(self, request):

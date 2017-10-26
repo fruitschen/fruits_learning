@@ -4,11 +4,11 @@ from diary.models import Diary, WeekdayEventTemplate, Weekday, MonthEventTemplat
 from datetime import timedelta, date
 
 
-def get_events_by_date(diary, tag='', commit=False):
+def get_events_by_date(diary, tag='', commit=False, include_deleted=False):
     the_date = diary.date
     events_query = Event.objects.filter(event_date=the_date).order_by('priority')
-    # TODO: This should be explicit
-    # events_generated = events_query.filter(event_type__in=AUTO_EVENT_TYPES).exists()
+    if not include_deleted:
+        events_query = events_query.filter(is_deleted=False)
     # This is explicit now.
     events_generated = diary.events_generated
 
@@ -43,6 +43,8 @@ def get_events_by_date(diary, tag='', commit=False):
     if today == the_date:
         # only show unfinished_mandatory_events for today.
         unfinished_mandatory_events = Event.objects.filter(mandatory=True, is_done=False, event_date__lt=today)
+        if not include_deleted:
+            unfinished_mandatory_events = events_query.filter(is_deleted=False)
         events += unfinished_mandatory_events
     events = sorted(events, key=lambda x: x.priority)
 
