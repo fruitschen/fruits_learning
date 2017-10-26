@@ -5,7 +5,10 @@
             <div class="checkbox">
                 {% if event.is_task %}
                     <label>
-                        <input type="checkbox" data-event_id="{{ event.id }}" class="event-checkbox" id="event-checkbox-{{ event.id }}" {% if event.is_done %}checked="checked"{% endif %}>
+                        <input type="checkbox" data-event_id="{{ event.id }}" class="event-checkbox" id="event-checkbox-{{ event.id }}"
+                           {% if event.is_done %}checked="checked"{% endif %}
+                           {% if not event.id %}disabled="disabled"{% endif %}
+                        >
                         {{ event }}
                     </label>
                     {% if event.memo %}
