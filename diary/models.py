@@ -20,6 +20,7 @@ DATE_FORMAT = '%Y-%m-%d'
 
 class Diary(models.Model):
     date = models.DateField()
+    events_generated = models.BooleanField(default=False)
 
     @property
     def max_content_order(self):
@@ -42,6 +43,7 @@ class Diary(models.Model):
 
     class Meta:
         ordering = ['-date']
+        verbose_name_plural = 'Diaries'
 
 
 def get_diary_media_path(instance, filename):

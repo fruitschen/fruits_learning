@@ -57,9 +57,15 @@ class DiaryDetails(View):
         context = self.get_context(request, diary_date)
         return render(request, 'diary/diary_details.html', context)
 
+    @method_decorator(staff_member_required)
+    def post(self, request, diary_date):
+        context = self.get_context(request, diary_date)
+        return render(request, 'diary/diary_details.html', context)
+
     def get_context(self, request, diary_date):
         diary_date = datetime.strptime(diary_date, DATE_FORMAT).date()
         diary_query = Diary.objects.filter(date=diary_date)
+        generate_events = request.POST.get('generate_events', None) == 'generate_events'
         commit = True
         today = date.today()
         if diary_date == today:
@@ -69,14 +75,14 @@ class DiaryDetails(View):
         diary = None
         if diary_query.exists():
             diary = diary_query[0]
-        elif diary_date <= today:
+        elif diary_date <= today or generate_events:
             diary = Diary.objects.create(date=diary_date)
         elif diary_date > today:
             diary = Diary(date=diary_date)
             commit = False
         hidden_events_count = 0
         tag = request.GET.get('tag', '')
-        events = get_events_by_date(diary.date, tag=tag, commit=commit)
+        events = get_events_by_date(diary, tag=tag, commit=commit)
         tasks = filter(lambda e: e.is_task, events)
         tasks_all_done = not filter(lambda task: not task.is_done, tasks)
         now = datetime.now()
@@ -329,7 +335,12 @@ class DiaryEvents(View):
             days.append(current_day)
             current_day += timedelta(days=1)
         for day in days:
-            events = get_events_by_date(day)
+            diary_query = Diary.objects.filter(date=day)
+            if diary_query:
+                diary = diary_query[0]
+            else:
+                diary = Diary(date=day)
+            events = get_events_by_date(diary)
             if selected_type:
                 events = filter(lambda event:event.event_type==selected_type, events)
             if events:

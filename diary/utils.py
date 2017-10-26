@@ -1,12 +1,16 @@
 # -*- coding: UTF-8 -*-
-from diary.models import WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate, AUTO_EVENT_TYPES
+from diary.models import Diary, WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate, \
+    AUTO_EVENT_TYPES
 from datetime import timedelta, date
 
 
-def get_events_by_date(the_date, tag='', commit=False):
+def get_events_by_date(diary, tag='', commit=False):
+    the_date = diary.date
     events_query = Event.objects.filter(event_date=the_date).order_by('priority')
     # TODO: This should be explicit
-    events_generated = events_query.filter(event_type__in=AUTO_EVENT_TYPES).exists()
+    # events_generated = events_query.filter(event_type__in=AUTO_EVENT_TYPES).exists()
+    # This is explicit now.
+    events_generated = diary.events_generated
 
     rule_events_tpls = []
     rule_event_templates = RuleEventTemplate.objects.all()
@@ -30,7 +34,9 @@ def get_events_by_date(the_date, tag='', commit=False):
         events = list(events_query)
         for tpl in event_templates:
             events.append(tpl.to_event(the_date, commit=commit))
-
+        if commit:
+            diary.events_generated = True
+            diary.save()
         events.extend(rule_events_tpls)
 
     today = date.today()

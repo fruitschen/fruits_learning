@@ -36,8 +36,14 @@ class EventAdmin(admin.ModelAdmin):
     list_filter = ['is_task', 'is_done', 'event_date', 'event_type', ]
 
 
+class DiaryAdmin(admin.ModelAdmin):
+    model = Diary
+    list_display = ['date', 'events_generated']
+    list_filter = ['date', 'events_generated']
+
 admin.site.register(EventGroup, EventGroupAdmin)
 admin.site.register(WeekdayEventTemplate, WeekdayEventTemplateAdmin)
 admin.site.register(MonthEventTemplate, MonthEventTemplateAdmin)
 admin.site.register(RuleEventTemplate, RuleEventTemplateAdmin)
 admin.site.register(Event, EventAdmin)
+admin.site.register(Diary, DiaryAdmin)

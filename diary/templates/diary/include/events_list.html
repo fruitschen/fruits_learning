@@ -1,5 +1,16 @@
-{% if hidden_events_count %}
-    <a href="#" class="btn btn-sm btn-default" onclick="$('.collapse').collapse('toggle')">显示隐藏</a>
+{% if not diary.events_generated or hidden_events_count %}
+    <div class="btn-group" role="group">
+        {% if not diary.events_generated %}
+            <a href="#" class="btn btn-sm btn-default" onclick="$('#genarte_form').submit()">生成Events</a>
+        {% endif %}
+        {% if hidden_events_count %}
+            <a href="#" class="btn btn-sm btn-default" onclick="$('.collapse').collapse('toggle')">显示隐藏</a>
+        {% endif %}
+    </div>
+    <form id="genarte_form" action="." method="post">
+        {% csrf_token %}
+        <input type="input" name="generate_events" value="generate_events" />
+    </form>
 {% endif %}
 
 {% if tasks_all_done %}
