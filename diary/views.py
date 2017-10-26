@@ -128,7 +128,7 @@ class DiaryDetails(View):
             tip = get_random_tip()
 
         unread_info_count = Info.objects.filter(is_read=False).count()
-        event_form = EventForm(initial={'event_date': diary.date})
+        event_form = EventForm(initial={'event_date': diary.date, 'group': 1, 'is_task': True, })
 
         context = {
             'title': title,

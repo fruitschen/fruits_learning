@@ -42,7 +42,7 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        fields = ['group', 'event_date', 'event', 'is_task', 'mandatory', 'priority', 'memo', 'tags', ]
+        fields = ['event', 'event_date', 'group', 'is_task', 'mandatory', 'priority', 'memo', 'tags', ]
         widgets = {
             'memo': forms.Textarea(attrs={
                 'cols': 30, 'rows': 10,
