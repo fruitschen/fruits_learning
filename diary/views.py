@@ -346,6 +346,7 @@ class DiaryEvents(View):
             if events:
                 days_and_events.append({
                     'day': day,
+                    'diary': diary,
                     'weekday': WEEKDAY_DICT[str(day.weekday())],
                     'events': events,
                 })

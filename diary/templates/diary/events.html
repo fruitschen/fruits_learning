@@ -24,11 +24,10 @@
     </form>
 
     {% for day_and_events in days_and_events %}
-        <h3>{{ day_and_events.day|date:'Y-m-j' }} {{ day_and_events.weekday }}</h3>
+        <h3><a href="{% url 'diary_details' day_and_events.diary.formatted_date %}">{{ day_and_events.diary.formatted_date }} {{ day_and_events.diary.weekday }}</a></h3>
         {% with day_and_events.events as events %}
-            {% include 'diary/include/events_list.html' %}
+            {% include "diary/include/events_inner_list.html" %}
         {% endwith %}
     {% endfor %}
-
 
 {% endblock %}

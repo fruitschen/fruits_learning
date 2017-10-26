@@ -9,7 +9,7 @@
     </div>
     <form id="genarte_form" action="." method="post">
         {% csrf_token %}
-        <input type="input" name="generate_events" value="generate_events" />
+        <input type="hidden" name="generate_events" value="generate_events" />
     </form>
 {% endif %}
 

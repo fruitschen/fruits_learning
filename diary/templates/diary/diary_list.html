@@ -6,20 +6,18 @@
         <li><a href="{% url 'diary_index' %}">日记</a></li>
         <li>日记列表</li>
     </ol>
-<h4>日记列表</h4>
-<div>
-    {% autopaginate diary_items 10 %}
-    {% for diary in diary_items %}
-        <h2 id="diary-title">
-            <a href="{% url 'diary_details' diary.formatted_date %}">{{ diary.formatted_date }} {{ diary.weekday }}</a>
-        </h2>
-        {% for content in diary.contents.all %}
-            {{ content.render }}
+    <h4>日记列表</h4>
+    <div>
+        {% autopaginate diary_items 10 %}
+        {% for diary in diary_items %}
+            <h2 id="diary-title">
+                <a href="{% url 'diary_details' diary.formatted_date %}">{{ diary.formatted_date }} {{ diary.weekday }}</a>
+            </h2>
+            {% for content in diary.contents.all %}
+                {{ content.render }}
+            {% endfor %}
         {% endfor %}
-    {% endfor %}
-    {% paginate %}
-</div>
-
-
+        {% paginate %}
+    </div>
 {% endblock %}
 
