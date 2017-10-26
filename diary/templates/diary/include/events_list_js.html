@@ -40,14 +40,9 @@
             },
             function(data, status){
                 if (status == 'success'){
-                    var item = $('#event-' + event_id).find('input');
-                    var tooptip_content = data + ' ' + status;
-                    $(item).attr('title', tooptip_content)
-                    $(item).data('placement', 'right')
-                    $(item).data('trigger', 'manual')
-                    $(item).tooltip('show');
-                    setTimeout('$("#event-' + event_id + '").tooltip("destroy")',1000)
-                    setTimeout('$("#event-' + event_id + '").remove()', 1000)
+                    var event_dom = $('#event-' + event_id)
+                    var item = event_dom.find('input');
+                    event_dom.find('.checkbox').text('已删除 ' + data + ' ' + status)
                 }
             });
         })

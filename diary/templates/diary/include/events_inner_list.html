@@ -26,8 +26,8 @@
                     {% endif %}
                 {% endif %}
                 {% if event.is_event_instance and event.id %}
-                    <span class="glyphicon glyphicon-minus btn btn-sm show-delete-event-btn" data-event="{{ event.id }}"></span>
-                    <span class="glyphicon glyphicon-remove btn btn-sm delete-event-btn" style="display:none;" data-event="{{ event.id }}"></span>
+                    <span class="glyphicon glyphicon-minus btn btn-sm show-delete-event-btn" data-event="{{ event.id }}" style="padding:0;"></span>
+                    <span class="glyphicon glyphicon-remove btn btn-sm delete-event-btn" style="display:none; padding:0;" data-event="{{ event.id }}"></span>
                 {% endif %}
             </div>
         </li>
