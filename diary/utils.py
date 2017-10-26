@@ -44,7 +44,7 @@ def get_events_by_date(diary, tag='', commit=False, include_deleted=False):
         # only show unfinished_mandatory_events for today.
         unfinished_mandatory_events = Event.objects.filter(mandatory=True, is_done=False, event_date__lt=today)
         if not include_deleted:
-            unfinished_mandatory_events = events_query.filter(is_deleted=False)
+            unfinished_mandatory_events = unfinished_mandatory_events.filter(is_deleted=False)
         events += unfinished_mandatory_events
     events = sorted(events, key=lambda x: x.priority)
 

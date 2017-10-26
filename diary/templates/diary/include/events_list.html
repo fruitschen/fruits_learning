@@ -1,4 +1,4 @@
-{% if not diary.events_generated or hidden_events_count %}
+{% if hidden_events_count or not diary.events_generated or tasks_all_done %}
     <div class="btn-group" role="group">
         {% if not diary.events_generated %}
             <a href="#" class="btn btn-sm btn-default" onclick="$('#genarte_form').submit()">生成Events</a>
@@ -6,6 +6,10 @@
         {% if hidden_events_count %}
             <a href="#" class="btn btn-sm btn-default" onclick="$('.collapse').collapse('toggle')">显示隐藏</a>
         {% endif %}
+        {% if tasks_all_done %}
+            <a class="btn btn-primary btn-sm" href="{% url 'diary_todo' %}">今日任务完成! 查看TODO</a>
+        {% endif %}
+
     </div>
     <form id="genarte_form" action="." method="post">
         {% csrf_token %}
@@ -13,9 +17,6 @@
     </form>
 {% endif %}
 
-{% if tasks_all_done %}
-    <a class="btn btn-primary btn-sm" href="{% url 'diary_todo' %}">今日任务完成! 查看TODO</a>
-{% endif %}
 
 {% if events_by_groups %}
     {% for item in events_by_groups %}
