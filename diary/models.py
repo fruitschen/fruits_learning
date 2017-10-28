@@ -209,7 +209,7 @@ class Weekday(models.Model):
 
 class WeekdayEventTemplate(BaseEventTemplate):
     event_type = 'weekday_event'
-    weekdays = models.ManyToManyField('Weekday')
+    weekdays = models.ManyToManyField('Weekday', blank=True)
 
     def __unicode__(self):
         return '{} {} (Weekday Event Template)'.format(self.event, u'、'.join(
