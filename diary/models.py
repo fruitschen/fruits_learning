@@ -7,10 +7,13 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.db.models.signals import post_migrate
+from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 
 import os
 from datetime import date
+from PIL import Image as PILImage
+from PIL import ExifTags
 
 from diary.rules import RULES_CHOICES
 import diary.rules
@@ -339,3 +342,40 @@ def generate_exercises(**kwargs):
         Exercise.objects.get_or_create(name=ex)
 
 post_migrate.connect(generate_exercises, sender=Exercise._meta.app_config)
+
+
+for orientation in ExifTags.TAGS.keys():
+    if ExifTags.TAGS[orientation] == 'Orientation':
+        break
+
+
+def resize_image(path):
+    max_width = 1080
+    img = PILImage.open(path)
+    if hasattr(img, '_getexif'):
+        # we need to rotate the image based on exif info.
+        # https://stackoverflow.com/questions/4228530/pil-thumbnail-is-rotating-my-image
+        exif = img._getexif()
+        if not exif:
+            return
+        exif = dict(img._getexif().items())
+        if exif[orientation] == 3:
+            img = img.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+            img = img.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+            img = img.rotate(90, expand=True)
+    original_width, original_height = img.size
+    if original_width < max_width:  # no need to resize
+        return
+    width_percent = (max_width / float(original_width))
+    new_height = int((float(original_height) * float(width_percent)))
+    img = img.resize((max_width, new_height), PILImage.ANTIALIAS)
+    img.save(path)
+
+
+def image_post_save(sender, instance, **kwargs):
+    image_path = instance.image.path
+    resize_image(image_path)
+
+post_save.connect(image_post_save, sender=DiaryImage)
