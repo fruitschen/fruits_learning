@@ -10,7 +10,14 @@
     {% if tip %}
         <div class="alert alert-info" role="alert">
             <strong class="message">{{ tip }}</strong>
-            {% if tip.long_tip %}{{ tip.long_tip.text|linebreaks }}{% endif %}
+            {% if tip.long_tip %}
+                <a class="btn btn-sm btn-primary" role="button" data-toggle="collapse" href="#tip-content" aria-expanded="false" aria-controls="tip-content">
+                    展开
+                </a>
+                <div class="collapse" id="tip-content">
+                    {{ tip.long_tip.text|linebreaks }}
+                </div>
+            {% endif %}
         </div>
     {% endif %}
 
