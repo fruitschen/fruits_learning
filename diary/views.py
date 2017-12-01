@@ -67,6 +67,7 @@ class DiaryDetails(View):
         diary_query = Diary.objects.filter(date=diary_date)
         generate_events = request.POST.get('generate_events', None) == 'generate_events'
         commit = True
+        display_events = True
         today = date.today()
         if diary_date == today:
             title = 'Diary, today'
@@ -82,7 +83,14 @@ class DiaryDetails(View):
             commit = False
         hidden_events_count = 0
         tag = request.GET.get('tag', '')
-        events = get_events_by_date(diary, tag=tag, commit=commit)
+        # 早于7天之前， 不自动创建events
+        if diary_date <= today - timedelta(days=7) and not generate_events:
+            commit = False
+            display_events = False
+        if not display_events and not diary.events_generated:
+            events = []
+        else:
+            events = get_events_by_date(diary, tag=tag, commit=commit)
         tasks = filter(lambda e: e.is_task, events)
         tasks_all_done = not filter(lambda task: not task.is_done, tasks)
         now = datetime.now()
