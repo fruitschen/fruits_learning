@@ -111,7 +111,10 @@ def account_details(request, account_slug):
     month = now.month
     while month != 0:
         start = timezone.datetime(now.year, month, 1)
-        end = timezone.datetime(now.year, month+1, 1)
+        if month == 12:
+            end = timezone.datetime(now.year+1, 1, 1)
+        else:
+            end = timezone.datetime(now.year, month+1, 1)
         pair_transactions_by_month = account_pair_transactions.filter(finished__isnull=False)\
             .filter(finished__gte=start, finished__lt=end)
         transactions_by_month = account_bs_transactions.filter(finished__isnull=False)\
