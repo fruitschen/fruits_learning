@@ -4,6 +4,7 @@ from django.utils import timezone
 import os
 import time
 import selenium
+from datetime import timedelta
 from selenium import webdriver
 from selenium.common.exceptions import WebDriverException
 from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
@@ -63,7 +64,17 @@ class Command(BaseCommand):
             status_time = t['status_time']
             if not status_time[:4].isdigit():
                 now = timezone.now()
-                status_time = '{}-{}'.format(now.year, status_time)
+                if '-' in status_time:
+                    # 12-27, {month}-{date} format
+                    status_time = '{}-{}'.format(now.year, status_time)
+                elif u'\u5c0f\u65f6\u524d' in status_time:
+                    # 11小时前, 1小时前……
+                    status_time = status_time.replace(u'\u5c0f\u65f6\u524d', u'')
+                    status_time = now - timedelta(hours=int(status_time))
+                    status_time = status_time.strftime('%Y-%m-%d')
+                else:
+                    raise RuntimeError('We cannot handle the status time format. ')
+
             if link:
                 url = link.get_attribute('href')
                 status_id = url.split('/status/')[-1]
