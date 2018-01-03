@@ -383,8 +383,10 @@ class Stock(models.Model):
         if not fp:
             fp = open(self.price_file, 'r')
         first_line = fp.readline()
-        first_item = first_line.split()[1]
-        return first_item
+        date_item = first_line.split()[0]
+        if len(date_item) < 10:  # 2000-01-01
+            date_item = first_line.split()[1]
+        return date_item
 
     def fix_tushare_price_content(self, content):
         """
@@ -421,7 +423,7 @@ class Stock(models.Model):
                     fp.write(content + old_content)
                     fp.close()
         else:
-            start = '2016-01-01'
+            start = '2013-01-01'
             data = ts.get_k_data(self.code, autype=None, retry_count=5, start=start, end=now.strftime('%Y-%m-%d'))
             if data is not None:
                 content = data.to_string()
@@ -453,7 +455,7 @@ class Stock(models.Model):
         date = timezone.datetime(date.year, date.month, date.day, tzinfo=timezone.get_current_timezone())
         prices = self.get_prices
         price = prices.get(date_str, None)
-        while not price and date > timezone.datetime(2016, 1, 1, tzinfo=timezone.get_default_timezone()):
+        while not price and date > timezone.datetime(2013, 1, 1, tzinfo=timezone.get_default_timezone()):
             date = date - timedelta(days=1)
             return self.get_price_by_date(date)
         return Decimal(price)

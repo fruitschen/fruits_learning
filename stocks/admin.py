@@ -87,6 +87,8 @@ class SnapshotStockInline(admin.TabularInline):
 class SnapshotAdmin(MarkdownxModelAdmin):
     model = Snapshot
     inlines = [SnapshotStockInline]
+    list_display = ['account', 'serial_number', 'date']
+    list_filter = ['account', ]
 
 
 admin.site.register(Stock, StockAdmin)
