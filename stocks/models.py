@@ -14,7 +14,7 @@ from django.db.models import Q
 
 from markdownx.models import MarkdownxField
 from markdownx.utils import markdownify
-from stocks.utils import update_stocks_prices
+from stocks.utils import update_stocks_prices, td_format
 
 
 '''
@@ -780,6 +780,16 @@ class Snapshot(models.Model):
         return self.increase * 100
 
     @property
+    def all_time_increase(self):
+        """比初始投资的净资产变动"""
+        return self.net_asset / self.account.initial_investment - 1
+
+    @property
+    def all_time_increase_percent(self):
+        """比初始投资的净资产变动，百分比"""
+        return self.all_time_increase * 100
+
+    @property
     def total(self):
         """总资产"""
         return self.stocks_total + self.cash
@@ -820,6 +830,13 @@ class Snapshot(models.Model):
     def nth_year(self):
         first_snapshot = self.account.snapshots.all().order_by('id')[0]
         return self.date.year - first_snapshot.date.year
+
+    @property
+    def age(self):
+        """snapshot时的账户年龄"""
+        initial = self.account.initial_date
+        age = self.date - datetime(initial.year, initial.month, initial.day).date() + timedelta(days=2)
+        return td_format(age)
 
 
 class SnapshotStock(models.Model):

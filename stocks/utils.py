@@ -47,3 +47,19 @@ def update_stocks_prices_url(stocks):
     key = ','.join(key)
     url = base_url + key
     return url
+
+
+def td_format(td_object):
+    seconds = int(td_object.total_seconds())
+    periods = [
+        (u'年', 60 * 60 * 24 * 365),
+        (u'月', 60 * 60 * 24 * 30),
+    ]
+
+    strings = []
+    for period_name, period_seconds in periods:
+        if seconds > period_seconds:
+            period_value, seconds = divmod(seconds, period_seconds)
+            strings.append("%s%s" % (period_value, period_name))
+
+    return "".join(strings)
