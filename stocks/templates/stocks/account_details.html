@@ -95,8 +95,17 @@
         {% endif %}
     {% endif %}
 
-
     {% if logged_in and account.main %}
+
+        <h3>
+            <form method="post" action="{% url 'take_snapshot' account.slug %}">
+                {% csrf_token %}
+                <button class="btn btn-lg btn-primary">
+                    Take Snapshot
+                </button>
+            </form>
+        </h3>
+
         <h3>配对</h3>
         {% include "stocks/includes/pair_list.html" %}
     {% endif %}

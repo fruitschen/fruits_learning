@@ -3,7 +3,7 @@ from datetime import timedelta
 from decimal import Decimal
 
 from django.db.models import Sum
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils import timezone
 from django.http import HttpResponseForbidden
@@ -27,6 +27,7 @@ def stocks(request):
     if logged_in:
         context.update(get_pairs_context(request))
     return render(request, 'stocks/stocks.html', context)
+
 
 def account_pair_transactions(request, account_slug):
     logged_in = request.user.is_authenticated()
@@ -167,6 +168,14 @@ def account_details(request, account_slug):
     }
     context.update(get_pairs_context(request))
     return render(request, 'stocks/account_details.html', context)
+
+
+@staff_member_required
+def take_snapshot(request, account_slug):
+    if request.method == 'POST':
+        account = Account.objects.get(slug=account_slug)
+        account.take_snapshot()
+    return redirect('account_details', account_slug=account_slug)
 
 
 def get_pairs_context(request):
