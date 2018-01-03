@@ -152,6 +152,7 @@ def account_details(request, account_slug):
         'snapshots': snapshots,
         'snapshots_chart_data': snapshots_chart_data,
         'logged_in': logged_in,
+        'is_admin': logged_in and request.user.is_staff,
         'star_stocks': star_stocks,
         'recent_pair_transactions': recent_pair_transactions,
         'pair_transactions_unfinished': pair_transactions_unfinished,

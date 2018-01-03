@@ -8,6 +8,9 @@
                 <th>比上期涨跌</th>
                 <th>交易笔数</th>
                 <th>雪球链接</th>
+                {% if is_admin %}
+                <th>管理</th>
+                {% endif %}
             </tr>
         </thead>
     {% for s in snapshots %}
@@ -28,6 +31,11 @@
                     <a href="{{ s.xueqiu_url }}" target="_blank">雪球第{{ s.serial_number }}期</a>
                 {% endif %}
             </td>
+            {% if is_admin %}
+                <td>
+                    <a href="{% url 'admin:stocks_snapshot_change' s.id %}" target="_blank">管理</a>
+                </td>
+            {% endif %}
         </tr>
     {% endfor %}
     </table>

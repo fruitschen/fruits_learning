@@ -9,7 +9,12 @@
     </ol>
 
 
-    <h1>{{ account }}</h1>
+    <h1>
+        {{ account }}
+        {% if is_admin %}
+            <a href="{% url 'admin:stocks_account_change' account.id %}" target="_blank" class="btn btn-lg btn-primary btn-lg">管理</a>
+        {% endif %}
+    </h1>
     <h3>概览
         <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#summary" aria-expanded="{% if account.display_summary %}true{% else %}false{% endif %}" aria-controls="summary">
             显示/隐藏
@@ -171,6 +176,10 @@
             {% with bs_transactions_this_month as bs_transactions %}
                 {% include "stocks/includes/bs_transaction_list.html" %}
             {% endwith %}
+        {% else %}
+            <h3>
+                <a href="{% url 'admin:stocks_boughtsoldtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-lg btn-primary">添加未卖出交易</a>
+            </h3>
         {% endif %}
     {% endif %}
 
