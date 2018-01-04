@@ -14,7 +14,7 @@
             </tr>
         </thead>
     {% for s in snapshots %}
-        <tr>
+        <tr class="{% if s.is_annual %}bg-info{% endif %}">
             <td>
                 {% if snapshot and snapshot == s %}
                     快照#{{ s.serial_number }}

@@ -233,7 +233,10 @@ def account_snapshot(request, account_slug, snapshot_number):
         'snapshot_stocks': snapshot.stocks_ordered,
     }
     if snapshot.is_annual:
-        incs = account.snapshots.values_list('increase', flat=True)
+        first_snapshot_this_year = snapshot.serial_number - 12
+        incs = account.snapshots.filter(
+            serial_number__lte=snapshot.serial_number, serial_number__gte=first_snapshot_this_year
+        ).values_list('increase', flat=True)
         max_inc = max(incs) * 100
         min_inc = min(incs) * 100
         context.update({
