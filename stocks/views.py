@@ -230,6 +230,7 @@ def account_snapshot(request, account_slug, snapshot_number):
         'snapshots': snapshots,
         'logged_in': logged_in,
         'transactions': transactions,
+        'snapshot_stocks': snapshot.stocks_ordered,
     }
     if snapshot.is_annual:
         incs = account.snapshots.values_list('increase', flat=True)

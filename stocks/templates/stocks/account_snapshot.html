@@ -39,7 +39,7 @@
                 <td>{{ snapshot.increase_percent|default:0|floatformat:2 }}%</td>
             </tr>
         </table>
-        {% if snapshot.stocks.all %}
+        {% if snapshot_stocks %}
         <table class="table">
             <tr>
                 <th>名称</th>
@@ -47,7 +47,7 @@
                 <th>总价</th>
                 <th>占比</th>
             </tr>
-            {% for stock in snapshot.stocks.all %}
+            {% for stock in snapshot_stocks %}
                 <tr>
                     <td>{{ stock.stock }}</td>
                     <td>{{ stock.amount }}</td>
@@ -59,26 +59,43 @@
         {% endif %}
     </div>
 
-    {% if snapshot.stocks.all %}
-    <h3>构成</h3>
-    <div id="account_chart_container">
-        <div id="account_chart"  style="width:100%;height:500px"></div>
-    </div>
+    {% if snapshot_stocks %}
+        <h3>构成</h3>
+        <div id="account_chart_container">
+            <div id="account_chart"  style="width:100%;height:500px"></div>
+        </div>
     {% endif %}
 
-    <p>
+    <h4>
         {{ account }}第{{ snapshot.serial_number }}期 {{ snapshot.date|date:'Y-m-j' }}
-    </p>
+    </h4>
     <p>
         账户净资产 {{ snapshot.net_asset }}({{ snapshot.net_asset|money_display }})。较上期变动{{ snapshot.increase_percent|default:0|floatformat:2 }}%。
     </p>
-    <p>
-        账户始于{{ account.initial_date|date:'Y-m-j' }}, 初始投资{{ account.initial_investment|money_display }}。
-        截至{{ snapshot.date|date:'Y-m-j' }}， 时长{{ snapshot.age }}，累计收益率为{{ snapshot.all_time_increase_percent|default:0|floatformat:2 }}%。
-    </p>
+    {% if snapshot.age %}
+        <p>
+            账户始于{{ account.initial_date|date:'Y-m-j' }}, 初始投资{{ account.initial_investment|money_display }}。
+            截至{{ snapshot.date|date:'Y-m-j' }}， 时长{{ snapshot.age }}，累计收益率为{{ snapshot.all_time_increase_percent|default:0|floatformat:2 }}%。
+        </p>
+    {% endif %}
     <p>
          {% if transactions %}本月有{{ transactions|length }}笔交易。{% else %}本月无交易{% endif %}
     </p>
+
+    {% if snapshot_stocks %}
+    <h4>持有</h4>
+    <ul>
+        {% for stock in snapshot_stocks %}
+            <li>
+                ${{ stock.stock.name }}({{ stock.stock.market|upper }}{{ stock.stock.code }})$
+                (占比{{ stock.percent|floatformat:2 }}%)
+            </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+
+
     {% if account.public %}
         <p>
             同时发布在个人网站：<a href="http://www.fruitschen.com{% url 'account_details' account.slug %}">http://www.fruitschen.com{% url 'account_details' account.slug %}</a>

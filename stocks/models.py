@@ -838,6 +838,9 @@ class Snapshot(models.Model):
         age = self.date - datetime(initial.year, initial.month, initial.day).date() + timedelta(days=2)
         return td_format(age)
 
+    @property
+    def stocks_ordered(self):
+        return self.stocks.order_by('-total')
 
 class SnapshotStock(models.Model):
     """账户快照 当时持有的股票"""

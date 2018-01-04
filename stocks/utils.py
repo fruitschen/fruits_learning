@@ -53,7 +53,7 @@ def td_format(td_object):
     seconds = int(td_object.total_seconds())
     periods = [
         (u'年', 60 * 60 * 24 * 365),
-        (u'月', 60 * 60 * 24 * 30),
+        (u'个月', 60 * 60 * 24 * 30),
     ]
 
     strings = []
