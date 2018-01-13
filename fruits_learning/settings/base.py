@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     'contacts',
     'pages',
     'weibo_backup',
+    'shortcuts',
 ]
 
 MIDDLEWARE = [
