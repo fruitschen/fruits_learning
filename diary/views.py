@@ -72,7 +72,8 @@ class DiaryDetails(View):
         commit = True
         display_events = True
         today = date.today()
-        if diary_date == today:
+        is_today = diary_date == today
+        if is_today:
             title = 'Diary, today'
         else:
             title = 'Diary, {}'.format(date.strftime(diary_date, '%Y-%m-%d'))
@@ -95,7 +96,7 @@ class DiaryDetails(View):
         else:
             events = get_events_by_date(diary, tag=tag, commit=commit)
         tasks = filter(lambda e: e.is_task, events)
-        tasks_all_done = not filter(lambda task: not task.is_done, tasks)
+        tasks_all_done = is_today and not filter(lambda task: not task.is_done, tasks)
         now = datetime.now()
         for event in events:
             event.hidden = False
