@@ -18,24 +18,40 @@
                     {% endfor %}
                 {% endif %}
 
+                <div class="btn-group" role="group" style="margin-bottom: 10px;">
+
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            日记
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'diary_details' yesterday %}{% if tag %}?tag={{ tag }}{% endif %}">昨天</a></li>
+                            <li><a href="{% url 'diary_details' today %}{% if tag %}?tag={{ tag }}{% endif %}">今天</a></li>
+                            <li><a href="{% url 'diary_details' tomorrow %}{% if tag %}?tag={{ tag }}{% endif %}">明天</a></li>
+                            <li><a href="{% url 'diary_events' %}">事项</a></li>
+                            <li><a href="{% url 'diary_todo' %}">TODO</a></li>
+                            <li><a href="{% url 'contacts_send_email' %}">发邮件</a></li>
+                        </ul>
+                    </div>
+
+                    <!-- shortcuts -->
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          链接
+                          <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            {% for shortcut in shortcuts %}
+                                <li><a href="{{ shortcut.link }}" target="_blank">{{ shortcut.title }}</a></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    <a href="{% url 'info_reader_mobile' %}" class="btn btn-default">Reader<span class="badge">{{ unread_info_count }}</span></a>
+                </div>
+
                 {% block diary_content %}
                 {% endblock %}
-                <div class="btn-group" role="group">
-                    <a href="{% url 'diary_details' yesterday %}{% if tag %}?tag={{ tag }}{% endif %}" class="btn btn-default">昨天</a>
-                    <a href="{% url 'diary_details' today %}{% if tag %}?tag={{ tag }}{% endif %}" class="btn btn-default">今天</a>
-                    <a href="{% url 'diary_details' tomorrow %}{% if tag %}?tag={{ tag }}{% endif %}" class="btn btn-default">明天</a>
-                    <a href="{% url 'diary_events' %}" class="btn btn-default">事项</a>
-                    <a href="{% url 'diary_todo' %}" class="btn btn-default">TODO</a>
-                    <a href="/" class="btn btn-default">主页</a>
-                </div>
-                <br>
-                <div class="btn-group" role="group"  style="padding: 20px 0;">
-                    <!-- shortcuts -->
-                    <a href="{% url 'info_reader_mobile' %}" class="btn btn-default">Reader<span class="badge">{{ unread_info_count }}</span></a>
-                    <a href="{% url 'contacts_send_email' %}" class="btn btn-default">发邮件</a>
-                    <a href="{% url 'account_details' 'public' %}" class="btn btn-default">公开账户</a>
-                    <a href="{% url 'admin:index' %}" class="btn btn-default">Admin</a>
-                </div>
             </div>
         </div>
     </div>

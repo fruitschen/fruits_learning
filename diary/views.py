@@ -17,16 +17,19 @@ from diary.forms import DiaryTextForm, DiaryImageForm, DiaryAudioForm, EventsRan
 from diary.utils import get_events_by_date
 from tips.models import get_random_tip
 from info_collector.models import Info
+from shortcuts.models import Shortcut
 
 
 def base_diary_context():
     today = date.today()
     yesterday = today - timedelta(days=1)
     tomorrow = today + timedelta(days=1)
+    shortcuts = Shortcut.objects.all()
     return {
         'today': today.strftime(DATE_FORMAT),
         'yesterday': yesterday.strftime(DATE_FORMAT),
         'tomorrow': tomorrow.strftime(DATE_FORMAT),
+        'shortcuts': shortcuts,
     }
 
 
