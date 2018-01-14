@@ -11,6 +11,9 @@
                         >
                         {{ event }}
                     </label>
+                    {% if event.link_url %}
+                        <a href="{{ event.link_url }}" target="_blank">{{ event.link_title|default:"链接" }}</a>
+                    {% endif %}
                     {% if event.memo %}
                         ： {{ event.memo }}
                     {% endif %}
@@ -21,6 +24,9 @@
                         <span class="glyphicon glyphicon-stop"></span>
                     {% endif %}
                     {{ event }}
+                    {% if event.link_url %}
+                        <a href="{{ event.link_url }}" target="_blank">{{ event.link_title|default:"链接" }}</a>
+                    {% endif %}
                     {% if event.memo %}
                         ： {{ event.memo }}
                     {% endif %}

@@ -24,7 +24,7 @@
             <div class="panel-heading">
                 {{ item.group|default:"无" }}
                 {% if item.group_all_done %}
-                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#group-{{ item.group }}" aria-expanded="false" aria-controls="group-{{ item.group }}">
+                    <button class="btn btn-primary btn-xs" type="button" data-toggle="collapse" data-target="#group-{{ item.group }}" aria-expanded="false" aria-controls="group-{{ item.group }}">
                         Show
                     </button>
                 {% endif %}

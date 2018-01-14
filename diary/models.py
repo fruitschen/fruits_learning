@@ -157,6 +157,9 @@ class BaseEventTemplate(models.Model):
     )
     events = GenericRelation('Event')
 
+    link_title = models.CharField(max_length=128, blank=True)
+    link_url = models.CharField(max_length=512, blank=True)
+
     class Meta:
         abstract = True
 
@@ -181,6 +184,8 @@ class BaseEventTemplate(models.Model):
             event_type=self.event_type,
             tags=self.tags,
             mandatory=self.mandatory,
+            link_title=self.link_title,
+            link_url=self.link_url,
         )
         if commit:
             event.event_template = self
