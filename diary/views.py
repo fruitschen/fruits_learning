@@ -117,9 +117,17 @@ class DiaryDetails(View):
         for group in list(event_groups) + [None]:
             group_events = filter(lambda e: e.group == group, events)
             if group_events:
+                if not is_today:
+                    group_all_tasks = False
+                    group_all_done = False
+                else:
+                    group_all_tasks = len(filter(lambda e: e.is_task, group_events)) == len(group_events)
+                    group_all_done = len(filter(lambda e: not e.is_done, group_events)) == 0
+
                 events_by_groups.append({
                     'group': group,
                     'events': group_events,
+                    'group_all_done': group_all_tasks and group_all_done,
                 })
 
         exercises_logs = ExerciseLog.objects.filter(date=diary_date)

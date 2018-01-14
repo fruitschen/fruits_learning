@@ -376,6 +376,7 @@ def resize_image(path):
 
 def image_post_save(sender, instance, **kwargs):
     image_path = instance.image.path
-    resize_image(image_path)
+    if os.path.exists(image_path):
+        resize_image(image_path)
 
 post_save.connect(image_post_save, sender=DiaryImage)

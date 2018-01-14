@@ -21,8 +21,15 @@
 {% if events_by_groups %}
     {% for item in events_by_groups %}
         <div class="panel panel-default">
-            <div class="panel-heading">{{ item.group|default:"无" }}</div>
-            <div class="panel-body">
+            <div class="panel-heading">
+                {{ item.group|default:"无" }}
+                {% if item.group_all_done %}
+                    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#group-{{ item.group }}" aria-expanded="false" aria-controls="group-{{ item.group }}">
+                        Show
+                    </button>
+                {% endif %}
+            </div>
+            <div class="panel-body {% if item.group_all_done %}collapse{% endif %}" {% if item.group_all_done %}id="group-{{ item.group }}"{% endif %}>
                 {% with item.events as events %}
                     {% include "diary/include/events_inner_list.html" %}
                 {% endwith %}
