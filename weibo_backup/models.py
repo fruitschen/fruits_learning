@@ -8,7 +8,6 @@ from django.utils import timezone
 BASE_DIR = os.path.join(settings.MEDIA_ROOT, 'tweets')
 
 
-# Create your models here.
 class Tweet(models.Model):
     t_id = models.CharField(max_length=64, blank=True, db_index=True)
     t_time = models.CharField(max_length=64, blank=True)

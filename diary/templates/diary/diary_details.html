@@ -92,6 +92,23 @@
             </div>
         </div>
     {% endif %}
+
+    {% if tweets %}
+        <h2>{{ tweets.count }}条微博</h2>
+        {% for tweet in tweets %}
+            <div class="panel panel-default">
+                <p>{{ tweet.t_time }}</p>
+                <p>
+                    {{ tweet.content }}
+                </p>
+                <img src="{{ tweet.screenshot_full_url }}" />
+            </div>
+        {% endfor %}
+    {% else %}
+        <h2>没有微博。</h2>
+    {% endif %}
+
+
 {% endblock %}
 
 {% block extra_js %}

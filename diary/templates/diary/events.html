@@ -18,7 +18,7 @@
     <form method="get" action=".">
         {{ form.start }} ~ {{ form.end }}
         <input type="submit" value="改日期" />
-        {% for shortcut in shortcuts %}
+        {% for shortcut in dates_shortcuts %}
             <a href=".?start={{ shortcut.1|date:'Y-m-j' }}" class="btn btn-default">{{ shortcut.0 }}</a>
         {% endfor %}
     </form>

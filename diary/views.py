@@ -18,6 +18,7 @@ from diary.utils import get_events_by_date, age_format
 from tips.models import get_random_tip
 from info_collector.models import Info
 from shortcuts.models import Shortcut
+from weibo_backup.models import Tweet
 
 
 def base_diary_context():
@@ -161,6 +162,8 @@ class DiaryDetails(View):
         age_in_days = age.days
         age = age_format(age)
 
+        tweets = Tweet.objects.filter(published__gte=diary_date, published__lt=diary_date + timedelta(days=1))
+
         context = {
             'title': title,
             'warnings': warnings,
@@ -183,6 +186,7 @@ class DiaryDetails(View):
             'unread_info_count': unread_info_count,
             'age': age,
             'age_in_days': age_in_days,
+            'tweets': tweets,
         }
         context.update(base_diary_context())
         return context
@@ -350,7 +354,7 @@ class DiaryEvents(View):
             start = default_start
             end = default_end
 
-        shortcuts = [
+        dates_shortcuts = [
             [u'一周以前', today - timedelta(days=7),],
             [u'一月以前', today - timedelta(days=30),],
         ]
@@ -369,7 +373,7 @@ class DiaryEvents(View):
                 diary = Diary(date=day)
             events = get_events_by_date(diary)
             if selected_type:
-                events = filter(lambda event:event.event_type==selected_type, events)
+                events = filter(lambda event: event.event_type == selected_type, events)
             if events:
                 days_and_events.append({
                     'day': day,
@@ -385,7 +389,7 @@ class DiaryEvents(View):
             'event_types': event_types,
             'selected_type': selected_type,
             'form': form,
-            'shortcuts': shortcuts,
+            'dates_shortcuts': dates_shortcuts,
         }
         context.update(base_diary_context())
         return render(request, 'diary/events.html', context)
