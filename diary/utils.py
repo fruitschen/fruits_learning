@@ -59,3 +59,20 @@ def is_end_of_month(the_date):
         return True
     else:
         return False
+
+
+def age_format(td_object):
+    seconds = int(td_object.total_seconds())
+    periods = [
+        (u'岁', 60 * 60 * 24 * 365),
+        (u'个月', 60 * 60 * 24 * 30),
+        (u'天', 60 * 60 * 24),
+    ]
+
+    strings = []
+    for period_name, period_seconds in periods:
+        if seconds > period_seconds:
+            period_value, seconds = divmod(seconds, period_seconds)
+            strings.append("%s%s" % (period_value, period_name))
+
+    return "".join(strings)

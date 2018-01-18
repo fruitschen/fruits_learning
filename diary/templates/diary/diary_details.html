@@ -56,6 +56,8 @@
     </table>
 
     <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</h2>
+    <p>{{ age }}, {{ age_in_days }}天</p>
+
     {% for content in diary.contents.all %}
         {{ content.render }}
     {% endfor %}

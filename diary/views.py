@@ -14,7 +14,7 @@ from diary.models import (
     Diary, DiaryContent, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog, EventGroup
 )
 from diary.forms import DiaryTextForm, DiaryImageForm, DiaryAudioForm, EventsRangeForm, EventForm
-from diary.utils import get_events_by_date
+from diary.utils import get_events_by_date, age_format
 from tips.models import get_random_tip
 from info_collector.models import Info
 from shortcuts.models import Shortcut
@@ -156,6 +156,11 @@ class DiaryDetails(View):
         unread_info_count = Info.objects.filter(is_read=False).count()
         event_form = EventForm(initial={'event_date': diary.date, 'group': 1, 'is_task': True, })
 
+        B_DAY = datetime(2013, 12, 21)
+        age = diary_date - B_DAY.date()
+        age_in_days = age.days
+        age = age_format(age)
+
         context = {
             'title': title,
             'warnings': warnings,
@@ -176,6 +181,8 @@ class DiaryDetails(View):
             'done_any_exercise': done_any_exercise,
             'tip': tip,
             'unread_info_count': unread_info_count,
+            'age': age,
+            'age_in_days': age_in_days,
         }
         context.update(base_diary_context())
         return context
