@@ -5,6 +5,10 @@
     {{ title|default:"Diary APP" }}
 {% endblock %}
 
+{% block extra_css %}
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap-datepicker/css/bootstrap-datepicker.min.css' %}">
+{% endblock %}
+
 {% block outter_content %}
     <div class="content-wrap container" id="diary_container">
         <div class="row">
@@ -29,6 +33,7 @@
                             <li><a href="{% url 'diary_details' yesterday %}{% if tag %}?tag={{ tag }}{% endif %}">昨天</a></li>
                             <li><a href="{% url 'diary_details' today %}{% if tag %}?tag={{ tag }}{% endif %}">今天</a></li>
                             <li><a href="{% url 'diary_details' tomorrow %}{% if tag %}?tag={{ tag }}{% endif %}">明天</a></li>
+                            <li><a href="#show-calendar" id="show-calendar">日历</a></li>
                             <li><a href="{% url 'diary_events' %}">事项</a></li>
                             <li><a href="{% url 'diary_todo' %}">TODO</a></li>
                             <li><a href="{% url 'contacts_send_email' %}">发邮件</a></li>
@@ -50,6 +55,14 @@
                     <a href="{% url 'info_reader_mobile' %}" class="btn btn-default">Reader<span class="badge">{{ unread_info_count }}</span></a>
                 </div>
 
+
+                <div class="input-group date" id="diary_date"  data-provide="datepicker" data-date-format="yyyy-mm-dd" style="display:none">
+                    <input type="text" class="form-control" value="{{ diary.date|date:'Y-m-j'|default:today }}">
+                    <div class="input-group-addon">
+                        <span class="glyphicon glyphicon-th"></span>
+                    </div>
+                </div>
+
                 {% block diary_content %}
                 {% endblock %}
             </div>
@@ -60,5 +73,20 @@
 {% block extra_js %}
     <script src="{% static 'js/jquery-3.1.1.min.js' %}"></script>
     <script src="{% static "bootstrap-3.3.7-dist/js/bootstrap.min.js" %}"></script>
+    <script src="{% static "bootstrap-datepicker/js/bootstrap-datepicker.min.js" %}"></script>
+<script>
+    $(function(){
+        $('#diary_date').datepicker().on('changeDate', function(e) {
+            var d = e.format('yyyy-mm-dd')
+            location.href = '/diary/details/' + d + '/'
+        });
+
+        $('#show-calendar').click(function(e){
+            e.preventDefault();
+            $('#diary_date').show();
+            $('#diary_date').datepicker('show');
+        })
+    })
+</script>
 {% endblock %}
 
