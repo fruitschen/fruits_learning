@@ -17,6 +17,9 @@
                     {% if event.memo %}
                         ： {{ event.memo }}
                     {% endif %}
+                    {% if is_today %}
+                        ({{ event.finish_rate.finish_rate_text }})
+                    {% endif %}
                 {% else %}
                     {% if event.event_type == "rule_event" %}
                         <span class="glyphicon glyphicon-info-sign"></span>

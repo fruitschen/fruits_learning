@@ -186,6 +186,7 @@ class DiaryDetails(View):
             'exercises_logs': exercises_logs,
             'done_any_exercise': done_any_exercise,
             'tip': tip,
+            'is_today': is_today,
             'unread_info_count': unread_info_count,
             'age': age,
             'age_in_days': age_in_days,

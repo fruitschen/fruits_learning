@@ -11,7 +11,7 @@ from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 
 import os
-from datetime import date
+from datetime import date, timedelta
 from PIL import Image as PILImage
 from PIL import ExifTags
 
@@ -299,6 +299,23 @@ class Event(BaseEventTemplate):
     @property
     def formatted_date(self):
         return self.event_date.strftime(DATE_FORMAT)
+
+    @property
+    def finish_rate(self):
+        if not self.event_template:
+            return None
+        today = date.today()
+        start = today - timedelta(days=30)
+        events = self.event_template.events.all().filter(event_date__gte=start, is_deleted=False)
+        total = events.count()
+        finished = events.filter(is_done=True).count()
+        return {
+            'total': total,
+            'finished': finished,
+            'finish_rate': finished / total,
+            'finish_rate_text': '{}/{}'.format(finished, total),
+        }
+
 
 
 def generate_weekdays(**kwargs):
