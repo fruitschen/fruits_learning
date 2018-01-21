@@ -7,6 +7,11 @@
         <li><a href="{{ diary.get_absolute_url }}">日记 {{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</a></li>
     </ol>
 
+
+    <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</h2>
+    <p>{{ age }}, {{ age_in_days }}天。已查看{{ diary.view_count }}次。</p>
+
+
     {% if tip %}
         <div class="alert alert-info" role="alert">
             <strong class="message">{{ tip }}</strong>
@@ -55,9 +60,6 @@
             </tr>
         {% endfor %}
     </table>
-
-    <h2 id="diary-title">{{ diary.date|date:'Y-m-j' }} {{ diary.weekday }}</h2>
-    <p>{{ age }}, {{ age_in_days }}天</p>
 
     {% for content in diary.contents.all %}
         {{ content.render }}
@@ -120,8 +122,9 @@
             $('.edit').show();
         {% endif %}
         $('#diary-title').append('<a href="#" id="edit-button" class="btn btn-default">编辑</a>')
-        $('#edit-button').click(function(){
-            $('.edit').toggle()
+        $('#edit-button').click(function(e){
+            e.preventDefault();
+            $('.edit').toggle();
         });
 
         $('.do_exercise').click(function(e){

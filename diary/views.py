@@ -86,6 +86,9 @@ class DiaryDetails(View):
         elif diary_date > today:
             diary = Diary(date=diary_date)
             commit = False
+        if diary.id:
+            diary.view_count += 1
+            diary.save()
         hidden_events_count = 0
         tag = request.GET.get('tag', '')
         # 早于7天之前， 不自动创建events

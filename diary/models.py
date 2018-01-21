@@ -24,6 +24,7 @@ DATE_FORMAT = '%Y-%m-%d'
 class Diary(models.Model):
     date = models.DateField()
     events_generated = models.BooleanField(default=False)
+    view_count = models.PositiveIntegerField(default=0)
 
     @property
     def max_content_order(self):
