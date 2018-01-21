@@ -17,7 +17,7 @@
                     {% if event.memo %}
                         ： {{ event.memo }}
                     {% endif %}
-                    {% if is_today %}
+                    {% if is_today and event.finish_rate %}
                         ({{ event.finish_rate.finish_rate_text }})
                     {% endif %}
                 {% else %}
