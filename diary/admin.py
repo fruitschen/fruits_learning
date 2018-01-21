@@ -22,6 +22,13 @@ class MonthEventTemplateAdmin(admin.ModelAdmin):
     list_filter = ['is_task', 'day', ]
 
 
+class AnnualEventTemplateAdmin(admin.ModelAdmin):
+    model = AnnualEventTemplate
+    list_editable = ['tags', 'group', ]
+    list_display = ['event', 'month', 'day', 'is_task', 'priority', 'tags', 'group']
+    list_filter = ['is_task', 'day', ]
+
+
 class RuleEventTemplateAdmin(admin.ModelAdmin):
     model = RuleEventTemplate
     list_editable = ['tags', 'group', ]
@@ -44,6 +51,7 @@ class DiaryAdmin(admin.ModelAdmin):
 admin.site.register(EventGroup, EventGroupAdmin)
 admin.site.register(WeekdayEventTemplate, WeekdayEventTemplateAdmin)
 admin.site.register(MonthEventTemplate, MonthEventTemplateAdmin)
+admin.site.register(AnnualEventTemplate, AnnualEventTemplateAdmin)
 admin.site.register(RuleEventTemplate, RuleEventTemplateAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(Diary, DiaryAdmin)

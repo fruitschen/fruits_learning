@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 from diary.models import Diary, WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate, \
-    AUTO_EVENT_TYPES
+    AUTO_EVENT_TYPES, AnnualEventTemplate
 from datetime import timedelta, date
 
 
@@ -25,7 +25,10 @@ def get_events_by_date(diary, tag='', commit=False, include_deleted=False):
         weekday_event_templates = weekday.weekdayeventtemplate_set.all()
 
         month_event_templates = MonthEventTemplate.objects.filter(day=the_date.day)
-        event_templates = list(weekday_event_templates) + list(month_event_templates)
+
+        annual_event_templates = AnnualEventTemplate.objects.filter(month=the_date.month, day=the_date.day)
+
+        event_templates = list(weekday_event_templates) + list(month_event_templates) + list(annual_event_templates)
 
         for tpl in rule_event_templates:
             if tpl.generate_event and tpl.applicable_to_date(the_date):

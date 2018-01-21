@@ -238,6 +238,19 @@ class MonthEventTemplate(BaseEventTemplate):
         return u'{} {}日 (Month Event Template)'.format(self.event, self.day)
 
 
+MONTHS = [str(i) for i in range(1, 13)]
+MONTH_CHOICES = zip(MONTHS, MONTHS)
+
+
+class AnnualEventTemplate(BaseEventTemplate):
+    event_type = 'annual_event'
+    month = models.CharField('月', max_length=2, choices=MONTH_CHOICES)
+    day = models.CharField('日', max_length=2, choices=DAY_CHOICES)
+
+    def __unicode__(self):
+        return u'{} {}月{}日 (Annual Event Template)'.format(self.event, self.month, self.day)
+
+
 class RuleEventTemplate(BaseEventTemplate):
     event_type = 'rule_event'
     rule = models.CharField(max_length=64, choices=RULES_CHOICES)
