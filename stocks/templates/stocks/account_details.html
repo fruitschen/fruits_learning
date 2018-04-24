@@ -100,7 +100,7 @@
         {% endif %}
     {% endif %}
 
-    {% if logged_in and account.main %}
+    {% if logged_in %}
 
         <h3>
             <form method="post" action="{% url 'take_snapshot' account.slug %}">
