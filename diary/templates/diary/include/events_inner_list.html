@@ -34,10 +34,18 @@
                         ： {{ event.memo }}
                     {% endif %}
                 {% endif %}
-                {% if event.is_event_instance and event.id %}
-                    <span class="glyphicon glyphicon-minus btn btn-sm show-delete-event-btn" data-event="{{ event.id }}" style="padding:0;"></span>
-                    <span class="glyphicon glyphicon-remove btn btn-sm delete-event-btn" style="display:none; padding:0;" data-event="{{ event.id }}"></span>
+                <span class="glyphicon glyphicon-list-alt btn btn-sm show-event-menu-btn" data-event="{{ event.id }}" style="padding:0;"></span>
+                {% if event.is_event_instance %}
+                    <span class="glyphicon glyphicon-remove btn btn-sm delete-event-btn event-menu-btn" style="display:none; padding:0;" data-event="{{ event.id }}"></span>
+                    <a href="{% url 'admin:diary_event_change' event.id %}" target="_blank" title="Admin">
+                        <span class="glyphicon glyphicon glyphicon-edit btn btn-sm event-menu-btn" style="display:none; padding:0;">
+                        </span>
+                    </a>
                 {% endif %}
+                    <a href="{{ event.event_template.get_admin_url }}" target="_blank" title="Template">
+                        <span class="glyphicon glyphicon glyphicon-book btn btn-sm event-menu-btn" style="display:none; padding:0;">
+                        </span>
+                    </a>
             </div>
         </li>
     {% endfor %}

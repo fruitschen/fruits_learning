@@ -23,10 +23,10 @@
         })
 
 
-        $('.show-delete-event-btn').click(function(e){
+        $('.show-event-menu-btn').click(function(e){
             e.preventDefault();
             var event_id = $(this).data('event');
-            $('#event-' + event_id).find('.delete-event-btn').show()
+            $('#event-' + event_id).find('.event-menu-btn').show()
             $(this).hide();
         })
 

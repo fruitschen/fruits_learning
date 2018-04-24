@@ -10,6 +10,8 @@ from django.db.models.signals import post_migrate
 from django.db.models.signals import post_save
 from django.template.loader import render_to_string
 
+from django.urls import reverse
+
 import os
 from datetime import date, timedelta
 from PIL import Image as PILImage
@@ -42,7 +44,6 @@ class Diary(models.Model):
         return WEEKDAY_DICT[str(self.date.weekday())]
 
     def get_absolute_url(self):
-        from django.urls import reverse
         return reverse('diary_details', args=[self.formatted_date])
 
     class Meta:
@@ -225,6 +226,9 @@ class WeekdayEventTemplate(BaseEventTemplate):
             [w.get_weekday_display() for w in self.weekdays.all()])
         )
 
+    def get_admin_url(self):
+        return reverse('admin:diary_weekdayeventtemplate_change', args=(self.id, ))
+
 
 DAYS = [str(i) for i in range(1, 32)]
 DAY_CHOICES = zip(DAYS, DAYS)
@@ -236,6 +240,9 @@ class MonthEventTemplate(BaseEventTemplate):
 
     def __unicode__(self):
         return u'{} {}日 (Month Event Template)'.format(self.event, self.day)
+
+    def get_admin_url(self):
+        return reverse('admin:diary_montheventtemplate_change', args=(self.id,))
 
 
 MONTHS = [str(i) for i in range(1, 13)]
@@ -249,6 +256,9 @@ class AnnualEventTemplate(BaseEventTemplate):
 
     def __unicode__(self):
         return u'{} {}月{}日 (Annual Event Template)'.format(self.event, self.month, self.day)
+
+    def get_admin_url(self):
+        return reverse('admin:diary_annualeventtemplate_change', args=(self.id,))
 
 
 class RuleEventTemplate(BaseEventTemplate):
@@ -274,9 +284,16 @@ class RuleEventTemplate(BaseEventTemplate):
         else:
             return self
 
+    def get_admin_url(self):
+        return reverse('admin:diary_ruleeventtemplate_change', args=(self.id,))
+
     def __unicode__(self):
         return u'{}'.format(self.event)
 
+    @property
+    def event_template(self):
+        return self
+    
 
 class Event(BaseEventTemplate):
     event_date = models.DateField(blank=True, null=True)
