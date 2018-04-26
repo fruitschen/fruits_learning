@@ -9,8 +9,8 @@ class ListItemInline(admin.TabularInline):
 
 class MyListAdmin(admin.ModelAdmin):
     model = MyList
-    list_editable = ['name', 'order', ]
-    list_display = ['id', 'name', 'order', ]
+    list_editable = ['order', ]
+    list_display = ['name', 'order', ]
     inlines = [ListItemInline, ]
 
 
