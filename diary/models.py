@@ -293,7 +293,7 @@ class RuleEventTemplate(BaseEventTemplate):
     @property
     def event_template(self):
         return self
-    
+
 
 class Event(BaseEventTemplate):
     event_date = models.DateField(blank=True, null=True)
