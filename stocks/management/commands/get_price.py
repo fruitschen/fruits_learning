@@ -20,12 +20,15 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         stocks = Stock.objects.all()
+        print 'Updating'
         if options.get('all'):
             stocks = Stock.objects.all()
             pairs = StockPair.objects.all()
+            print 'All Stocks'
         else:
             stocks = stocks.filter(star=True)
             pairs = StockPair.objects.filter(star=True)
+            print 'Used Stocks'
 
         i = 0
         count = stocks.count()
