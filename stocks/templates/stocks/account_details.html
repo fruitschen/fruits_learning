@@ -64,7 +64,7 @@
                 <th>总价</th>
                 <th>占比</th>
             </tr>
-            {% for stock in account.stocks.all %}
+            {% for stock in account_stocks %}
                 <tr>
                     <td>{{ stock.stock }}</td>
                     <td>{{ stock.amount }}</td>

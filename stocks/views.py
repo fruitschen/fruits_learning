@@ -79,6 +79,7 @@ def account_details(request, account_slug):
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
+    account_stocks = sorted(account.stocks.all(), lambda x, y: int(y.total - x.total))
     all_account_pair_transactions = account.pair_transactions.all()
     account_pair_transactions = all_account_pair_transactions.exclude(archived=True)
     if account.public:
@@ -154,6 +155,7 @@ def account_details(request, account_slug):
         'logged_in': logged_in,
         'is_admin': logged_in and request.user.is_staff,
         'star_stocks': star_stocks,
+        'account_stocks': account_stocks,
         'recent_pair_transactions': recent_pair_transactions,
         'pair_transactions_unfinished': pair_transactions_unfinished,
         'pair_virtual_profit': pair_virtual_profit,
