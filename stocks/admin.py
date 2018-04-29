@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 from django.contrib import admin
 
-from stocks.models import (Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account,
+from stocks.models import (Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account, SubAccount,
                            AccountStock, Snapshot, SnapshotStock, Transaction)
 from markdownx.admin import MarkdownxModelAdmin
 
@@ -75,9 +75,13 @@ class AccountStockInline(admin.TabularInline):
     model = AccountStock
 
 
+class SubAccountInline(admin.TabularInline):
+    model = SubAccount
+
+
 class AccountAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'public', ]
-    inlines = [AccountStockInline]
+    inlines = [AccountStockInline, SubAccountInline]
 
 
 class SnapshotStockInline(admin.TabularInline):

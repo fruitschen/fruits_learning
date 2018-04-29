@@ -703,6 +703,17 @@ class Account(models.Model):
         return transactions
 
 
+class SubAccount(models.Model):
+    account = models.ForeignKey(Account)
+    name = models.CharField(max_length=64)
+    order = models.IntegerField(default=100)
+    asset = models.PositiveIntegerField(u'资产', default=0)
+    debt = models.PositiveIntegerField(u'负债', default=0)
+
+    def net_asset(self):
+        return self.asset - self.debt
+
+
 class Snapshot(models.Model):
     """账户快照，保存一个账户在某个时间点的净资产，持有股票等等"""
     account = models.ForeignKey('Account', related_name='snapshots', on_delete=models.PROTECT)
