@@ -36,6 +36,18 @@
             </tr>
             {% if account.debt %}
                 <tr>
+                    <td>总资产</td>
+                    <td>{{ account.total }}</td>
+                </tr>
+                <tr>
+                    <td>---股票资产</td>
+                    <td>{{ account.stocks_total }}</td>
+                </tr>
+                <tr>
+                    <td>---子账户资产</td>
+                    <td>{{ account.sub_accounts_asset }}</td>
+                </tr>
+                <tr>
                     <td>负债</td>
                     <td>{{ account.debt }}</td>
                 </tr>

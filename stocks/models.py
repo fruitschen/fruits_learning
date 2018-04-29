@@ -10,7 +10,7 @@ from django.utils import timezone
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import models
-from django.db.models import Q
+from django.db.models import Q, Sum
 
 from markdownx.models import MarkdownxField
 from markdownx.utils import markdownify
@@ -584,7 +584,7 @@ class AccountStock(models.Model):
 
     @property
     def percent(self):
-        return self.total / self.account.total * Decimal(100)
+        return self.total / self.account.stocks_total * Decimal(100)
 
 
 class Account(models.Model):
@@ -601,6 +601,19 @@ class Account(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if self.sub_accounts_debt and (self.debt != self.sub_accounts_debt):
+            self.debt = self.sub_accounts_debt
+        super(Account, self).save(*args, **kwargs)
+
+    @property
+    def sub_accounts_asset(self):
+        return self.subaccount_set.all().aggregate(Sum('asset'))['asset__sum'] or 0
+
+    @property
+    def sub_accounts_debt(self):
+        return self.subaccount_set.all().aggregate(Sum('debt'))['debt__sum'] or 0
+
     @property
     def stocks_total(self):
         """持有的股票的市值"""
@@ -608,8 +621,8 @@ class Account(models.Model):
 
     @property
     def total(self):
-        """股票现金合计"""
-        return self.stocks_total + self.cash
+        """股票、子账户、现金合计"""
+        return self.stocks_total + self.sub_accounts_asset + self.cash
 
     @property
     def net(self):
@@ -665,6 +678,7 @@ class Account(models.Model):
             date=datetime.today(),
             serial_number=serial_number,
             stocks_asset=self.stocks_total,
+            sub_accounts_asset=self.sub_accounts_asset,
             net_asset=self.net,
             cash=self.cash,
             debt=self.debt,
@@ -722,6 +736,7 @@ class Snapshot(models.Model):
 
     net_asset = models.DecimalField(u'净资产', max_digits=14, decimal_places=2, null=True, blank=True)
     stocks_asset = models.DecimalField(u'股票市值', max_digits=14, decimal_places=2, null=True, blank=True)
+    sub_accounts_asset = models.DecimalField(u'子账户市值', max_digits=14, decimal_places=2, blank=True, default=0)
     cash = models.DecimalField(u'现金', max_digits=14, decimal_places=2, null=True, blank=True)
     debt = models.DecimalField(u'负债', max_digits=10, decimal_places=2, null=True, blank=True, default=0)
     increase = models.DecimalField(u'涨幅', max_digits=8, decimal_places=4, null=True, blank=True)
@@ -769,7 +784,7 @@ class Snapshot(models.Model):
                 stock.code = stock.stock.code
                 stock.save()
         self.stocks_asset = sum([stock.total for stock in self.stocks.all()])
-        self.net_asset = self.stocks_asset + self.cash - (self.debt or 0)
+        self.net_asset = self.total - (self.debt or 0)
         if not self.transactions_count:
             self.transactions_count = len(self.find_transactions())
         self.calculate_increase()
@@ -803,7 +818,7 @@ class Snapshot(models.Model):
     @property
     def total(self):
         """总资产"""
-        return self.stocks_total + self.cash
+        return self.stocks_asset + self.sub_accounts_asset + self.cash
 
     def find_transactions(self):
         """找到当月1日到snapshot日期的交易"""
