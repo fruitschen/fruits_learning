@@ -44,11 +44,13 @@
     <body class="{% block body_class %}{% endblock %}">
         {% wagtailuserbar %}
 
-        {% if not hide_header_footer %}
-        <header class="container">
-            <h1 class="col-md-10">投资者，程序员 -- 陈喆</h1>
-        </header>
-        {% endif %}
+        {% block header %}
+            {% if not hide_header_footer %}
+            <header class="container">
+                <h1 id="site_heading">投资者，程序员 -- 陈喆</h1>
+            </header>
+            {% endif %}
+        {% endblock %}
 
         {% block outter_content %}
         <div class="container">

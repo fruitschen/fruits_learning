@@ -4,22 +4,63 @@
 
 {% block body_class %}template-homepage{% endblock %}
 
-{% block content %}
-    {{ page.body|richtext }}
-    <img src="{% static 'img/demo/playing-lego.jpg' %}" style="max-width: 300px;">
-
-    {% if user.is_authenticated %}
-        <p>
-            <a href="{% url 'diary_index' %}">Diary</a> |
-            <a href="{% url 'info_reader' %}">Info Reader</a> |
-            <a href="{% url 'my_feedreader' %}">RSS Reader</a> |
-            <a href="{% url 'fund_value_estimation' %}">分级基金净值计算</a> |
-            <a href="{% url 'compound_interest' %}">复利表</a> |
-            <a href="{% url 'read_list' %}">阅读</a> |
-            <a href="{% url 'account_details' 'public' %}">公开账户 - 投资改变生活</a> |
-            <a href="http://docs.wagtail.io/" target="_blank">http://docs.wagtail.io</a> |
-            <a href="{% url 'api-root' %}">API</a>
-        </p>
+{% block header %}
+    {% if not hide_header_footer %}
+    <header class="container">
+        <h1 id="site_heading">投资者，程序员 -- 陈喆</h1>
+    </header>
     {% endif %}
+{% endblock %}
+
+
+{% block outter_content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="jumbotron home-jumbo">
+                    <h2>投资者</h2>
+                    <p>
+                        2008年开始投资，
+                        2016年08月开始管理<a href="/stocks/accounts/public/">公开账户</a>。
+                    </p>
+                    <p>
+                        运营<a href="http://www.minishuju.com/">小数据</a>。<a href="/investing/">投资入门</a>。
+                        偶尔在<a href="https://xueqiu.com/fruitschen">我的雪球页面</a>发投资文章。
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="jumbotron home-jumbo">
+                    <h2>程序员</h2>
+                    <p>
+                        <a href="http://ixxy.co.uk/">Ixxy</a>，自由职业。
+                    </p>
+                    <p>
+                        主要用Django做网站后端。
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {{ page.body|richtext }}
+
+        {% if user.is_authenticated %}
+        <div class="row">
+            <div class="jumbotron home-jumbo">
+                <p>
+                    <a href="{% url 'diary_index' %}">Diary</a> |
+                    <a href="{% url 'info_reader' %}">Info Reader</a> |
+                    <a href="{% url 'my_feedreader' %}">RSS Reader</a> |
+                    <a href="{% url 'fund_value_estimation' %}">分级基金净值计算</a> |
+                    <a href="{% url 'compound_interest' %}">复利表</a> |
+                    <a href="{% url 'read_list' %}">阅读</a> |
+                    <a href="{% url 'account_details' 'public' %}">公开账户 - 投资改变生活</a> |
+                    <a href="http://docs.wagtail.io/" target="_blank">http://docs.wagtail.io</a> |
+                    <a href="{% url 'api-root' %}">API</a>
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
 {% endblock %}
 
