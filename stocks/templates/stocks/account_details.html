@@ -49,8 +49,18 @@
                 </tr>
                 <tr>
                     <td>负债</td>
-                    <td>{{ account.debt }}</td>
+                    <td>
+                        {{ account.debt }}
+                    </td>
                 </tr>
+                {% for sub in account.subaccount_set.all %}
+                    {%if sub.debt %}
+                    <tr>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.name }}</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.debt }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
                 <tr>
                     <td>担保比</td>
                     <td>{{ account.ratio|floatformat:2 }}%</td>

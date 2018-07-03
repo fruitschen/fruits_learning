@@ -727,6 +727,12 @@ class SubAccount(models.Model):
     def net_asset(self):
         return self.asset - self.debt
 
+    def __unicode__(self):
+        return u'{} ({}子账户)'.format(self.name, self.account)
+
+    class Meta:
+        ordering = ['order']
+
 
 class Snapshot(models.Model):
     """账户快照，保存一个账户在某个时间点的净资产，持有股票等等"""
@@ -867,6 +873,7 @@ class Snapshot(models.Model):
     @property
     def stocks_ordered(self):
         return self.stocks.order_by('-total')
+
 
 class SnapshotStock(models.Model):
     """账户快照 当时持有的股票"""
