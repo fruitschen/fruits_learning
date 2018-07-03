@@ -87,10 +87,7 @@
     <ul>
         {% for stock in snapshot_stocks %}
             <li>
-                $
-                {{ stock.stock.name }}
-                {% if forloop.counter <= 3 %}({{ stock.stock.market|upper }}{{ stock.stock.code }}){% endif %}
-                $
+                ${{ stock.stock.name }}{% if forloop.counter <= 3 %}({{ stock.stock.market|upper }}{{ stock.stock.code }}){% endif %}$
                 (占比{{ stock.percent|floatformat:2 }}%)
             </li>
         {% endfor %}
