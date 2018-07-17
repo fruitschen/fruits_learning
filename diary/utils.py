@@ -15,23 +15,24 @@ def get_events_by_date(diary, tag='', commit=False, include_deleted=False):
     rule_events_tpls = []
     rule_event_templates = RuleEventTemplate.objects.all()
     for tpl in rule_event_templates:
-        if not tpl.generate_event and tpl.applicable_to_date(the_date):
+        if not tpl.generate_event and tpl.applicable_to_date(the_date) and not tpl.is_archived:
             rule_events_tpls.append(tpl)
 
     if events_generated:
         events = list(events_query) + rule_events_tpls
     else:
         weekday = Weekday.objects.get(weekday=str(the_date.weekday()))
-        weekday_event_templates = weekday.weekdayeventtemplate_set.all()
+        weekday_event_templates = weekday.weekdayeventtemplate_set.filter(is_archived=False)
 
-        month_event_templates = MonthEventTemplate.objects.filter(day=the_date.day)
+        month_event_templates = MonthEventTemplate.objects.filter(day=the_date.day).filter(is_archived=False)
 
-        annual_event_templates = AnnualEventTemplate.objects.filter(month=the_date.month, day=the_date.day)
+        annual_event_templates = AnnualEventTemplate.objects.filter(month=the_date.month, day=the_date.day).\
+            filter(is_archived=False)
 
         event_templates = list(weekday_event_templates) + list(month_event_templates) + list(annual_event_templates)
 
         for tpl in rule_event_templates:
-            if tpl.generate_event and tpl.applicable_to_date(the_date):
+            if tpl.generate_event and tpl.applicable_to_date(the_date) and not tpl.is_archived:
                 event_templates.append(tpl)
 
         events = list(events_query)

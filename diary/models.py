@@ -161,6 +161,7 @@ class BaseEventTemplate(models.Model):
 
     link_title = models.CharField(max_length=128, blank=True)
     link_url = models.CharField(max_length=512, blank=True)
+    is_archived = models.BooleanField(default=False)
 
     class Meta:
         abstract = True
