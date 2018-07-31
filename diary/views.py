@@ -54,6 +54,27 @@ class DiaryList(View):
         return render(request, 'diary/diary_list.html', context)
 
 
+def get_events_by_groups(events, is_today):
+    events_by_groups = []
+    event_groups = EventGroup.objects.all()
+    for group in list(event_groups) + [None]:
+        group_events = filter(lambda e: e.group == group, events)
+        if group_events:
+            if not is_today:
+                group_all_tasks = False
+                group_all_done = False
+            else:
+                group_all_tasks = len(filter(lambda e: e.is_task, group_events)) == len(group_events)
+                group_all_done = len(filter(lambda e: not e.is_done, group_events)) == 0
+
+            events_by_groups.append({
+                'group': group,
+                'events': group_events,
+                'group_all_done': group_all_tasks and group_all_done,
+            })
+    return events_by_groups
+
+
 class DiaryDetails(View):
 
     @method_decorator(staff_member_required)
@@ -116,23 +137,7 @@ class DiaryDetails(View):
             if getattr(event, 'hidden', False):
                 hidden_events_count += 1
 
-        events_by_groups = []
-        event_groups = EventGroup.objects.all()
-        for group in list(event_groups) + [None]:
-            group_events = filter(lambda e: e.group == group, events)
-            if group_events:
-                if not is_today:
-                    group_all_tasks = False
-                    group_all_done = False
-                else:
-                    group_all_tasks = len(filter(lambda e: e.is_task, group_events)) == len(group_events)
-                    group_all_done = len(filter(lambda e: not e.is_done, group_events)) == 0
-
-                events_by_groups.append({
-                    'group': group,
-                    'events': group_events,
-                    'group_all_done': group_all_tasks and group_all_done,
-                })
+        events_by_groups = get_events_by_groups(events, is_today)
 
         exercises_logs = ExerciseLog.objects.filter(date=diary_date)
         done_any_exercise = False
@@ -378,12 +383,14 @@ class DiaryEvents(View):
             events = get_events_by_date(diary)
             if selected_type:
                 events = filter(lambda event: event.event_type == selected_type, events)
+            events_by_groups = get_events_by_groups(events, is_today=False)
             if events:
                 days_and_events.append({
                     'day': day,
                     'diary': diary,
                     'weekday': WEEKDAY_DICT[str(day.weekday())],
                     'events': events,
+                    'events_by_groups': events_by_groups,
                 })
 
         context = {
