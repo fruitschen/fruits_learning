@@ -109,7 +109,7 @@
         <h1>{{ account }}第{{ snapshot.nth_year }}年总结</h1>
         <p>
             实验账户第{{ snapshot.nth_year }}年收益率为{{ snapshot.yield_yoy_percent|floatformat:2 }}%。
-            净资产由{{ snapshot.previous_annual_snapshot.net_asset|money_display }}增长到{{ snapshot.net_asset|money_display }}。
+            净资产由{{ snapshot.previous_annual_snapshot.net_asset|money_display }}变为 {{ snapshot.net_asset|money_display }}。
         </p>
         <p>按月计算最单月最高涨幅为{{ max_inc|floatformat:2 }}%, 最低为{{ min_inc|floatformat:2 }}%。</p>
 
