@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.reverse import reverse
@@ -419,8 +420,10 @@ class UpdateTaskView(View):
         done = request.POST.get('checked', False)
         if done.lower() == 'true':
             task.is_done = True
+            task.done_timestamp = timezone.now()
         elif done.lower() == 'false':
             task.is_done = False
+            task.done_timestamp = None
         task.save()
         return HttpResponse('Task Updated. ')
 

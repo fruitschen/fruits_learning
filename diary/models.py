@@ -299,6 +299,7 @@ class RuleEventTemplate(BaseEventTemplate):
 class Event(BaseEventTemplate):
     event_date = models.DateField(blank=True, null=True)
     is_done = models.BooleanField(default=False)
+    done_timestamp = models.DateTimeField(default=None, null=True, blank=True)
     event_type = models.CharField(max_length=64)
     content_type = models.ForeignKey(ContentType, on_delete=models.PROTECT, null=True, blank=True)
     object_id = models.PositiveIntegerField(null=True, blank=True)

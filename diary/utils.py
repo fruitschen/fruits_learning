@@ -50,7 +50,20 @@ def get_events_by_date(diary, tag='', commit=False, include_deleted=False):
         if not include_deleted:
             unfinished_mandatory_events = unfinished_mandatory_events.filter(is_deleted=False)
         events += unfinished_mandatory_events
-    events = sorted(events, key=lambda x: x.priority)
+
+    def sort_events(event, other_event):
+        # both not done
+        if (not event.is_done) and (not other_event.is_done):
+            return int(event.priority - event.priority)
+
+        # both done
+        if event.is_done and event.done_timestamp and other_event.is_done and other_event.done_timestamp:
+            return int((event.done_timestamp - other_event.done_timestamp ).total_seconds())
+
+        # one is done
+        return int(other_event.is_done) - int(event.is_done)
+
+    events = sorted(events, cmp=sort_events)
 
     if tag:
         events = filter(lambda x: tag in x.tags, events)
