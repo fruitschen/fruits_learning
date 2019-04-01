@@ -34,11 +34,22 @@ def last_sunday(the_date):
     return the_last_sunday == the_date
 
 
+def season_end(the_date):
+    seasons_ends = [
+        (3, 31),
+        (6, 30),
+        (9, 30),
+        (12, 31),
+    ]
+    return (the_date.month, the_date.day) in seasons_ends
+
+
 rules = [
     'first_20_days',
     'not_first_20_days',
     'last_trading_day',
     'last_sunday',
+    'season_end',
 ]
 
 
