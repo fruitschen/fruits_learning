@@ -2,9 +2,9 @@
     {% for event in events %}
         <li id="event-{{ event.id }}" style="{% if event.is_important or event.is_delayed_mandatory %}font-weight:bold; color: red;{% endif %}"
             {% if event.hidden %}class="collapse"{% endif %}>
-            <div class="checkbox">
+            <div class="checkbox" {% if event.is_done and is_today %}style="color: gray;"{% endif %}>
                 {% if event.is_task %}
-                    <label {% if event.is_done and is_today %}style="color: gray;"{% endif %}>
+                    <label>
                         <input type="checkbox" data-event_id="{{ event.id }}" class="event-checkbox" id="event-checkbox-{{ event.id }}"
                            {% if event.is_done %}checked="checked"{% endif %}
                            {% if not event.id %}disabled="disabled"{% endif %}

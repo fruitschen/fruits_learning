@@ -18,7 +18,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         binary = FirefoxBinary('/usr/bin/firefox')
         driver = webdriver.Firefox(firefox_binary=binary)
+        driver.get('https://weibo.com/')
         input = raw_input('login and go to the account page. Then enter anything to continue: ')
+        driver.get('https://m.weibo.cn/u/5578088290?uid=5578088290&luicode=10000011&lfid=231093_-_selfgroupfollow_-_201102030062389608')
+        input = raw_input('Remove header and scroll until all items to backup are shown. Click enter to continue: ')
 
         items = driver.find_elements_by_class_name('card9')
         #  items.reverse()
@@ -42,6 +45,8 @@ class Command(BaseCommand):
         js = '''
         document.querySelectorAll('footer').forEach(function(obj){obj.remove()});
         document.querySelectorAll('header').forEach(function(obj){obj.remove()});
+        document.querySelectorAll('.m-top-bar').forEach(function(obj){obj.remove()});
+        document.querySelectorAll('.nav-main').forEach(function(obj){obj.remove()});
         document.querySelectorAll('.profile-cover').forEach(function(obj){obj.remove()});
         document.querySelectorAll('.m-top-nav-wrapper').forEach(function(obj){obj.remove()});
         document.querySelectorAll('.m-top-nav').forEach(function(obj){obj.remove()});
