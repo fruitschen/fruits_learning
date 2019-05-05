@@ -24,7 +24,6 @@ def run_crawlers():
     info_crawlers = (
         crawlers.TechQQCrawler(),
         crawlers.XueqiuHomeCrawler(),
-        crawlers.DoubanBookCrawler(),
         crawlers.XueqiuPeopleCrawler(),
         crawlers.StocksCrawler(),
         # crawlers.StocksAnnouncementCrawler(),

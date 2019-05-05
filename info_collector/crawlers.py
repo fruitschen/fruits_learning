@@ -61,6 +61,7 @@ def get_response(req, url, timeout, headers, post_data=None):
         retry += 1
     return response
 
+
 class TechQQCrawler(AbstractBaseCrawler):
     """
     from info_collector.crawlers import TechQQCrawler
@@ -76,8 +77,7 @@ class TechQQCrawler(AbstractBaseCrawler):
         if not response:
             return
         soup = BS(response.text)
-        list_zone = soup.find('div', {'id': 'listZone'})
-        headings = list_zone.findAll('h3')
+        headings = soup.findAll('h3')
         links = [heading.find('a') for heading in headings]
         links.reverse()
         for link in links:
@@ -125,6 +125,7 @@ class XueqiuBaseCrawler(AbstractBaseCrawler):
         info.author = author
         info.save()
         return author
+
 
 class XueqiuHomeCrawler(XueqiuBaseCrawler):
     """
@@ -300,60 +301,6 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
             info = info_query[0]
             if not info.author:
                 author = self.save_author(post['user'], info)
-
-
-class DoubanBookCrawler(AbstractBaseCrawler):
-    """
-    from info_collector.crawlers import DoubanBookCrawler
-    crawler = DoubanBookCrawler()
-    crawler.update_info()
-    """
-
-    def __init__(self):
-        super(DoubanBookCrawler, self).__init__('douban_book')
-
-    def update_info(self):
-        count = 50
-
-        queries = [
-            # 'q=python',
-            u'tag=英文绘本',
-        ]
-        for query in queries:
-            start = 0
-            total = 0
-            while (not start) or (start < total - count):  # haven't got all the books yet
-                api_url = u'https://api.douban.com/v2/book/search?{}&count={}&start={}'.format(query, count, start)
-                json_response = get_response(requests, api_url , timeout=3, headers=self.headers)
-                json_result = json_response.json()
-                if not total:
-                    total = json_result['total']
-                    # print 'Total {}'.format(total)
-                start += count
-                books = json_result['books']
-
-                for book in books:
-                    identifier = book['id']
-                    title = book['title']
-                    url = '{}subject/{}'.format(self.info_source.url, identifier)
-                    try:
-                        created = timezone.datetime.strptime(book['pubdate'], '%Y-%m-%d')
-                        if created < timezone.datetime(1900,1,1):
-                            created = None
-                    except:
-                        created = None
-                    if not Info.objects.filter(info_source=self.info_source, identifier=identifier).exists():
-                        info = Info.objects.create(
-                            url=url,
-                            status=Info.NEW,
-                            info_source=self.info_source,
-                            title=title,
-                            identifier=identifier,
-                            original_timestamp = created,
-                        )
-                    else:
-                        pass
-                        # print u'Book exists {}'.format(book['title'])
 
 
 class StocksCrawler(AbstractBaseCrawler):
