@@ -38,7 +38,17 @@ class ReadInfoSerializer(serializers.Serializer):
 
 
 def info_reader_mobile(request):
+    info_items = Info.objects.all()
+    one_day = timezone.now()-timedelta(days=1)
+    one_week_ago = timezone.now()-timedelta(days=7)
+    added_1_day = info_items.filter(timestamp__gt=one_day).count()
+    read_1_day = info_items.filter(read_at__gt=one_day).count()
+    added_1_week = info_items.filter(timestamp__gt=one_week_ago).count()
+    read_1_week = info_items.filter(read_at__gt=one_week_ago).count()
     context = {
-
+        'added_1_day': added_1_day,
+        'added_1_week': added_1_week,
+        'read_1_day': read_1_day,
+        'read_1_week': read_1_week,
     }
     return render(request, 'info_collector/info_reader_mobile.html', context)
