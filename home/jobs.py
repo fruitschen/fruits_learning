@@ -3,6 +3,8 @@ from django.conf import settings
 from django.core.management import call_command
 from django.utils import timezone
 from datetime import timedelta
+from home.utils import get_current_country
+
 
 def poll_feeds():
     call_command('poll_feeds')
@@ -18,8 +20,17 @@ def run_backup():
 
 
 def run_crawlers():
+    # 服务器上暂时不运行info crawlers
     if not settings.RUN_INFO_CRAWLERS:
         return
+    # IP不对，暂时不运行
+    # TODO: Display a notification at least
+    try:
+        country = get_current_country()
+        if country != 'China':
+            return
+    except:
+        pass
     from info_collector import crawlers
     info_crawlers = (
         crawlers.TechQQCrawler(),

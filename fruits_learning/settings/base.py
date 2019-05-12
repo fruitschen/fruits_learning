@@ -213,3 +213,5 @@ REST_FRAMEWORK = {
 DATA_DIR = os.path.join(BASE_DIR, 'stuff', 'data')
 
 RUN_INFO_CRAWLERS = False
+
+GEOIP_DB_PATH = os.path.join(BASE_DIR, 'stuff', 'GeoLite2-Country', 'GeoLite2-Country.mmdb')
