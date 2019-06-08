@@ -78,7 +78,7 @@ class Command(BaseCommand):
                     status_time = now - timedelta(hours=int(status_time))
                     status_time = status_time.strftime('%Y-%m-%d')
                 else:
-                    raise RuntimeError('We cannot handle the status time format. ')
+                    raise RuntimeError('We cannot handle the status time format. {}'.format(status_time))
 
             if link:
                 url = link.get_attribute('href')
@@ -108,7 +108,7 @@ class Command(BaseCommand):
                     pass
                 else:
                     time.sleep(0.5)
-                    content.location_once_scrolled_into_view
+                    content.location_once_scrolled_into_view()
                     time.sleep(0.5)
                     content.screenshot(tweet.screenshot_full)
                     #  open(tweet.screenshot_full, 'wb').write(content.screenshot_as_png)

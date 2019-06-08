@@ -29,3 +29,4 @@ sorl-thumbnail==12.3
 dj-pagination==2.3.0
 django-autocomplete-light==3.2.10
 -e git+https://github.com/django-backup/django-backup.git@develop#egg=django-backup
+Pygments==2.4.0
