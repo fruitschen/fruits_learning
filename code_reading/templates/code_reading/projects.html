@@ -1,0 +1,15 @@
+{% extends "code_reading/code_base.html" %}
+{% load static %}
+
+
+{% block content %}
+    <h1>Test</h1>
+    <ul>
+        {% for project in projects %}
+            <li>
+                {{ project }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+
