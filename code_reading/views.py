@@ -6,6 +6,9 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.views import View
 
+from pygments import highlight
+from pygments.lexers import get_lexer_for_filename
+from pygments.formatters import HtmlFormatter
 
 
 PROJECTS_DIR = os.path.join(settings.BASE_DIR, 'data', 'projects')
@@ -35,15 +38,24 @@ class ProjectsIndex(View):
 
 
 class ProjectDetails(View):
-
     @method_decorator(staff_member_required)
     def get(self, request, project):
         absolute_project_path = os.path.join(PROJECTS_DIR, project)
         pwd = request.GET.get('pwd', '')
+        file = request.GET.get('file', '')
+        formatted_content = ''
+        template = 'code_reading/project_details.html'
+
         if not pwd:
             absolute_pwd = absolute_project_path
         else:
             absolute_pwd = os.path.join(absolute_project_path, pwd)
+        
+        if file:
+            file_path = os.path.join(absolute_pwd, file)
+            formatted_content = self.get_file_content(file_path)
+            template = 'code_reading/file_details.html'
+            
         files, directories = get_names(absolute_pwd)
         directories = [{'name': d, 'pwd': os.path.join(pwd, d)} for d in directories]
         context = {
@@ -51,6 +63,14 @@ class ProjectDetails(View):
             'project': project,
             'pwd': pwd,
             'files': files,
+            'file': file,
+            'formatted_content': formatted_content,
             'directories': directories,
         }
-        return render(request, 'code_reading/project_details.html', context)
+        return render(request, template, context)
+    
+    
+    def get_file_content(self, file_path):
+        file_content = open(file_path).read()
+        lexer = get_lexer_for_filename(file_path)
+        return highlight(file_content, lexer, HtmlFormatter(linenos='table'))

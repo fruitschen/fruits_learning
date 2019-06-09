@@ -14,7 +14,9 @@
         {% endfor %}
         {% for file in files %}
             <li>
-                {{ file }}
+                <a href="{% url 'code_reading_project' project %}?pwd={{ pwd }}&file={{ file }}">
+                    {{ file }}
+                </a>
             </li>
         {% endfor %}
     </ul>
