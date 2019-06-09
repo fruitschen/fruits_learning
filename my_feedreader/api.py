@@ -1,5 +1,3 @@
-from django.conf.urls import url, include
-from django.utils import timezone
 from django.shortcuts import redirect
 import django_filters
 from rest_framework.decorators import detail_route
