@@ -1,0 +1,22 @@
+{% extends "code_reading/code_base.html" %}
+{% load static %}
+
+
+{% block content %}
+    <h1>{{ project }}{% if pwd %}: {{ pwd }}{% endif %}</h1>
+    <ul>
+        {% for directory in directories %}
+            <li>
+                <a href="{% url 'code_reading_project' project %}?pwd={{ directory.pwd }}">
+                    +{{ directory.name }}
+                </a>
+            </li>
+        {% endfor %}
+        {% for file in files %}
+            <li>
+                {{ file }}
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}
+

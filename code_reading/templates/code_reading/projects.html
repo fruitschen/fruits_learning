@@ -3,11 +3,11 @@
 
 
 {% block content %}
-    <h1>Test</h1>
+    <h1>Projects</h1>
     <ul>
         {% for project in projects %}
             <li>
-                {{ project }}
+                <a href="{% url 'code_reading_project' project %}">{{ project }}</a>
             </li>
         {% endfor %}
     </ul>
