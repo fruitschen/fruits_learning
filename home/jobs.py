@@ -8,6 +8,7 @@ from home.utils import get_current_country
 
 def poll_feeds():
     call_command('poll_feeds')
+    call_command('post_poll_feeds')
 
 
 def delete_old_info():
