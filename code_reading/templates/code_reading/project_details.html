@@ -4,6 +4,21 @@
 
 {% block content %}
     <h1>{{ project }}{% if pwd %}: {{ pwd }}{% endif %}</h1>
+    <table class="table">
+        <tr>
+            <th>Python Files</th>
+            <td>{{ project.py_files_read_count }} / {{ project.py_files_count }}</td>
+        </tr>
+        <tr>
+            <th>Lines</th>
+            <td>{{ project.py_lines_read_count }} / {{ project.py_lines_count }}</td>
+        </tr>
+        <tr>
+            <td>Last Updated</td>
+            <td>{{ project.updated_timestamp }}</td>
+        </tr>
+    </table>
+
     <ul>
         {% for directory in directories %}
             <li>

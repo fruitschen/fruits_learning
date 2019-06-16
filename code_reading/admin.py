@@ -1,3 +1,14 @@
 from django.contrib import admin
 
-# Register your models here.
+from code_reading.models import Project, ProjectFile
+
+
+@admin.register(Project)
+class ProjectAdmin(admin.ModelAdmin):
+    list_filter = ['analysed']
+
+
+@admin.register(ProjectFile)
+class ProjectFileAdmin(admin.ModelAdmin):
+    list_display = ['project', 'filepath', ]
+    list_filter = ['project', 'ext', 'read']

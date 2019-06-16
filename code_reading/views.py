@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.conf import settings
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
+from django.utils import timezone
 from django.views import View
 
 from pygments import highlight
@@ -46,6 +47,8 @@ class ProjectDetails(View):
             project.save()
         if not project.analysed:
             project.analyse_project()
+        if project.updated_timestamp < timezone.now() - timezone.timedelta(minutes=10):
+            project.update()
         pwd = request.GET.get('pwd', '')
         file = request.GET.get('file', '')
         formatted_content = ''
