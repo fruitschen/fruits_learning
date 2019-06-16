@@ -11,7 +11,7 @@ from pygments.lexers import get_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
 
-PROJECTS_DIR = os.path.join(settings.BASE_DIR, 'data', 'projects')
+from code_reading.models import PROJECTS_DIR, Project
 
 
 def get_names(directory):
@@ -39,17 +39,22 @@ class ProjectsIndex(View):
 
 class ProjectDetails(View):
     @method_decorator(staff_member_required)
-    def get(self, request, project):
-        absolute_project_path = os.path.join(PROJECTS_DIR, project)
+    def get(self, request, project_directory):
+        project, created = Project.objects.get_or_create(directory=project_directory)
+        if created:
+            project.name = project.directory
+            project.save()
+        if not project.analysed:
+            project.analyse_project()
         pwd = request.GET.get('pwd', '')
         file = request.GET.get('file', '')
         formatted_content = ''
         template = 'code_reading/project_details.html'
 
         if not pwd:
-            absolute_pwd = absolute_project_path
+            absolute_pwd = project.absolute_project_path
         else:
-            absolute_pwd = os.path.join(absolute_project_path, pwd)
+            absolute_pwd = os.path.join(project.absolute_project_path, pwd)
         
         if file:
             file_path = os.path.join(absolute_pwd, file)
@@ -59,7 +64,7 @@ class ProjectDetails(View):
         files, directories = get_names(absolute_pwd)
         directories = [{'name': d, 'pwd': os.path.join(pwd, d)} for d in directories]
         context = {
-            'title': project,
+            'title': project.name,
             'project': project,
             'pwd': pwd,
             'files': files,
