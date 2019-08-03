@@ -62,96 +62,99 @@ class Command(BaseCommand):
 
         '''
         driver.execute_script(js)
-
-        for index, t in enumerate(tweets_to_process):
-            content = t['content']
-            link = t['link']
-            status_time = t['status_time']
-            if not status_time[:4].isdigit():
-                now = timezone.now()
-                if '-' in status_time:
-                    # 12-27, {month}-{date} format
-                    status_time = '{}-{}'.format(now.year, status_time)
-                elif u'\u5c0f\u65f6\u524d' in status_time:
-                    # 11小时前, 1小时前……
-                    status_time = status_time.replace(u'\u5c0f\u65f6\u524d', u'')
-                    status_time = now - timedelta(hours=int(status_time))
-                    status_time = status_time.strftime('%Y-%m-%d')
-                else:
-                    raise RuntimeError('We cannot handle the status time format. {}'.format(status_time))
-
-            if link:
-                url = link.get_attribute('href')
-                status_id = url.split('/status/')[-1]
-                if Tweet.objects.filter(t_id=status_id).exists():
-                    # Tweet.objects.filter(t_id=status_id).update(t_time=status_time)
-                    pass
-                else:
-                    print 'record the id and save date, id, content, later'
-                    tweet = Tweet.objects.create(
-                        t_id=status_id,
-                        t_time=status_time,
-                        finished=False
-                    )
-            else:
-                if Tweet.objects.filter(t_time=status_time).exists():
-                    tweet = Tweet.objects.filter(t_time=status_time)[0]
-                else:
-                    print 'Save the content and time'
-                    tweet = Tweet.objects.create(
-                        t_id='',
-                        t_time=status_time,
-                        finished=True,
-                        content=content.text,
-                    )
-                if os.path.exists(tweet.screenshot_full):
-                    pass
-                else:
-                    time.sleep(0.5)
-                    content.location_once_scrolled_into_view()
-                    time.sleep(0.5)
-                    content.screenshot(tweet.screenshot_full)
-                    #  open(tweet.screenshot_full, 'wb').write(content.screenshot_as_png)
-                    try:
-                        picture_content = content.find_element_by_class_name('weibo-media')
-                        picture_content.screenshot(tweet.screenshot_pictures)
-                    except selenium.common.exceptions.NoSuchElementException:
+        
+        try:
+            for index, t in enumerate(tweets_to_process):
+                content = t['content']
+                link = t['link']
+                status_time = t['status_time']
+                if not status_time[:4].isdigit():
+                    now = timezone.now()
+                    if '-' in status_time:
+                        # 12-27, {month}-{date} format
+                        status_time = '{}-{}'.format(now.year, status_time)
+                    elif u'\u5c0f\u65f6\u524d' in status_time:
+                        # 11小时前, 1小时前……
+                        status_time = status_time.replace(u'\u5c0f\u65f6\u524d', u'')
+                        status_time = now - timedelta(hours=int(status_time))
+                        status_time = status_time.strftime('%Y-%m-%d')
+                    else:
+                        raise RuntimeError('We cannot handle the status time format. {}'.format(status_time))
+    
+                if link:
+                    url = link.get_attribute('href')
+                    status_id = url.split('/status/')[-1]
+                    if Tweet.objects.filter(t_id=status_id).exists():
+                        # Tweet.objects.filter(t_id=status_id).update(t_time=status_time)
                         pass
-
-            #  we need to hide the tweet or the screenshot will be wrong.
-            js = '''document.querySelectorAll('#tweet_processing%s').forEach(function(obj){
-                obj.style.display='none';
-            })''' % (index)
-            driver.execute_script(js)
-
-        for tweet in Tweet.objects.filter(finished=False):
-            retry = 0
-            while retry < 3 and not tweet.finished:
-                try:
-                    driver.get(tweet.status_url())
-                    time.sleep(1)
-                    js = '''document.querySelectorAll('.tips')[0].style.display='None'; '''
-                    try:
-                        driver.execute_script(js)
-                    except:
-                        pass
-                    main_content = driver.find_element_by_class_name('weibo-main')
-                    time.sleep(0.2)
+                    else:
+                        print 'record the id and save date, id, content, later'
+                        tweet = Tweet.objects.create(
+                            t_id=status_id,
+                            t_time=status_time,
+                            finished=False
+                        )
+                else:
+                    if Tweet.objects.filter(t_time=status_time).exists():
+                        tweet = Tweet.objects.filter(t_time=status_time)[0]
+                    else:
+                        print 'Save the content and time'
+                        tweet = Tweet.objects.create(
+                            t_id='',
+                            t_time=status_time,
+                            finished=True,
+                            content=content.text,
+                        )
                     if os.path.exists(tweet.screenshot_full):
                         pass
                     else:
-                        main_content.screenshot(tweet.screenshot_full)
+                        time.sleep(0.5)
+                        content.location_once_scrolled_into_view
+                        time.sleep(0.5)
+                        content.screenshot(tweet.screenshot_full)
+                        #  open(tweet.screenshot_full, 'wb').write(content.screenshot_as_png)
                         try:
-                            picture_content = main_content.find_element_by_class_name('weibo-media')
+                            picture_content = content.find_element_by_class_name('weibo-media')
                             picture_content.screenshot(tweet.screenshot_pictures)
                         except selenium.common.exceptions.NoSuchElementException:
                             pass
-                    tweet.content = main_content.text
-                    tweet.finished = True
-                    tweet.save()
-                except:
-                    retry += 1
-
+    
+                #  we need to hide the tweet or the screenshot will be wrong.
+                js = '''document.querySelectorAll('#tweet_processing%s').forEach(function(obj){
+                    obj.style.display='none';
+                })''' % (index)
+                driver.execute_script(js)
+    
+            for tweet in Tweet.objects.filter(finished=False):
+                retry = 0
+                while retry < 3 and not tweet.finished:
+                    try:
+                        driver.get(tweet.status_url())
+                        time.sleep(1)
+                        js = '''document.querySelectorAll('.tips')[0].style.display='None'; '''
+                        try:
+                            driver.execute_script(js)
+                        except:
+                            pass
+                        main_content = driver.find_element_by_class_name('weibo-main')
+                        time.sleep(0.2)
+                        if os.path.exists(tweet.screenshot_full):
+                            pass
+                        else:
+                            main_content.screenshot(tweet.screenshot_full)
+                            try:
+                                picture_content = main_content.find_element_by_class_name('weibo-media')
+                                picture_content.screenshot(tweet.screenshot_pictures)
+                            except selenium.common.exceptions.NoSuchElementException:
+                                pass
+                        tweet.content = main_content.text
+                        tweet.finished = True
+                        tweet.save()
+                    except:
+                        retry += 1
+        except:
+            import pdb; pdb.set_trace()
+            raise
         print 1
         print 2
         print 3
