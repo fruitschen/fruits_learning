@@ -25,6 +25,7 @@ def get_names(directory):
             directories.append(item)
         else:
             files.append(item)
+    files.sort()
     return files, directories
 
 
