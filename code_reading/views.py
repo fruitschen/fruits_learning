@@ -48,7 +48,7 @@ class ProjectDetails(View):
             project.save()
         if not project.analysed:
             project.analyse_project()
-        if project.updated_timestamp < timezone.now() - timezone.timedelta(minutes=10):
+        if not project.updated_timestamp or project.updated_timestamp < timezone.now() - timezone.timedelta(minutes=10):
             project.update()
         pwd = request.GET.get('pwd', '')
         file = request.GET.get('file', '')
