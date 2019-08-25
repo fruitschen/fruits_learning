@@ -42,6 +42,15 @@ class ProjectsIndex(View):
 class ProjectDetails(View):
     @method_decorator(staff_member_required)
     def get(self, request, project_directory):
+        context = self.get_context(request, project_directory)
+        return render(request, context['template'], context)
+    
+    def get_file_content(self, file_path):
+        file_content = open(file_path).read()
+        lexer = get_lexer_for_filename(file_path)
+        return highlight(file_content, lexer, HtmlFormatter(linenos='table'))
+
+    def get_context(self, request, project_directory):
         project, created = Project.objects.get_or_create(directory=project_directory)
         if created:
             project.name = project.directory
@@ -52,19 +61,23 @@ class ProjectDetails(View):
             project.update()
         pwd = request.GET.get('pwd', '')
         file = request.GET.get('file', '')
+        file_obj = None
         formatted_content = ''
         template = 'code_reading/project_details.html'
-
+    
         if not pwd:
             absolute_pwd = project.absolute_project_path
         else:
             absolute_pwd = os.path.join(project.absolute_project_path, pwd)
-        
+    
         if file:
             file_path = os.path.join(absolute_pwd, file)
             formatted_content = self.get_file_content(file_path)
             template = 'code_reading/file_details.html'
-            
+            rel_file_path = os.path.join(pwd, file)
+            file_obj = project.files.get(filepath=rel_file_path)
+
+    
         files, directories = get_names(absolute_pwd)
         directories = [{'name': d, 'pwd': os.path.join(pwd, d)} for d in directories]
         context = {
@@ -73,13 +86,17 @@ class ProjectDetails(View):
             'pwd': pwd,
             'files': files,
             'file': file,
+            'file_obj': file_obj,
             'formatted_content': formatted_content,
             'directories': directories,
+            'template': template,
         }
-        return render(request, template, context)
-    
-    
-    def get_file_content(self, file_path):
-        file_content = open(file_path).read()
-        lexer = get_lexer_for_filename(file_path)
-        return highlight(file_content, lexer, HtmlFormatter(linenos='table'))
+        return context
+        
+    @method_decorator(staff_member_required)
+    def post(self, request, project_directory):
+        context = self.get_context(request, project_directory)
+        if request.POST.get('action') == 'mark_as_read':
+            context['file_obj'].mark_as_read()
+            
+        return render(request, context['template'], context)

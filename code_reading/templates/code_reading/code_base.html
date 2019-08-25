@@ -8,7 +8,13 @@
 {% block extra_css %}
 {% endblock %}
 
-{% block content %}
+{% block outter_content %}
+<div class="container">
+    <div class="col-md-10">
+        <a href="{% url 'code_reading_index' %}">Code Reading</a>
+        {% block content %}{% endblock %}
+    </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}

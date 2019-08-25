@@ -83,7 +83,13 @@
         <a href="{% url 'code_reading_project' project %}?pwd={{ pwd }}">{% if pwd %}{{ pwd }}{% endif %}</a>
     </h1>
     <h1>{{ file }}</h1>
-
+    <p>
+        <form action="" method="post">
+            <input type="hidden" name="action" value="mark_as_read">
+            {% csrf_token %}
+            <button>Mark Read</button>
+        </form>
+    </p>
     {{ formatted_content|safe }}
 
 {% endblock %}

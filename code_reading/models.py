@@ -84,3 +84,8 @@ class ProjectFile(models.Model):
         if self.ext in ProjectFile.VALID_TYPES:
             self.lines_count = len(open(path, 'r').readlines())
         self.save()
+    
+    def mark_as_read(self):
+        self.read += 1
+        self.save()
+        self.project.update()
