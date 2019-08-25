@@ -12,3 +12,4 @@ class ProjectAdmin(admin.ModelAdmin):
 class ProjectFileAdmin(admin.ModelAdmin):
     list_display = ['project', 'filepath', ]
     list_filter = ['project', 'ext', 'read']
+    search_fields = ['filepath']

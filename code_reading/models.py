@@ -22,6 +22,9 @@ class Project(models.Model):
     py_lines_read_count = models.IntegerField(default=0)
     updated_timestamp = models.DateTimeField(null=True, default=None)
     
+    SKIP_PATHS = ['.git', 'migrations']
+    SKIP_EXTENSIONS = ['pyc', 'egg-info']
+    
     def __unicode__(self):
         return self.name
     
@@ -31,9 +34,14 @@ class Project(models.Model):
 
     def analyse_project(self):
         def process_dir(data, dir, files):
+            if file in Project.SKIP_PATHS:
+                return
             for file in files:
                 path = os.path.join(dir, file)
                 if not os.path.isdir(path):
+                    ext = os.path.splitext(path)[-1].replace('.', '')
+                    if ext in self.SKIP_EXTENSIONS:
+                        continue
                     relative_path = path.replace(self.absolute_project_path, '')
                     if relative_path.startswith('/'):
                         relative_path = relative_path[1:]
@@ -42,7 +50,8 @@ class Project(models.Model):
                         file_obj = ProjectFile(
                             project=self,
                             filepath=relative_path,
-                            filename=file
+                            filename=file,
+                            ext=ext,
                         )
                         file_obj.analyse_file()
 
@@ -73,14 +82,13 @@ class ProjectFile(models.Model):
     ignored = models.BooleanField(default=False)
     lines_count = models.IntegerField(null=True)
 
-    VALID_TYPES = ['.py', '.js', '.css', '.html', ]
+    VALID_TYPES = ['py', 'js', 'css', 'html', ]
     
     def __unicode__(self):
         return self.filename
 
     def analyse_file(self):
         path = os.path.join(self.project.absolute_project_path, self.filepath)
-        self.ext = os.path.splitext(path)[-1].replace('.', '')
         if self.ext in ProjectFile.VALID_TYPES:
             self.lines_count = len(open(path, 'r').readlines())
         self.save()

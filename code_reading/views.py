@@ -20,6 +20,11 @@ def get_names(directory):
     contents = os.listdir(directory)
     files, directories = [], []
     for item in contents:
+        if item in Project.SKIP_PATHS:
+            continue
+        ext = os.path.splitext(item)[-1].replace('.', '')
+        if ext in Project.SKIP_EXTENSIONS:
+            continue
         candidate = os.path.join(directory, item)
         if os.path.isdir(candidate):
             directories.append(item)
