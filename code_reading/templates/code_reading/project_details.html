@@ -3,7 +3,11 @@
 
 
 {% block content %}
-    <h1>{{ project }}{% if pwd %}: {{ pwd }}{% endif %}</h1>
+    <h1>
+        <a href="{% url 'code_reading_project' project %}">{{ project }}</a>
+        :
+        <a href="{% url 'code_reading_project' project %}?pwd={{ pwd }}">{% if pwd %}{{ pwd }}{% endif %}</a>
+    </h1>
     <table class="table">
         <tr>
             <th>Python Files</th>
@@ -27,10 +31,15 @@
                 </a>
             </li>
         {% endfor %}
-        {% for file in files %}
+        {% for file_obj in files_objects %}
             <li>
-                <a href="{% url 'code_reading_project' project %}?pwd={{ pwd }}&file={{ file }}">
-                    {{ file }}
+                {% if file_obj.read %}
+                    <input type="checkbox" name="read" checked disabled />
+                {% else %}
+                    <input type="checkbox" name="read" disabled />
+                {% endif %}
+                <a href="{% url 'code_reading_project' project %}?pwd={{ pwd }}&file={{ file_obj.filename }}">
+                    {{ file_obj.filename }}
                 </a>
             </li>
         {% endfor %}

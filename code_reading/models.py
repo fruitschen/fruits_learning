@@ -22,7 +22,7 @@ class Project(models.Model):
     py_lines_read_count = models.IntegerField(default=0)
     updated_timestamp = models.DateTimeField(null=True, default=None)
     
-    SKIP_PATHS = ['.git', 'migrations']
+    SKIP_PATHS = ['.git', 'migrations', '__pycache__']
     SKIP_EXTENSIONS = ['pyc', 'egg-info']
     
     def __unicode__(self):
@@ -34,7 +34,7 @@ class Project(models.Model):
 
     def analyse_project(self):
         def process_dir(data, dir, files):
-            if file in Project.SKIP_PATHS:
+            if dir in Project.SKIP_PATHS:
                 return
             for file in files:
                 path = os.path.join(dir, file)

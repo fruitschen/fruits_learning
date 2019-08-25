@@ -11,8 +11,7 @@ from pygments import highlight
 from pygments.lexers import get_lexer_for_filename
 from pygments.formatters import HtmlFormatter
 
-
-from code_reading.models import PROJECTS_DIR, Project
+from code_reading.models import PROJECTS_DIR, Project, ProjectFile
 
 
 def get_names(directory):
@@ -81,10 +80,12 @@ class ProjectDetails(View):
             template = 'code_reading/file_details.html'
             rel_file_path = os.path.join(pwd, file)
             file_obj = project.files.get(filepath=rel_file_path)
-
-    
-        files, directories = get_names(absolute_pwd)
-        directories = [{'name': d, 'pwd': os.path.join(pwd, d)} for d in directories]
+            files = directories = files_objects = []
+        else:
+            files, directories = get_names(absolute_pwd)
+            files_paths = ['{}/{}'.format(pwd, f) for f in files]
+            files_objects = project.files.filter(filepath__in=files_paths).order_by('filename')
+            directories = [{'name': d, 'pwd': os.path.join(pwd, d)} for d in directories]
         context = {
             'title': project.name,
             'project': project,
@@ -92,6 +93,7 @@ class ProjectDetails(View):
             'files': files,
             'file': file,
             'file_obj': file_obj,
+            'files_objects': files_objects,
             'formatted_content': formatted_content,
             'directories': directories,
             'template': template,
