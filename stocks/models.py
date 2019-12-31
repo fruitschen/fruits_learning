@@ -887,7 +887,7 @@ class SnapshotStock(models.Model):
 
     @property
     def get_total(self):
-        return self.stock.price * self.amount
+        return self.price * self.amount
 
     @property
     def percent(self):

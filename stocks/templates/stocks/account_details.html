@@ -258,7 +258,7 @@
       var myChart = echarts.init(document.getElementById('account_chart'));
       var names = []
       var data = []
-      {% for stock in account.stocks.all %}
+      {% for stock in account_stocks %}
           names.push('{{ stock.stock }}');
           data.push({value: {{ stock.total }}, name:'{{ stock.stock }}'})
       {% endfor %}

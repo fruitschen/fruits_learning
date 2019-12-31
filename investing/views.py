@@ -44,13 +44,14 @@ def compound_interest(request):
 
 
 def fund_value_estimation(request):
-    fund_price = Decimal('0.62')
-    fund_value = Decimal('0.646')
+    fund_value = Decimal('0.85')
     fee = (Decimal('1') + Decimal('0.22')) / 100
     interest_rate = Decimal('7.25') / 100
 
-    initial_fund_value = Decimal('0.65')  # 净值为0.65时候初始估值大概是1
-    initial_pb = 1
+    # (某时间点)，净值为0.65时候初始估值大概是1
+    # 2019年末, 净值为0.85时候初始估值大概是0.8
+    initial_fund_value = Decimal('0.85')
+    initial_pb = Decimal('0.8')
     initial_leverage = leverage = (1 + fund_value) / fund_value
     groups = [
         {'roe': Decimal('15'), },
@@ -61,7 +62,7 @@ def fund_value_estimation(request):
     ]
     for group in groups:
         results = []
-        fund_value = Decimal('0.65')
+        fund_value = Decimal('0.85')
         fund_values = []
         roe = group['roe'] / 100
         while fund_value <= Decimal('1.6'):
