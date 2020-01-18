@@ -11,7 +11,15 @@
         <li><a href="">银行B份价值估算</a></li>
     </ol>
 
-    <h1>银行B份价值估算</h1>
+    <ul>
+        {% for fund in funds %}
+            <li>
+                <a href="{% url 'fund_value_estimation' fund.code %}">{{ fund.name }}{{ fund.code }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <h1>{{ fund.name }}({{ fund.code }})价值估算</h1>
 
     {% for group in groups %}
         <h2>ROE {{ group.roe }}</h2>
@@ -26,6 +34,7 @@
                 <th>手续费</th>
                 <th>利息</th>
                 <th>实际利润</th>
+                <th>母基金PE</th>
                 <th>基金PE</th>
                 <th>基金ROE</th>
             </tr>
@@ -41,6 +50,7 @@
                     <td>{{ result.total_fee|floatformat:2 }}</td>
                     <td>{{ result.interest|floatformat:2 }}</td>
                     <td>{{ result.real_profit|floatformat:2 }}</td>
+                    <td>{{ result.parent_fund_pe|floatformat:2 }}</td>
                     <td>{{ result.fund_pe|floatformat:2 }}</td>
                     <td>{{ result.fund_roe|floatformat:2 }}</td>
                 </tr>

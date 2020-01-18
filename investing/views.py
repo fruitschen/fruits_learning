@@ -4,6 +4,7 @@ from django.shortcuts import render
 from decimal import Decimal
 from stocks.templatetags.money import money_display
 
+
 def compound_interest(request):
     cols = [8, 10, 15, 20, 25, 30]
     years = range(1, 51)
@@ -43,29 +44,59 @@ def compound_interest(request):
     return render(request, 'compound_interest.html', context)
 
 
-def fund_value_estimation(request):
-    fund_value = Decimal('0.85')
-    fee = (Decimal('1') + Decimal('0.22')) / 100
-    interest_rate = Decimal('7.25') / 100
-
-    # (某时间点)，净值为0.65时候初始估值大概是1
-    # 2019年末, 净值为0.85时候初始估值大概是0.8
-    initial_fund_value = Decimal('0.85')
-    initial_pb = Decimal('0.8')
-    initial_leverage = leverage = (1 + fund_value) / fund_value
-    groups = [
-        {'roe': Decimal('15'), },
-        {'roe': Decimal('10'), },
-        {'roe': Decimal('18'), },
-        {'roe': Decimal('5'), },
-        {'roe': Decimal('20'), },
+def fund_value_estimation(request, code='150292'):
+    funds = [
+        {
+            # (某时间点)，净值为0.65时候初始估值大概是1
+            # 2019年末, 净值为0.85时候初始估值大概是0.8
+            # 懒得计算PB
+            'code': '150292',
+            'name': u'银行B份',
+            'fund_value': Decimal('0.85'),
+            'initial_pb': Decimal('0.85'),
+            'fee': (Decimal('1') + Decimal('0.22')) / 100,
+            'interest_rate': (Decimal('4') + Decimal('1.5')) / 100,
+            'roe_list': [12, 15, 10, 18, 5, 20],
+        },
+        {
+            'code': '150118',
+            'name': u'房地产B',
+            'fund_value': Decimal('1.15'),
+            'initial_pb': Decimal('1.5'),
+            'fee': (Decimal('1') + Decimal('0.2')) / 100,
+            'interest_rate': (Decimal('4') + Decimal('1.5')) / 100,
+            'roe_list': [18, 15, 20, 25],
+        },
+        {
+            'code': '150228',
+            'name': u'银行B',
+            'fund_value': Decimal('0.95'),
+            'initial_pb': Decimal('0.85'),
+            'fee': (Decimal('1') + Decimal('0.22')) / 100,
+            'interest_rate': (Decimal('3') + Decimal('1.5')) / 100,
+            'roe_list': [12, 15, 10, 18, 5, 20],
+        },
     ]
+    for fund in funds:
+        if fund['code'] == code:
+            break
+    fund_value = fund['fund_value']
+    fee = fund['fee']
+    interest_rate = fund['interest_rate']
+    initial_fund_value = fund_value
+    initial_pb = fund['initial_pb']
+    initial_leverage = leverage = (1 + fund_value) / fund_value
+    
+    groups = [
+        {'roe': Decimal(roe), } for roe in fund['roe_list']
+    ]
+    calc_limit = fund_value * 2
     for group in groups:
         results = []
-        fund_value = Decimal('0.85')
+        fund_value = fund['fund_value']
         fund_values = []
         roe = group['roe'] / 100
-        while fund_value <= Decimal('1.6'):
+        while fund_value <= calc_limit:
             fund_values.append(fund_value)
             inc = (fund_value / initial_fund_value) - 1
             pb_inc = inc / initial_leverage
@@ -77,6 +108,7 @@ def fund_value_estimation(request):
             total_fee = money * fee
             interest = interest_rate * 1
             real_profit = profit - total_fee - interest
+            parent_fund_pe = Decimal(1 / (1 / pb * roe))
             fund_pe = fund_value / real_profit
             fund_roe = real_profit / fund_value * 100
 
@@ -91,6 +123,7 @@ def fund_value_estimation(request):
                 'interest': interest,
                 'real_profit': real_profit,
                 'fund_pe': fund_pe,
+                'parent_fund_pe': parent_fund_pe,
                 'fund_roe': fund_roe,
             }
             results.append(result)
@@ -99,5 +132,7 @@ def fund_value_estimation(request):
 
     context = {
         'groups': groups,
+        'fund': fund,
+        'funds': funds,
     }
     return render(request, 'fund_value_estimation.html', context)
