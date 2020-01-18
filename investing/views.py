@@ -111,7 +111,18 @@ def fund_value_estimation(request, code='150292'):
             parent_fund_pe = Decimal(1 / (1 / pb * roe))
             fund_pe = fund_value / real_profit
             fund_roe = real_profit / fund_value * 100
-
+            
+            years = []
+            max_year = int(request.GET.get('max_year', 0))
+            asset_next_year = asset * (1 + real_profit)
+            for year in range(1, max_year+1):
+                profit_next_year = asset_next_year * roe
+                real_profit_next_year = profit_next_year - total_fee - interest
+                asset_next_year = asset_next_year + real_profit_next_year
+                fund_pe_next_year = fund_value / real_profit_next_year
+                fund_roe_next_year = real_profit_next_year / fund_value * 100
+                years.append({'year': year, 'roe': fund_roe_next_year, 'pe': fund_pe_next_year})
+                
             result = {
                 'fund_value': fund_value,
                 'pb': pb,
@@ -125,6 +136,7 @@ def fund_value_estimation(request, code='150292'):
                 'fund_pe': fund_pe,
                 'parent_fund_pe': parent_fund_pe,
                 'fund_roe': fund_roe,
+                'years': years,
             }
             results.append(result)
             fund_value += Decimal('0.1')

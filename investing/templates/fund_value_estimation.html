@@ -21,6 +21,11 @@
 
     <h1>{{ fund.name }}({{ fund.code }})价值估算</h1>
 
+    <form action="" method="get">
+        <input type="number" name="max_year" min="1" max="20" value="{{ request.GET.max_year|default:1 }}" />
+        <input type="submit" value="年" />
+    </form>
+
     {% for group in groups %}
         <h2>ROE {{ group.roe }}</h2>
         <table class="table">
@@ -37,6 +42,10 @@
                 <th>母基金PE</th>
                 <th>基金PE</th>
                 <th>基金ROE</th>
+                {% for year in group.results.0.years %}
+                    <th>PE - {{ year.year }}</th>
+                    <th>ROE - {{ year.year }}</th>
+                {% endfor %}
             </tr>
 
             {% for result in group.results %}
@@ -53,6 +62,10 @@
                     <td>{{ result.parent_fund_pe|floatformat:2 }}</td>
                     <td>{{ result.fund_pe|floatformat:2 }}</td>
                     <td>{{ result.fund_roe|floatformat:2 }}</td>
+                    {% for year in result.years %}
+                        <td>{{ year.pe|floatformat:2 }}</td>
+                        <td>{{ year.roe|floatformat:2 }}</td>
+                    {% endfor %}
                 </tr>
             {% endfor %}
         </table>
