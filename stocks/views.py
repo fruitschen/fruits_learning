@@ -36,10 +36,13 @@ def account_pair_transactions(request, account_slug):
 
     account = Account.objects.get(slug=account_slug)
     all_account_pair_transactions = account.pair_transactions.all()
-    pair_transactions_unfinished = all_account_pair_transactions.filter(finished__isnull=True)
-    pair_transactions_finished = all_account_pair_transactions.filter(finished__isnull=False)
+    pair_transactions_archived = all_account_pair_transactions.filter(archived=True)
+    valid_pair_transactions = all_account_pair_transactions.filter(archived=False)
+    pair_transactions_unfinished = valid_pair_transactions.filter(finished__isnull=True)
+    pair_transactions_finished = valid_pair_transactions.filter(finished__isnull=False)
     context = {
         'account': account,
+        'pair_transactions_archived': pair_transactions_archived,
         'pair_transactions_unfinished': pair_transactions_unfinished,
         'pair_transactions_finished': pair_transactions_finished,
     }
@@ -139,10 +142,10 @@ def account_details(request, account_slug):
     recent_transactions = account.recent_transactions()
 
     all_time_profits = {}
-    all_time_profits['pair_finished']= all_account_pair_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
-    all_time_profits['pair_unfinished'] = sum([pt.get_profit() for pt in all_account_pair_transactions.filter(finished__isnull=True)])
-    all_time_profits['bs_finished']= all_account_bs_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
-    all_time_profits['bs_unfinished']= sum([t.get_profit() for t in all_account_bs_transactions.filter(finished__isnull=True)])
+    all_time_profits['pair_finished'] = account_pair_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
+    all_time_profits['pair_unfinished'] = sum([pt.get_profit() for pt in account_pair_transactions.filter(finished__isnull=True)])
+    all_time_profits['bs_finished'] = all_account_bs_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
+    all_time_profits['bs_unfinished'] = sum([t.get_profit() for t in all_account_bs_transactions.filter(finished__isnull=True)])
     all_time_profits['pair'] = all_time_profits['pair_finished'] + all_time_profits['pair_unfinished']
     all_time_profits['bs'] = all_time_profits['bs_finished'] + all_time_profits['bs_unfinished']
     all_time_profits['total'] = all_time_profits['bs'] + all_time_profits['pair']

@@ -21,5 +21,9 @@
         {% include "stocks/includes/pair_transaction_list.html" %}
     {% endwith %}
 
+    <h3>Archived</h3>
+    {% with pair_transactions_archived as pair_transactions %}
+        {% include "stocks/includes/pair_transaction_list.html" %}
+    {% endwith %}
 
 {% endblock %}
