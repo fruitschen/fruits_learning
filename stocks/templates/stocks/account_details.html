@@ -2,12 +2,11 @@
 {% load static %}
 
 {% block stocks_content %}
-    <ol class="breadcrumb">
+    <ol class="breadcrumb no-print">
         <li><a href="/">主页</a></li>
         <li><a href="{% url 'stocks' %}">股票</a></li>
         <li><a href="">{{ account }} </a></li>
     </ol>
-
 
     <h1>
         {{ account }}
@@ -55,7 +54,7 @@
                 </tr>
                 {% for sub in account.subaccount_set.all %}
                     {%if sub.debt %}
-                    <tr>
+                    <tr class="no-input">
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.name }}</td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.debt }}</td>
                     </tr>
@@ -82,6 +81,7 @@
         <table class="table">
             <tr>
                 <th>名称</th>
+                <th>价格</th>
                 <th>数量</th>
                 <th>总价</th>
                 <th>占比</th>
@@ -89,6 +89,7 @@
             {% for stock in account_stocks %}
                 <tr>
                     <td>{{ stock.stock }}</td>
+                    <td>{{ stock.stock.price }}</td>
                     <td>{{ stock.amount }}</td>
                     <td>{{ stock.total }}</td>
                     <td>{{ stock.percent|floatformat:2 }}%</td>
@@ -99,7 +100,7 @@
 
 
     <h3>构成
-        <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#account_chart_container" aria-expanded="true" aria-controls="account_chart_container">
+        <a class="btn btn-lg btn-primary no-print" role="button" data-toggle="collapse" href="#account_chart_container" aria-expanded="true" aria-controls="account_chart_container">
             显示/隐藏
         </a>
     </h3>
@@ -107,44 +108,47 @@
         <div id="account_chart"  style="width:100%;height:500px"></div>
     </div>
 
-
     {% if snapshots %}
-        <h3>快照
-            <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#account_snapshots" aria-expanded="true" aria-controls="account_snapshots">
+        <h3 class="no-print">快照
+            <a class="btn btn-lg btn-primary" id="account_snapshots_button" role="button" data-toggle="collapse" href="#account_snapshots_container" aria-expanded="true" aria-controls="account_snapshots_container">
                 显示/隐藏
             </a>
         </h3>
+        <div id="account_snapshots_container" class="collapse in">
+            {% include "stocks/includes/snapshot_list.html" %}
 
-        {% include "stocks/includes/snapshot_list.html" %}
+            {% if snapshots_chart_data %}
+            <div id="snapshots_chart" style="width:100%;height:500px"></div>
+            {% endif %}
 
-        {% if snapshots_chart_data %}
-        <div id="snapshots_chart" style="width:100%;height:500px"></div>
-        {% endif %}
+            {% if logged_in %}
+                <h3>
+                    <form method="post" action="{% url 'take_snapshot' account.slug %}">
+                        {% csrf_token %}
+                        <button class="btn btn-lg btn-primary">
+                            Take Snapshot
+                        </button>
+                    </form>
+                </h3>
+            {% endif %}
+
+        </div>
     {% endif %}
 
     {% if logged_in %}
-
-        <h3>
-            <form method="post" action="{% url 'take_snapshot' account.slug %}">
-                {% csrf_token %}
-                <button class="btn btn-lg btn-primary">
-                    Take Snapshot
-                </button>
-            </form>
-        </h3>
-
+    <div class="no-print">
         <h3>配对</h3>
         {% include "stocks/includes/pair_list.html" %}
+    </div>
     {% endif %}
 
-
     {% if logged_in %}
-        <h3>利润
+        <h3 class="no-input">利润
             <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
                 显示/隐藏
             </a>
         </h3>
-        <div  class="collapse in" id="account_profit">
+        <div class="collapse in" id="account_profit">
             <table class="table">
                 {% for month in aggregates_by_months %}
                     <tr>
@@ -194,7 +198,7 @@
             {% with bs_transactions_unfinished as bs_transactions %}
                 {% include "stocks/includes/bs_transaction_list.html" %}
             {% endwith %}
-            <h3>已卖出交易</h3>
+            <h3 class="no-print">已卖出交易</h3>
             {% with bs_transactions_this_month as bs_transactions %}
                 {% include "stocks/includes/bs_transaction_list.html" %}
             {% endwith %}
@@ -208,8 +212,8 @@
 
     {% if recent_transactions %}
         {% with recent_transactions as transactions %}
-            <h3>最近交易
-                <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">
+            <h3 class="no-print">最近交易
+                <a class="btn btn-lg btn-primary" id="recent_transactions_button" role="button" data-toggle="collapse" href="#recent_transactions" aria-expanded="true" aria-controls="recent_transactions">
                     显示/隐藏
                 </a>
             </h3>
@@ -351,6 +355,14 @@
       };
       snapshotsChart.setOption(option);
       /* -------------------------------- 账户历史净资产图结束 --------------------------------------- */
+
+          {% if logged_in %}
+          $(function(){
+              $('#account_snapshots_button').click();
+              $('#recent_transactions_button').click();
+          })
+          {% endif %}
+
       {% endif %}
   </script>
 {% endblock %}

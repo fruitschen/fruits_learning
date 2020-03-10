@@ -82,7 +82,7 @@ def account_details(request, account_slug):
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
-    account_stocks = sorted(account.stocks.all(), lambda x, y: int(y.total - x.total))
+    account_stocks = sorted(account.stocks.filter(amount__gt=0), lambda x, y: int(y.total - x.total))
     all_account_pair_transactions = account.pair_transactions.all()
     account_pair_transactions = all_account_pair_transactions.exclude(archived=True)
     if account.public:

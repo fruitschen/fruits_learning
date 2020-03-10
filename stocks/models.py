@@ -707,7 +707,7 @@ class Account(models.Model):
 
     def recent_transactions(self):
         """最近交易，返回一个月内的，如果没有交易则返回上个月的。"""
-        today = timezone.now().date()
+        today = timezone.now().date() + timedelta(days=1)
         month_start = timezone.datetime(today.year, today.month, 1).date()
         transactions = self.find_transactions(month_start, today)
         if not transactions:

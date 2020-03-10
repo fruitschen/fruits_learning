@@ -5,3 +5,17 @@
 .home-jumbo p {
     font-size: 18px;
 }
+
+@media print {
+　h1#site_heading, #account_profit, .no-print, tr.no-input, th.no-input, h3.no-input, td.no-input, .breadcrumb,
+  .btn-primary, footer{
+    display:none !important;
+  }
+
+  #account_chart_container {
+    margin-left: -25%;
+  }
+
+
+
+}
