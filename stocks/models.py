@@ -134,7 +134,33 @@ class StockPair(models.Model):
         """如果股票的价格有变动则更新比值。"""
         if not self.value_updated or self.value_updated < (timezone.now() + timedelta(minutes=1)):
             self.update()
-
+    
+    @property
+    def last_transaction(self):
+        if self.unfinished_transactions:
+            query = self.unfinished_transactions
+        else:
+            query = self.transactions.all()
+        if query:
+            last_transaction = query.order_by('-id')[0]
+        return last_transaction
+    
+    @property
+    def unfinished_transactions(self):
+        return self.transactions.filter(finished__isnull=True).exclude(archived=True)
+    
+    @property
+    def note(self):
+        last_transaction = self.last_transaction
+        if last_transaction:
+            if last_transaction.finished:
+                ratio = self.last_transaction.back_ratio
+            else:
+                ratio = self.last_transaction.to_ratio
+            ratio = round(ratio * 10000) / 10000
+            
+            return ratio
+    
     @property
     def status(self):
         """计算配对今日的涨跌幅"""
@@ -325,7 +351,11 @@ class PairTransaction(models.Model):
                     self.transactions.add(t)
         transactions = start_transactions + end_transactions
         return transactions
-
+    
+    @property
+    def same_direction(self):
+        return self.sold_stock == self.pair.started_stock
+    
 
 class Stock(models.Model):
     """一直股票，基金……"""

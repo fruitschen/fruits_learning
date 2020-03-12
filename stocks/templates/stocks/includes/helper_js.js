@@ -7,7 +7,16 @@ if(typeof(global_interval) != undefined){
 var $ = window.jQuery;
 window.stocks = {}
 window.pairs = [
-
+    {% for pair in pairs %}{
+        'pair': ['{{ pair.started_stock.market.upper }}{{ pair.started_stock.code }}', '{{ pair.target_stock.market.upper }}{{ pair.target_stock.code }}'],
+        'note': {{ pair.note }},
+        'transactions': [
+        {% for t in pair.unfinished_transactions %}
+            {'ratio': {{ t.to_ratio }}, 'same_direction': {{ t.same_direction|lower }},
+            'text': '{{ t.bought_stock.name }} x {{ t.bought_amount }}. -> {{ t.sold_stock.name }} x {{ t.sold_amount }}', }{% if not forloop.last %},{% endif %}
+        {% endfor %}]
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
 ]
 
 window.update_stocks = function(){
@@ -47,8 +56,26 @@ window.update_display = function(){
     for (i in pairs){
         pair = pairs[i];
         content = '<strong>' + pair['name'] + '</strong> <br> <strong>' + pair['ratio'].toFixed(3) + '</strong>'
-        if(pair.note){
-            content = content + '<span> ' + pair.note + '</span>'
+        if(pair.transactions){
+            for (j in pair.transactions){
+                transaction = pair.transactions[j];
+                trans_ratio = transaction.ratio;
+                fee = 0.002; // assume total fee is 0.2%
+                if(transaction.same_direction){
+                    change = (1- pair['ratio'] / trans_ratio - fee) * 100
+                }else{
+                    change = (pair['ratio'] / trans_ratio - 1 - fee) * 100
+                }
+                if(change > 0){
+                    sign = '+'
+                    color = 'red'
+                }else{
+                    sign = ''
+                    color = 'green'
+                }
+                change_text = '<strong style="color: ' + color + '">(' + sign + change.toFixed(2) + '%)</strong>'
+                content = content + '<br /><span> ' + trans_ratio.toFixed(3) + change_text + ' | ' + transaction.text + '</span>'
+            }
         }
         $(first_panel).append('<li style="padding:10px;">' + content + '</li>')
     }
