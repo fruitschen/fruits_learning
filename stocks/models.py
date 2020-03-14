@@ -380,8 +380,12 @@ class Stock(models.Model):
     def __unicode__(self):
         return u'%s(%s%s)' % (self.name, self.market, self.code)
 
-    def update_price(self):
-        update_stocks_prices([self])
+    def update_price(self, price):
+        if self.market == 'hk':
+            price = Decimal(price) * Decimal('0.9')
+        self.price = price
+        self.price_updated = timezone.now()
+        self.save()
 
     def get_absolute_url(self):
         return reverse('stock_details', args=(self.code,))
@@ -489,7 +493,6 @@ class Stock(models.Model):
             date = date - timedelta(days=1)
             return self.get_price_by_date(date)
         return Decimal(price)
-
 
 
 class BoughtSoldTransaction(models.Model):

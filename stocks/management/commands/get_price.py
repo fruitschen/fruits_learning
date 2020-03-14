@@ -40,9 +40,7 @@ class Command(BaseCommand):
                 price = info['price']
                 if Stock.objects.filter(code=code).exists():
                     stock = Stock.objects.get(code=code)
-                    stock.price = Decimal(price)
-                    stock.price_updated = timezone.now()
-                    stock.save()
+                    stock.update_price(Decimal(price))
             for f in stocks_files:
                 file_path = os.path.join(update_file_path, f)
                 os.unlink(file_path)

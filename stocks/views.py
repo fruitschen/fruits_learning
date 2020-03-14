@@ -49,13 +49,14 @@ def account_pair_transactions(request, account_slug):
     return render(request, 'stocks/account_pair_transactions.html', context)
 
 
-
 def account_details(request, account_slug):
     logged_in = request.user.is_authenticated()
     get_price_job = None
     if logged_in and request.GET.get('update', False):
         get_price_job = get_price.delay()
     account = Account.objects.get(slug=account_slug)
+    if account.slug == 'personal':
+        assert account.public is False
     if not account.public and not request.user.is_authenticated():
         return HttpResponseForbidden('Oops')
     snapshots = account.snapshots.all().order_by('-id')

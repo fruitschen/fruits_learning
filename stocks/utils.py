@@ -29,9 +29,7 @@ def update_stocks_prices(stocks, verbose=0):
             price = line.split('~')[3]
             if Decimal(price) > 0:
                 stock.comment = line.decode('gb2312')
-                stock.price = price
-                stock.price_updated = timezone.now()
-                stock.save()
+                stock.update_price(price)
         except Exception, e:
             if verbose:
                 print e
