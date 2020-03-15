@@ -19,6 +19,7 @@ from diary.utils import get_events_by_date, age_format
 from tips.models import get_random_tip
 from info_collector.models import Info
 from shortcuts.models import Shortcut
+from stocks.utils import trigger_snapshot
 from weibo_backup.models import Tweet
 
 
@@ -80,6 +81,7 @@ class DiaryDetails(View):
 
     @method_decorator(staff_member_required)
     def get(self, request, diary_date):
+        trigger_snapshot();
         context = self.get_context(request, diary_date)
         return render(request, 'diary/diary_details.html', context)
 

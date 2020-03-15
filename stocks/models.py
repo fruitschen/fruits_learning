@@ -14,7 +14,7 @@ from django.db.models import Q, Sum
 
 from markdownx.models import MarkdownxField
 from markdownx.utils import markdownify
-from stocks.utils import update_stocks_prices, td_format
+from stocks.utils import td_format
 
 
 '''

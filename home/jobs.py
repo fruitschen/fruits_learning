@@ -4,6 +4,7 @@ from django.core.management import call_command
 from django.utils import timezone
 from datetime import timedelta
 from home.utils import get_current_country
+from stocks.utils import trigger_snapshot
 
 
 def poll_feeds():
@@ -118,6 +119,14 @@ cron_jobs = [
         args=[],
         kwargs={},
         repeat=None,  # Repeat forever
+        queue_name='default'
+    ),
+    dict(
+        cron_string='10 15 * * *',
+        func=trigger_snapshot,
+        args=[],
+        kwargs={},
+        repeat=None,
         queue_name='default'
     ),
     dict(

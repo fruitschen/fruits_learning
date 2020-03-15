@@ -1,8 +1,10 @@
 # -*- coding: UTF-8 -*-
 import requests
 from decimal import Decimal
-
 from django.utils import timezone
+from django.core.management import call_command
+from diary.rules import last_trading_day
+from datetime import date, timedelta, datetime
 
 
 def update_stocks_prices(stocks, verbose=0):
@@ -61,3 +63,16 @@ def td_format(td_object):
             strings.append("%s%s" % (period_value, period_name))
 
     return "".join(strings)
+
+
+def trigger_snapshot():
+    """When time is right, automatically take a snapshot of public account. """
+    from stocks.models import Account
+    now = datetime.now()
+    if last_trading_day(now):
+        if now.hour > 15:
+            first_day_of_month = date(now.year, now.month, 1)
+            public_account = Account.objects.get(slug='public')
+            if not public_account.snapshots.filter(date__gt=first_day_of_month):
+                call_command('get_price')
+                public_account.take_snapshot()
