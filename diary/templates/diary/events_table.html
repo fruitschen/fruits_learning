@@ -1,0 +1,32 @@
+{% extends "diary/diary_base.html" %}
+
+{% block diary_content %}
+    <ol class="breadcrumb">
+        <li><a href="{% url 'diary_index' %}">日记</a></li>
+        <li>事项表格</li>
+    </ol>
+
+    <h3>事项表格</h3>
+
+    {% include "diary/include/events_options.html" %}
+
+    <table class="table">
+        <tr>{% for th in table.header %}<th>{{ th }}</th>{% endfor %}</tr>
+        {% for row in table.rows %}
+        <tr>
+            {% for td in row %}
+                <td>
+                    <span {% if td is True %}class="glyphicon glyphicon-remove"{% endif %}
+                          {% if td is False %}class="glyphicon glyphicon-remove"{% endif %}>
+                        {% if forloop.first %}{{ td }}{% endif %}
+                    </span>
+                </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+
+    </table>
+
+
+
+{% endblock %}

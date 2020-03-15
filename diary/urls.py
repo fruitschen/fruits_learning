@@ -6,6 +6,7 @@ urlpatterns = [
     url(r'^$', DiaryIndex.as_view(), name='diary_index'),
     url(r'^list/$', DiaryList.as_view(), name='diary_list'),
     url(r'^events/$', DiaryEvents.as_view(), name='diary_events'),
+    url(r'^events_table/$', DiaryEventsTable.as_view(), name='diary_events_table'),
     url(r'^add_event/$', AddEvent.as_view(), name='diary_add_event'),
     url(r'^todo/$', DiaryTodo.as_view(), name='diary_todo'),
     url(r'^details/(?P<diary_date>\d{4}-\d{2}-\d{2})/$', diary_details, name='diary_details'),

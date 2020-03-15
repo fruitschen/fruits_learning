@@ -1,0 +1,14 @@
+    <ul class="nav nav-pills">
+        <li role="presentation" {% if not selected_type %}class="active"{% endif %}><a href=".">全部</a></li>
+        {% for event_type in event_types %}
+            <li role="presentation" {% if selected_type == event_type %}class="active"{% endif %}><a href="?event_type={{ event_type }}">{{ event_type }}</a></li>
+        {% endfor %}
+    </ul>
+
+    <form method="get" action=".">
+        {{ form.start }} ~ {{ form.end }}
+        <input type="submit" value="改日期" />
+        {% for shortcut in dates_shortcuts %}
+            <a href=".?start={{ shortcut.1|date:'Y-m-j' }}" class="btn btn-default">{{ shortcut.0 }}</a>
+        {% endfor %}
+    </form>

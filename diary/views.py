@@ -347,14 +347,22 @@ class DiaryEditText(View):
 
 
 class DiaryEvents(View):
-    @method_decorator(staff_member_required)
-    def get(self, request):
+    
+    def get_default_start(self):
+        today = date.today()
+        return today
+    
+    def get_default_end(self):
+        default_end = self.get_default_start() + timedelta(days=42)
+        return default_end
+    
+    def get_context(self, request):
         event_types = EVENT_TYPES
         selected_type = request.GET.get('event_type', None)
-
+    
         today = date.today()
-        default_start = today
-        default_end = default_start + timedelta(days=42)
+        default_start = self.get_default_start()
+        default_end = self.get_default_end()
         form = EventsRangeForm(initial={'start': default_start, 'end': default_end})
         if request.GET:
             form = EventsRangeForm(request.GET)
@@ -365,15 +373,16 @@ class DiaryEvents(View):
         else:
             start = default_start
             end = default_end
-
+    
         dates_shortcuts = [
-            [u'一周以前', today - timedelta(days=7),],
-            [u'一月以前', today - timedelta(days=30),],
+            [u'一周以前', today - timedelta(days=7), ],
+            [u'一月以前', today - timedelta(days=30), ],
         ]
-
+    
         current_day = start
         days = []
         days_and_events = []
+    
         while current_day < end:
             days.append(current_day)
             current_day += timedelta(days=1)
@@ -395,19 +404,83 @@ class DiaryEvents(View):
                     'events': events,
                     'events_by_groups': events_by_groups,
                 })
-
+    
         context = {
             'title': u'日记 - 事件列表',
             'hide_header_footer': True,
+            'days': days,
             'days_and_events': days_and_events,
             'event_types': event_types,
             'selected_type': selected_type,
             'form': form,
             'dates_shortcuts': dates_shortcuts,
         }
+        return context
+    
+    template = 'diary/events.html'
+    
+    @method_decorator(staff_member_required)
+    def get(self, request):
+        context = self.get_context(request)
+        template = self.template
         context.update(base_diary_context())
-        return render(request, 'diary/events.html', context)
+        return render(request, template, context)
 
+
+class DiaryEventsTable(DiaryEvents):
+    template = 'diary/events_table.html'
+
+    def get_default_start(self):
+        start = date.today() - timedelta(days=7)
+        return start
+
+    def get_default_end(self):
+        return date.today() + timedelta(days=1)
+
+    def get_context(self, request):
+        context = super(DiaryEventsTable, self).get_context(request)
+        days = context['days']
+        selected_type = context['selected_type']
+        
+        header = [u'日期']
+        rows = []
+        table = {
+            'header': header,
+            'rows': rows,
+        }
+        max_index = 1
+        for day in days:
+            diary_query = Diary.objects.filter(date=day)
+            if diary_query:
+                diary = diary_query[0]
+            else:
+                diary = Diary(date=day)
+            events = get_events_by_date(diary)
+            events = filter(lambda event: event.is_task, events)
+            if selected_type:
+                events = filter(lambda event: event.event_type == selected_type, events)
+            if events:
+                row = [diary.date]
+                for event in events:
+                    if event.event_template:
+                        name = event.event_template.event
+                    else:
+                        name = event.event
+                    if name not in header:
+                        header.append(name)
+                    index = header.index(name)
+                    if index > max_index:
+                        max_index = index
+                    while len(row) <= index:
+                        row.append('')
+                    row[index] = event.is_done
+                rows.append(row)
+            for row in rows:
+                while len(row) <= max_index:
+                    row.append('')
+        context.update({'table': table})
+        return context
+    
 
 class UpdateTaskView(View):
 

@@ -17,4 +17,12 @@ class Migration(migrations.Migration):
             name='done_timestamp',
             field=models.DateTimeField(blank=True, default=None, null=True),
         ),
+        migrations.AlterField(
+            model_name='ruleeventtemplate',
+            name='rule',
+            field=models.CharField(
+                choices=[(b'first_20_days', b'first_20_days'), (b'not_first_20_days', b'not_first_20_days'),
+                         (b'last_trading_day', b'last_trading_day'), (b'last_sunday', b'last_sunday'),
+                         (b'season_end', b'season_end')], max_length=64),
+        ),
     ]

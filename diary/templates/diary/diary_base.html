@@ -35,6 +35,7 @@
                             <li><a href="{% url 'diary_details' tomorrow %}{% if tag %}?tag={{ tag }}{% endif %}">明天</a></li>
                             <li><a href="#show-calendar" id="show-calendar">日历</a></li>
                             <li><a href="{% url 'diary_events' %}">事项</a></li>
+                            <li><a href="{% url 'diary_events_table' %}">事项表格</a></li>
                             <li><a href="{% url 'diary_todo' %}">TODO</a></li>
                             <li><a href="{% url 'contacts_send_email' %}">发邮件</a></li>
                         </ul>
