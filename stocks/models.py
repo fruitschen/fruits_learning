@@ -620,6 +620,41 @@ class AccountStock(models.Model):
         return self.total / self.account.stocks_total * Decimal(100)
 
 
+class AccountStocksRange(models.Model):
+    account = models.ForeignKey('Account', related_name='stocks_ranges')
+    stocks = models.ManyToManyField('Stock', limit_choices_to={'star': True})
+    low = models.DecimalField(default='20', max_digits=5, decimal_places=2, null=True, blank=True)
+    high = models.DecimalField(default='20', max_digits=5, decimal_places=2, null=True, blank=True)
+    
+    @property
+    def mid(self):
+        if self.high and self.low:
+            return (self.high + self.low) / 2
+    
+    @property
+    def current_values(self):
+        total = Decimal(0)
+        percent = Decimal(0)
+        for account_stock in self.account.stocks.filter(stock__in=self.stocks.all()):
+            total += account_stock.total
+            percent += account_stock.percent
+        if percent > self.high:
+            status = u'超'
+            status_amount = percent - self.high
+        elif percent < self.low:
+            status = u'低'
+            status_amount = self.low - percent
+        else:
+            status = u'正常'
+            status_amount = 0
+        return {
+            'percent': percent,
+            'total': total,
+            'status': status,
+            'status_amount': status_amount,
+        }
+
+
 class Account(models.Model):
     name = models.CharField(max_length=32)
     slug = models.SlugField(unique=True, db_index=True)

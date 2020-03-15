@@ -2,17 +2,21 @@
 from django.contrib import admin
 
 from stocks.models import (Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account, SubAccount,
-                           AccountStock, Snapshot, SnapshotStock, Transaction)
+                           AccountStock, Snapshot, SnapshotStock, Transaction, AccountStocksRange)
 from markdownx.admin import MarkdownxModelAdmin
 
 
 def add_star(modeladmin, request, queryset):
     queryset.update(star=True)
+
+
 add_star.short_description = "Star"
 
 
 def remove_star(modeladmin, request, queryset):
     queryset.update(star=True)
+
+
 remove_star.short_description = "Unstar"
 
 
@@ -38,7 +42,9 @@ def combine_pair_transactions(modeladmin, request, queryset):
     for obj in queryset[1:]:
         obj.delete()
 
+
 combine_pair_transactions.short_description = "Combine"
+
 
 class StockAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'price', 'market', 'star']
@@ -76,13 +82,18 @@ class AccountStockInline(admin.TabularInline):
     model = AccountStock
 
 
+class AccountStocksRangeInline(admin.TabularInline):
+    model = AccountStocksRange
+    extra = 0
+
+
 class SubAccountInline(admin.TabularInline):
     model = SubAccount
 
 
 class AccountAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'public', ]
-    inlines = [AccountStockInline, SubAccountInline]
+    inlines = [AccountStockInline, SubAccountInline, AccountStocksRangeInline]
 
 
 class SnapshotStockInline(admin.TabularInline):

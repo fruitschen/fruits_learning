@@ -106,6 +106,33 @@
     </h3>
     <div id="account_chart_container" class="collapse in">
         <div id="account_chart"  style="width:100%;height:500px"></div>
+
+        <div class="no-print">
+            <table class="table">
+                <tr>
+                    <th>分组</th>
+                    <th>状态</th>
+                    <th>实际</th>
+                    <th>期待</th>
+                </tr>
+                {% for stock_range in account.stocks_ranges.all %}
+                    <tr>
+                        <td>
+                            {% for stock in stock_range.stocks.all %}{{ stock.name }}{% if not forloop.last %}+{% endif %}{% endfor %}
+                        </td>
+                        <td>
+                            {{ stock_range.current_values.status }}
+                            {% if stock_range.current_values.status_amount %}
+                                {{ stock_range.current_values.status_amount|floatformat:2 }}%
+                            {% endif %}
+                        </td>
+                        <td>{{ stock_range.current_values.percent|floatformat:2 }}%</td>
+                        <td>{{ stock_range.low }} - {{ stock_range.high }}%</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
     </div>
 
     {% if snapshots %}
