@@ -16,7 +16,7 @@
         <tr>
             {% for td in row %}
                 <td>
-                    <span {% if td is True %}class="glyphicon glyphicon-remove"{% endif %}
+                    <span {% if td is True %}class="glyphicon glyphicon-ok" style="color: red;" {% endif %}
                           {% if td is False %}class="glyphicon glyphicon-remove"{% endif %}>
                         {% if forloop.first %}{{ td }}{% endif %}
                     </span>
