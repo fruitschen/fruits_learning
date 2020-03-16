@@ -109,7 +109,19 @@ window.update_all = function(){
 
 window.download_stocks = function(){
     n = new Date();
-    if (n.getHours() > 9 && n.getHours() < 15){
+    open_cond_1 = n.getHours() == 9 && n.getMinutes() > 25
+    open_cond_2 = n.getHours() > 9
+    end_cond_1 = n.getHours() == 11 && n.getMinutes() < 30
+    end_cond_2 = n.getHours() < 11
+    open_morning = (open_cond_1 || open_cond_2) && (end_cond_1 || end_cond_2)
+
+    open_cond_pm = n.getHours() >= 13
+    end_cond_pm = n.getHours() < 15
+    open_afternoon = open_cond_pm && end_cond_pm
+
+    open = open_morning || open_afternoon
+
+    if (open){
         download(JSON.stringify(stocks), 'stocks_updates.json', 'text/plain');
     }
 }
