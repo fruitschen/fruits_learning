@@ -22,7 +22,11 @@
     {% for item in events_by_groups %}
         <div class="panel panel-default">
             <div class="panel-heading">
-                {{ item.group|default:"无" }}
+                {% if item.is_important %}
+                    <h4>{{ item.group|default:"无" }}</h4>
+                {% else %}
+                    {{ item.group|default:"无" }}
+                {% endif %}
                 {% if item.group_all_done %}
                     <button class="btn btn-primary btn-xs" type="button" data-toggle="collapse" data-target="#group-{{ item.group|slugify }}" aria-expanded="false" aria-controls="group-{{ item.group }}">
                         Show

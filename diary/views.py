@@ -15,7 +15,7 @@ from diary.models import (
     Diary, DiaryContent, DiaryText, WEEKDAY_DICT, Event, DATE_FORMAT, EVENT_TYPES, Exercise, ExerciseLog, EventGroup
 )
 from diary.forms import DiaryTextForm, DiaryImageForm, DiaryAudioForm, EventsRangeForm, EventForm
-from diary.utils import get_events_by_date, age_format
+from diary.utils import get_events_by_date, get_important_events_by_date, age_format
 from tips.models import get_random_tip
 from info_collector.models import Info
 from shortcuts.models import Shortcut
@@ -121,8 +121,10 @@ class DiaryDetails(View):
             display_events = False
         if not display_events and not diary.events_generated:
             events = []
+            important_events = []
         else:
             events = get_events_by_date(diary, tag=tag, commit=commit)
+            important_events = get_important_events_by_date(diary.date)
         tasks = filter(lambda e: e.is_task, events)
         tasks_all_done = is_today and not filter(lambda task: not task.is_done, tasks)
         now = datetime.now()
@@ -141,7 +143,13 @@ class DiaryDetails(View):
                 hidden_events_count += 1
 
         events_by_groups = get_events_by_groups(events, is_today)
-
+        if important_events:
+            events_by_groups.append({
+                'is_important': True,
+                'group': u'最近重要事项',
+                'events': important_events
+            })
+        
         exercises_logs = ExerciseLog.objects.filter(date=diary_date)
         done_any_exercise = False
         if diary_date == today and not exercises_logs:

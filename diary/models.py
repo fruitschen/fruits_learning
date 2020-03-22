@@ -162,7 +162,8 @@ class BaseEventTemplate(models.Model):
     link_title = models.CharField(max_length=128, blank=True)
     link_url = models.CharField(max_length=512, blank=True)
     is_archived = models.BooleanField(default=False)
-
+    is_important = models.BooleanField(default=False)
+    
     class Meta:
         abstract = True
 
@@ -316,10 +317,6 @@ class Event(BaseEventTemplate):
         if self.start_hour:
             event += ' {}:{}'.format(self.start_hour, self.start_min or 0)
         return event
-
-    @property
-    def is_important(self):
-        return self.priority <= 10
 
     @property
     def is_delayed_mandatory(self):
