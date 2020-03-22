@@ -251,7 +251,7 @@ class PairTransaction(models.Model):
     @property
     def percent(self):
         """利润占占用资金的百分比"""
-        return '%%%.2f' % (self.get_profit() / self.money_taken * 100)
+        return '%.2f%%' % (self.get_profit() / self.money_taken * 100)
 
     @property
     def fee(self):
@@ -543,7 +543,7 @@ class BoughtSoldTransaction(models.Model):
 
     @property
     def percent(self):
-        return '%%%.2f' % (self.get_profit() / self.money_taken * 100)
+        return '%.2f%%' % (self.get_profit() / self.money_taken * 100)
 
     @property
     def fee(self):

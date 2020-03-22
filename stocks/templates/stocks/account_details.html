@@ -227,9 +227,11 @@
                 {% include "stocks/includes/bs_transaction_list.html" %}
             {% endwith %}
             <h3 class="no-print">已卖出交易</h3>
-            {% with bs_transactions_this_month as bs_transactions %}
-                {% include "stocks/includes/bs_transaction_list.html" %}
-            {% endwith %}
+            <div class="no-print">
+                {% with bs_transactions_this_month as bs_transactions %}
+                    {% include "stocks/includes/bs_transaction_list.html" %}
+                {% endwith %}
+            </div>
         {% else %}
             <h3>
                 <a href="{% url 'admin:stocks_boughtsoldtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-lg btn-primary">添加未卖出交易</a>
