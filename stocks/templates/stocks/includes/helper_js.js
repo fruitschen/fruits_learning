@@ -11,10 +11,18 @@ window.pairs = [
         'pair': ['{{ pair.started_stock.market.upper }}{{ pair.started_stock.code }}', '{{ pair.target_stock.market.upper }}{{ pair.target_stock.code }}'],
         'note': {{ pair.note }},
         'transactions': [
-        {% for t in pair.unfinished_transactions %}
-            {'ratio': {{ t.to_ratio }}, 'same_direction': {{ t.same_direction|lower }},
-            'text': '{{ t.bought_stock.name }} x {{ t.bought_amount }}. -> {{ t.sold_stock.name }} x {{ t.sold_amount }}', }{% if not forloop.last %},{% endif %}
-        {% endfor %}]
+        {% if pair.unfinished_transactions %}
+            {% for t in pair.unfinished_transactions %}
+                {'ratio': {{ t.to_ratio }}, 'same_direction': {{ t.same_direction|lower }},
+                'text': '{{ t.bought_stock.name }} x {{ t.bought_amount }}. -> {{ t.sold_stock.name }} x {{ t.sold_amount }}', }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        {% else %}
+            {% for t in pair.recent_finished_transactions %}
+                {'ratio': {{ t.to_ratio }}, 'same_direction': {{ t.same_direction|lower }},
+                'text': '已完成. {{ t.finished|date:"Y-m-d" }}', }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        {% endif %}
+        ]
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
 ]

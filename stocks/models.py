@@ -150,6 +150,12 @@ class StockPair(models.Model):
         return self.transactions.filter(finished__isnull=True).exclude(archived=True)
     
     @property
+    def recent_finished_transactions(self):
+        query = self.transactions.filter(finished__isnull=False).exclude(archived=True).order_by('-id')
+        return query[:2]
+
+    
+    @property
     def note(self):
         last_transaction = self.last_transaction
         if last_transaction:
