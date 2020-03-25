@@ -18,7 +18,13 @@
     {% with unfinished_pair_transactions as pair_transactions %}
         {% include "stocks/includes/pair_transaction_list.html" %}
     {% endwith %}
-    <h3>完成</h3>
+
+    <h3>已存档</h3>
+    {% with archived_pair_transactions as pair_transactions %}
+        {% include "stocks/includes/pair_transaction_list.html" %}
+    {% endwith %}
+
+    <h3>已完成</h3>
     {% include "stocks/includes/pair_transaction_list.html" %}
 {% endblock %}
 

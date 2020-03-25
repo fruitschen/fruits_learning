@@ -210,14 +210,18 @@ def pair_list(request):
 def pair_details(request, pair_id):
     pair = StockPair.objects.get(id=pair_id)
     pair_transactions = PairTransaction.objects.all().filter(pair=pair).\
-        filter(finished__isnull=False).order_by('-finished')
+        filter(finished__isnull=False).exclude(archived=True).order_by('-finished')
     unfinished_pair_transactions = PairTransaction.objects.all().\
-        filter(pair=pair).exclude(finished__isnull=False).order_by('-started')
-
+        filter(pair=pair).exclude(finished__isnull=False).exclude(archived=True).order_by('-started')
+    
+    archived_pair_transactions = PairTransaction.objects.all().\
+        filter(pair=pair).exclude(archived=False).order_by('-started')
+    
     context = {
         'pair': pair,
         'pair_transactions': pair_transactions,
         'unfinished_pair_transactions': unfinished_pair_transactions,
+        'archived_pair_transactions': archived_pair_transactions,
     }
     return render(request, 'stocks/pair_details.html', context)
 
