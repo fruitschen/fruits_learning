@@ -196,7 +196,7 @@ def get_pairs_context(request):
     pair_stocks = Stock.objects.filter(id__in=stock_ids)
     if request.GET.get('force_update', False):
         update_stocks_prices(pair_stocks)
-
+    star_pairs = sorted(star_pairs, lambda x, y: int( int(bool(y.unfinished_transactions)) - int(bool(x.unfinished_transactions))))
     return {"pairs": star_pairs, "update_stocks_prices_url": update_stocks_prices_url(pair_stocks)}
 
 
