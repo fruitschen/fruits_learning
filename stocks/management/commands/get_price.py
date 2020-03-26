@@ -38,6 +38,8 @@ class Command(BaseCommand):
             for key, info in stocks_info.items():
                 code = info['code'][-6:]
                 price = info['price']
+                if price == '--':
+                    continue
                 if Stock.objects.filter(code=code).exists():
                     stock = Stock.objects.get(code=code)
                     stock.update_price(Decimal(price))

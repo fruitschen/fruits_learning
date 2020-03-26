@@ -7,7 +7,7 @@
                         {{ t.pair }}
                         {{ t.started.date.year }}-{{ t.started.date.month }}-{{ t.started.date.day }}
                     </strong>
-                    比例:{{ t.to_ratio|floatformat:3 }} -&gt; | &lt;- {% if t.finished %}{{ t.back_ratio|floatformat:3 }}{% else %}({{ t.pair.current_value|floatformat:3 }}){% endif %}
+                    比例:{{ t.to_ratio_display }} -&gt; | &lt;- {% if t.finished %}{{ t.back_ratio_display }}{% else %}({{ t.pair.current_value_display }}){% endif %}
                 </th>
                 <th style="width:28%">
                     <strong style="color:red">{{ t.percent }} = {{ t.get_profit|floatformat:2 }} / {{ t.money_taken|floatformat:0 }}</strong>

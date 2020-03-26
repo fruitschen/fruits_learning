@@ -48,6 +48,14 @@ for transaction in sold_trans:
 '''
 
 
+def ratio_display(ratio):
+    if ratio < 0.2:
+        ratio = ratio.quantize(Decimal('0.0000'))
+    else:
+        ratio = ratio.quantize(Decimal('0.000'))
+    return ratio
+
+
 class Transaction(models.Model):
     """一笔买入、卖出交易"""
     BUY = u'买入'
@@ -118,6 +126,10 @@ class StockPair(models.Model):
             self.name = u'{}/{}'.format(self.started_stock.name, self.target_stock.name)
             self.save()
         return self.name
+
+    @property
+    def current_value_display(self):
+        return ratio_display(self.current_value)
 
     def update(self):
         """更新配对的比值"""
@@ -277,6 +289,21 @@ class PairTransaction(models.Model):
             ratio = self.sold_price / self.bought_price
         else:
             ratio = self.bought_price / self.sold_price
+        return ratio
+
+    @property
+    def to_ratio_display(self):
+        return self.ratio_display(self.to_ratio)
+
+    @property
+    def back_ratio_display(self):
+        return self.ratio_display(self.back_ratio)
+
+    def ratio_display(self, ratio):
+        if ratio < 0.2:
+            ratio = ratio.quantize(Decimal('0.0000'))
+        else:
+            ratio = ratio.quantize(Decimal('0.000'))
         return ratio
 
     @property

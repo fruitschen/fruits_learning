@@ -13,13 +13,15 @@ window.pairs = [
         'transactions': [
         {% if pair.unfinished_transactions %}
             {% for t in pair.unfinished_transactions %}
-                {'ratio': {{ t.to_ratio }}, 'same_direction': {{ t.same_direction|lower }},
+                {'ratio': {{ t.to_ratio_display }}, 'same_direction': {{ t.same_direction|lower }},
                 'text': '{{ t.bought_stock.name }} x {{ t.bought_amount }}. -> {{ t.sold_stock.name }} x {{ t.sold_amount }}', }{% if not forloop.last %},{% endif %}
             {% endfor %}
         {% else %}
             {% for t in pair.recent_finished_transactions %}
-                {'ratio': {{ t.to_ratio }}, 'same_direction': {{ t.same_direction|lower }},
-                'text': '已完成. {{ t.finished|date:"Y-m-d" }}', }{% if not forloop.last %},{% endif %}
+                {'ratio': {{ t.to_ratio_display }}, 'same_direction': {{ t.same_direction|lower }},
+                'text': '已完成. {{ t.finished|date:"Y-m-d" }}', is_finished:true },
+                {'ratio': {{ t.back_ratio_display }}, 'same_direction': {{ t.same_direction|lower }},
+                'text': '已完成. {{ t.finished|date:"Y-m-d" }}', is_finished: true }{% if not forloop.last %},{% endif %},
             {% endfor %}
         {% endif %}
         ]
@@ -58,15 +60,16 @@ window.update_display = function(){
     $('.user__col--lf').hide();
     $('.home__col--rt').width(450);
     first_panel = $('.home__business')[0];
-    $(first_panel).html('').css('margin-top', '160px');
+    $(first_panel).html('').css('margin-top', '0');
     n = new Date();
     $(first_panel).append('<li>' + n.toLocaleTimeString() + '</li>')
     for (i in pairs){
         pair = pairs[i];
-        content = '<strong>' + pair['name'] + '</strong> <br> <strong>' + pair['ratio'].toFixed(3) + '</strong>'
+        content = '<strong>' + pair['name'] + '</strong> <br> <strong>' + pair['ratio'].toFixed(4) + '</strong>'
         if(pair.transactions){
             for (j in pair.transactions){
                 transaction = pair.transactions[j];
+                var transaction_style = ''
                 trans_ratio = transaction.ratio;
                 fee = 0.002; // assume total fee is 0.2%
                 if(transaction.same_direction){
@@ -77,12 +80,18 @@ window.update_display = function(){
                 if(change > 0){
                     sign = '+'
                     color = 'red'
+                    if(change > 1){
+                        transaction_style += 'border: 2px dashed red;;'
+                    }
                 }else{
                     sign = ''
                     color = 'green'
                 }
                 change_text = '<strong style="color: ' + color + '">(' + sign + change.toFixed(2) + '%)</strong>'
-                content = content + '<br /><span> ' + trans_ratio.toFixed(3) + change_text + ' | ' + transaction.text + '</span>'
+                if(transaction.is_finished){
+                    transaction_style += 'background-color: #eee;'
+                }
+                content = content + '<br /><span style="' + transaction_style + '"> ' + trans_ratio.toFixed(4) + change_text + ' | ' + transaction.text + '</span>'
             }
         }
         $(first_panel).append('<li style="padding:10px;">' + content + '</li>')
