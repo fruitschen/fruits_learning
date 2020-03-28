@@ -89,7 +89,7 @@ window.update_display = function(){
                 }
                 change_text = '<strong style="color: ' + color + '">(' + sign + change.toFixed(2) + '%)</strong>'
                 if(transaction.is_finished){
-                    transaction_style += 'background-color: #eee;'
+                    transaction_style += 'background-color: #eee; color: #666;'
                 }
                 content = content + '<br /><span style="' + transaction_style + '"> ' + trans_ratio.toFixed(4) + change_text + ' | ' + transaction.text + '</span>'
             }

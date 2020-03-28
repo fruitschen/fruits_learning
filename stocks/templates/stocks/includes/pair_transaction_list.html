@@ -4,7 +4,7 @@
             <tr>
                 <th style="width:60%">
                     <strong>
-                        {{ t.pair }}
+                        <a href="{% url 'pair_details' t.pair.id %}">{{ t.pair }}</a>
                         {{ t.started.date.year }}-{{ t.started.date.month }}-{{ t.started.date.day }}
                     </strong>
                     比例:{{ t.to_ratio_display }} -&gt; | &lt;- {% if t.finished %}{{ t.back_ratio_display }}{% else %}({{ t.pair.current_value_display }}){% endif %}
@@ -14,7 +14,8 @@
                 </th>
                 <th style="width:12%" class="no-input">
                     <a href="{% url 'admin:stocks_pairtransaction_change' t.id %}" target="_blank" class="btn btn-primary btn-sm">Admin</a>
-                    <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="#pair_transactions_{{ t.id }}" aria-expanded="false" aria-controls="pair_transactions_{{ t.id }}">
+                    <a class="btn btn-primary btn-sm" role="button" data-toggle="collapse" href="#pair_transactions_{{ t.id }}"
+                       aria-expanded="false" aria-controls="pair_transactions_{{ t.id }}">
                         明细
                     </a>
                 </th>

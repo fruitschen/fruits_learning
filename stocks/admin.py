@@ -58,7 +58,32 @@ class PairTransactionAdmin(admin.ModelAdmin):
     list_filter = ['finished', 'account', 'archived', 'pair']
     readonly_fields = ['profit', ]
     actions = [combine_pair_transactions, ]
-
+    fieldsets = [
+        (None, {
+            'fields': ('account', 'pair'),
+        }),
+        (u'正向', {
+            'fields': (
+                ('sold_stock', 'sold_price', 'sold_amount'),
+                ('bought_stock', 'bought_price', 'bought_amount'),
+                ('started',),
+            )
+        }),
+        (u'反向', {
+            'fields': (
+                ('bought_sold_price',),
+                ('sold_bought_back_price', 'bought_back_amount', ),
+                ('finished',),
+            )
+        }),
+        (u'其它', {
+            'fields': (
+                ('profit',),
+                ('order',),
+                ('archived',),
+            )
+        }),
+    ]
 
 class BoughtSoldTransactionAdmin(admin.ModelAdmin):
     list_display = ['bought_stock', 'bought_price', 'profit', 'started', 'finished']
