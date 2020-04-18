@@ -7,8 +7,16 @@
 }
 
 @media print {
+  #stock_container {
+    margin: 0 auto;
+  }
+
 　h1#site_heading, #account_profit, .no-print, tr.no-input, th.no-input, h3.no-input, td.no-input, .breadcrumb,
   .btn-primary, footer{
+    display:none !important;
+  }
+
+  header h1#site_heading{
     display:none !important;
   }
 
