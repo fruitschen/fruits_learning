@@ -61,8 +61,8 @@ def fund_value_estimation(request, code='150292'):
         {
             'code': '150118',
             'name': u'房地产B',
-            'fund_value': Decimal('1.15'),
-            'initial_pb': Decimal('1.5'),
+            'fund_value': Decimal('0.9'),
+            'initial_pb': Decimal('1.26'),
             'fee': (Decimal('1') + Decimal('0.2')) / 100,
             'interest_rate': (Decimal('4') + Decimal('1.5')) / 100,
             'roe_list': [18, 15, 20, 25],
@@ -70,8 +70,8 @@ def fund_value_estimation(request, code='150292'):
         {
             'code': '150228',
             'name': u'银行B',
-            'fund_value': Decimal('0.95'),
-            'initial_pb': Decimal('0.85'),
+            'fund_value': Decimal('0.7'),
+            'initial_pb': Decimal('0.708'),
             'fee': (Decimal('1') + Decimal('0.22')) / 100,
             'interest_rate': (Decimal('3') + Decimal('1.5')) / 100,
             'roe_list': [12, 15, 10, 18, 5, 20],

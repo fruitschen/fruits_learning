@@ -388,7 +388,9 @@
 
           {% if logged_in %}
           $(function(){
-              $('#account_snapshots_button').click();
+              {% if not account.public %}
+                  $('#account_snapshots_button').click();
+              {% endif %}
               $('#recent_transactions_button').click();
           })
           {% endif %}

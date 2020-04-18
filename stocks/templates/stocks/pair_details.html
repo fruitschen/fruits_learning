@@ -14,6 +14,32 @@
     </ol>
 
     <h1>{{ pair }}</h1>
+
+
+    <h3 class="no-input">利润
+        <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#account_profit" aria-expanded="true" aria-controls="account_profit">
+            显示/隐藏
+        </a>
+    </h3>
+    <div class="collapse in" id="account_profit">
+        <table class="table">
+            {% for month in aggregates_by_months %}
+                <tr>
+                    <th>{{ month.time }}</th>
+                    <td>
+                        {{ month.pair_profit }}
+                        {% if month.profit %} + {{ month.profit }} = <strong style="color:red;">{{ month.total }}</strong>{% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <th>未结配对盈亏: </th>
+                <td>{{ pair_virtual_profit|floatformat:2 }}</td>
+            </tr>
+        </table>
+    </div>
+
+
     <h3>未完成</h3>
     {% with unfinished_pair_transactions as pair_transactions %}
         {% include "stocks/includes/pair_transaction_list.html" %}

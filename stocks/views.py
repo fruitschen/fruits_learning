@@ -126,17 +126,17 @@ def account_details(request, account_slug):
         transactions_by_month = account_bs_transactions.filter(finished__isnull=False)\
             .filter(finished__gte=start, finished__lt=end)
 
-        pair_profit_by_momth = pair_transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
-        profit_by_momth = transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
+        pair_profit_by_month = pair_transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
+        profit_by_month = transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
         aggregates_by_months.append({
             'time': '{} ~ {}'.format(start.date(), (end-timedelta(days=1)).date()),
-            'pair_profit': pair_profit_by_momth,
-            'profit': profit_by_momth,
-            'total': pair_profit_by_momth + profit_by_momth
+            'pair_profit': pair_profit_by_month,
+            'profit': profit_by_month,
+            'total': pair_profit_by_month + profit_by_month
         })
-        year_profits['pair_profit'] += pair_profit_by_momth
-        year_profits['profit'] += profit_by_momth
-        year_profits['total'] += pair_profit_by_momth + profit_by_momth
+        year_profits['pair_profit'] += pair_profit_by_month
+        year_profits['profit'] += profit_by_month
+        year_profits['total'] += pair_profit_by_month + profit_by_month
         month -= 1
 
     aggregates_by_months.append(year_profits)
@@ -216,12 +216,43 @@ def pair_details(request, pair_id):
     
     archived_pair_transactions = PairTransaction.objects.all().\
         filter(pair=pair).exclude(archived=False).order_by('-started')
+
+    now = timezone.now()
+    aggregates_by_months = []
+    year_profits = {
+        'time': '{} ~ '.format(now.year, 1, 1),
+        'pair_profit': 0,
+        'profit': 0,
+        'total': 0
+    }
+    month = now.month
+    while month != 0:
+        start = timezone.datetime(now.year, month, 1)
+        if month == 12:
+            end = timezone.datetime(now.year+1, 1, 1)
+        else:
+            end = timezone.datetime(now.year, month+1, 1)
+        pair_transactions_by_month = pair_transactions.filter(finished__isnull=False)\
+            .filter(finished__gte=start, finished__lt=end)
+
+        pair_profit_by_month = pair_transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
+        aggregates_by_months.append({
+            'time': '{} ~ {}'.format(start.date(), (end-timedelta(days=1)).date()),
+            'pair_profit': pair_profit_by_month,
+            'total': pair_profit_by_month
+        })
+        year_profits['pair_profit'] += pair_profit_by_month
+        month -= 1
+
+    aggregates_by_months.append(year_profits)
     
     context = {
         'pair': pair,
         'pair_transactions': pair_transactions,
         'unfinished_pair_transactions': unfinished_pair_transactions,
         'archived_pair_transactions': archived_pair_transactions,
+        'aggregates_by_months': aggregates_by_months,
+        'year_profits': year_profits,
     }
     return render(request, 'stocks/pair_details.html', context)
 

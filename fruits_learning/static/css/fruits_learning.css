@@ -16,6 +16,8 @@
     margin-left: -25%;
   }
 
-
+  a[href]:after {
+    content: none;
+  }
 
 }
