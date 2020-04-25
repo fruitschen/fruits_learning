@@ -14,7 +14,8 @@ class InfoAdmin(admin.ModelAdmin):
 
 
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ['name', 'url']
+    list_display = ['name', 'url', 'following']
+    list_filter = ['following', ]
 
 
 class SyncLogAdmin(admin.ModelAdmin):

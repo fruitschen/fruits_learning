@@ -51,14 +51,29 @@ class Author(models.Model):
     name = models.CharField(max_length=128, blank=True)
     url = models.CharField(max_length=1000, blank=True)
     avatar_url = models.CharField(max_length=1000, blank=True)
+    following = models.BooleanField(default=False)
     raw = models.TextField(blank=True)
-
+    
     def __unicode__(self):
         return self.name or u'[no name]'
 
     def natural_key(self):
         return (self.user_id, self.name)
 
+    def save_name(self):
+        if not self.names.filter(name=self.name).exists():
+            AuthorName.objects.create(author=self, name=self.name)
+            return True
+        
+
+class AuthorName(models.Model):
+    author = models.ForeignKey(Author, related_name='names')
+    name = models.CharField(max_length=128)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    def __unicode__(self):
+        return self.name
+    
 
 class InfoManager(models.Manager):
     def get_by_natural_key(self, info_source, identifier):

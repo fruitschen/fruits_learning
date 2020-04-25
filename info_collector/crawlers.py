@@ -105,7 +105,7 @@ class XueqiuBaseCrawler(AbstractBaseCrawler):
             'Accept-Language': 'en,zh-CN;q=0.8,zh;q=0.6,zh-TW;q=0.4',
         }
 
-    def save_author(self, user_info, info):
+    def save_author(self, user_info, info, following=False):
         user_id = user_info['id']
         if not user_id:
             return
@@ -118,12 +118,25 @@ class XueqiuBaseCrawler(AbstractBaseCrawler):
                 user_id=user_id,
                 name=user_info.get('screen_name', ''),
                 avatar_url=img,
+                following=following,
                 raw=json.dumps(user_info),
             )
         else:
             author = author_query[0]
-        info.author = author
-        info.save()
+            touched = False
+            if author.name != user_info.get('screen_name', ''):
+                author.name = user_info.get('screen_name', '')
+                author.raw = json.dumps(user_info)
+                author.save_name()
+                touched = True
+            if not author.following and following:
+                author.following = True
+                touched = True
+            if touched:
+                author.save()
+        if info:
+            info.author = author
+            info.save()
         return author
 
 
@@ -190,6 +203,43 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
             info.save()
 
 
+class XueqiuFollowingCrawler(XueqiuBaseCrawler):
+    """
+    from info_collector.crawlers import XueqiuFollowingCrawler
+    c = XueqiuFollowingCrawler()
+    c.run()
+    """
+    
+    def __init__(self):
+        super(XueqiuFollowingCrawler, self).__init__('xueqiu_following')
+
+    def update_info(self):
+        session = requests.Session()
+        # load home page and get cookies
+        response = get_response(session, self.info_source.url, timeout=3, headers=self.headers)
+        if not response:
+            return
+        
+        max_page = 1
+        current_page = 1
+        while current_page <= max_page:
+            json_url = 'https://xueqiu.com/friendships/groups/members.json?uid=9388324649&page={}&gid=0&_=158783019{}'.\
+                    format(current_page, random.randint(1, 2000))
+            json_response = get_response(session, json_url, timeout=3, headers=self.headers)
+            current_page += 1
+            res = json_response.json()
+            maxPage = res['maxPage']
+            if maxPage > max_page:
+                max_page = maxPage
+            following = res['users']
+            following.reverse()
+            for user in following:
+                #user_data = json.loads(user)
+                user_data = user
+                self.save_author(user_data, info=None, following=True)
+            time.sleep(5)
+            
+
 class XueqiuPeopleCrawler(XueqiuBaseCrawler):
     """
     from info_collector.crawlers import XueqiuPeopleCrawler
@@ -206,7 +256,8 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
         response = get_response(session, self.info_source.url, timeout=3, headers=self.headers)
         if not response:
             return
-
+        
+        '''
         users = [
             {'name': u'孙旭东', 'uid': '2536207007'},
             {'name': u'驽马-估值温度计', 'uid': '2548992415'},
@@ -222,11 +273,14 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
             {'name': u'闲来一坐s话投资', 'uid': '3491303582'},
             {'name': u'处镜如初', 'uid': '9226205191'},
         ]
+        '''
+        
+        users = Author.objects.filter(following=True).order_by('id')
         for user in users:
-            # print user['name']
+            print user.name
             page = 1
             json_url = 'https://xueqiu.com/v4/statuses/user_timeline.json?user_id={}&page={}&type=&_=1488637{}'.\
-                format(user['uid'], page, random.randint(1, 1000000))
+                format(user.user_id, page, random.randint(1, 1000000))
             json_response = get_response(session, json_url, timeout=3, headers=self.headers)
             json_result = json_response.json()
             total = json_result['total']
@@ -262,8 +316,8 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                         original_timestamp=created,
                         content=content,
                     )
+                    info.author = user
                     info.save()
-                    author = self.save_author(post['user'], info)
                 else:
                     info = info_query[0]
                     if not info.author:
