@@ -28,4 +28,15 @@
     content: none;
   }
 
+  table.small-print thead tr th, table.small-print thead tr td,
+  table.small-print tbody tr th, table.small-print tbody tr td{
+    padding: 2px;
+    font-weight: normal;
+  }
+
+  table.small-print thead tr th strong, table.small-print thead tr td strong,
+  table.small-print tbody tr th strong, table.small-print tbody tr td strong{
+    font-weight: normal;
+  }
+
 }
