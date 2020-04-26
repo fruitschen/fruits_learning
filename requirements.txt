@@ -15,7 +15,7 @@ BeautifulSoup==3.2.1
 urllib3[secure]
 django-webpack-loader
 
-djangorestframework==3.5.4
+djangorestframework==3.9.1
 markdown       # Markdown support for the browsable API.
 django-filter==1.0.1  # Filtering support
 django-crispy-forms
