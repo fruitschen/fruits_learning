@@ -8,14 +8,14 @@ ipython
 whitenoise==3.3.0
 diskcache
 redis
-django-rq
-rq-scheduler
+django-rq==2.0
+rq-scheduler==0.9.1
 git+https://github.com/fruitschen/django-feedreader.git#egg=django-feedreader
 BeautifulSoup==3.2.1
 urllib3[secure]
 django-webpack-loader
 
-djangorestframework
+djangorestframework==3.5.4
 markdown       # Markdown support for the browsable API.
 django-filter==1.0.1  # Filtering support
 django-crispy-forms
