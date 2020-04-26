@@ -1,0 +1,20 @@
+[program:learning_uwsgi]
+command=/home/fruitschen/.virtualenvs/learning/bin/uwsgi --emperor /home/fruitschen/workspace/learning/fruits_learning/local/deploy/local_uwsgi.ini  --logto /home/fruitschen/workspace/learning/fruits_learning/local/deploy/uwsgi.log
+autostart=true
+autorestart=true
+stopsignal=QUIT
+redirect_stderr=true
+
+[program:rq_worker]
+command=/home/fruitschen/.virtualenvs/learning/bin/python /home/fruitschen/workspace/learning/fruits_learning/manage.py rqworker
+autostart=true
+autorestart=true
+stopsignal=QUIT
+redirect_stderr=true
+
+[program:rq_scheduler]
+command=/home/fruitschen/.virtualenvs/learning/bin/python /home/fruitschen/workspace/learning/fruits_learning/manage.py rqscheduler
+autostart=true
+autorestart=true
+stopsignal=QUIT
+redirect_stderr=true

@@ -2,9 +2,10 @@ Django>=1.10,<1.11
 MySQL-python==1.2.5
 wagtail==1.12.2
 pytest-django
+django-compressor==2.2
 django-extensions
 ipython
-whitenoise
+whitenoise==3.3.0
 diskcache
 redis
 django-rq
@@ -16,17 +17,19 @@ django-webpack-loader
 
 djangorestframework
 markdown       # Markdown support for the browsable API.
-django-filter  # Filtering support
+django-filter==1.0.1  # Filtering support
 django-crispy-forms
 django-debug-toolbar
 selenium
 xlrd==1.0.0
 pandas==0.19.2
-lxml==3.7.3
-tushare==0.7.5
+lxml==4.5.0
 django-markdownx==2.0.21
 sorl-thumbnail==12.3
 dj-pagination==2.3.0
 django-autocomplete-light==3.2.10
 -e git+https://github.com/django-backup/django-backup.git@develop#egg=django-backup
 Pygments==2.4.0
+geoip2==2.9.0
+python-geoip==1.2
+python-geoip-geolite2==2015.303
