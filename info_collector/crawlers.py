@@ -257,26 +257,10 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
         if not response:
             return
         
-        '''
-        users = [
-            {'name': u'孙旭东', 'uid': '2536207007'},
-            {'name': u'驽马-估值温度计', 'uid': '2548992415'},
-            {'name': u'b_ing', 'uid': '4939534471'},
-            {'name': u'云蒙', 'uid': '3037882447'},
-            {'name': u'唐朝', 'uid': '8290096439'},
-            {'name': u'东博老股民', 'uid': '9528220473'},
-            {'name': u'滚一个雪球', 'uid': '6677862831'},
-            {'name': u'正合奇胜天舒', 'uid': '7315353232'},
-            {'name': u'陈绍霞', 'uid': '1876614331'},
-            {'name': u'DAVID自由之路', 'uid': '5819606767'},
-            {'name': u'天南财务健康谈', 'uid': '1175857472'},
-            {'name': u'闲来一坐s话投资', 'uid': '3491303582'},
-            {'name': u'处镜如初', 'uid': '9226205191'},
-        ]
-        '''
-        
         users = Author.objects.filter(following=True).order_by('id')
         for user in users:
+            if not user.should_fetch:
+                continue
             page = 1
             json_url = 'https://xueqiu.com/v4/statuses/user_timeline.json?user_id={}&page={}&type=&_=1488637{}'.\
                 format(user.user_id, page, random.randint(1, 1000000))

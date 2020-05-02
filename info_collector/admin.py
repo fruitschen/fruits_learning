@@ -14,6 +14,7 @@ class InfoAdmin(admin.ModelAdmin):
 
 
 class AuthorAdmin(admin.ModelAdmin):
+    search_fields = ['name']
     list_display = [
         'name', 'url', 'following', 'stop_fetching', 'last_fetched', 'last_day_count', 'last_week_count',
         'last_month_count', 'last_year_count',

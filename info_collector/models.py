@@ -68,8 +68,29 @@ class Author(models.Model):
 
     @property
     def should_fetch(self):
+        """
+        total = 0
+        for author in Author.objects.filter(following=True):
+            if author.should_fetch:
+                total += 1
+        print(total)
+        """
+        now = timezone.now()
         if self.stop_fetching:
             return False
+        if not self.last_fetched:
+            return True
+        since_last_fetched = now - self.last_fetched
+        # never again within an hour
+        if since_last_fetched < timedelta(minutes=60):
+            return False
+        # not within a week if there are fewer than 20 items last month
+        if self.last_month_count < 20 and since_last_fetched < timedelta(days=7):
+            return False
+        # not within a day if there are fewer than 20 items last week
+        if self.last_week_count < 20 and since_last_fetched < timedelta(days=1):
+            return False
+        return True
 
     def update_aggregate(self):
         info_set = self.info_set.all()
