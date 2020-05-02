@@ -52,6 +52,12 @@ class Author(models.Model):
     url = models.CharField(max_length=1000, blank=True)
     avatar_url = models.CharField(max_length=1000, blank=True)
     following = models.BooleanField(default=False)
+    stop_fetching = models.BooleanField(u'停止抓取', default=False)
+    last_fetched = models.DateTimeField(null=True, blank=True)
+    last_day_count = models.IntegerField(default=0)
+    last_week_count = models.IntegerField(default=0)
+    last_month_count = models.IntegerField(default=0)
+    last_year_count = models.IntegerField(default=0)
     raw = models.TextField(blank=True)
     
     def __unicode__(self):
@@ -60,6 +66,25 @@ class Author(models.Model):
     def natural_key(self):
         return (self.user_id, self.name)
 
+    @property
+    def should_fetch(self):
+        if self.stop_fetching:
+            return False
+
+    def update_aggregate(self):
+        info_set = self.info_set.all()
+        now = timezone.now()
+        self.last_day_count = info_set.filter(timestamp__gt=now-timedelta(days=1)).count()
+        self.last_week_count = info_set.filter(timestamp__gt=now - timedelta(days=7)).count()
+        self.last_month_count = info_set.filter(timestamp__gt=now - timedelta(days=30)).count()
+        self.last_year_count = info_set.filter(timestamp__gt=now - timedelta(days=365)).count()
+        last_info_query = info_set.order_by('-timestamp')
+        if last_info_query:
+            last_info = last_info_query[0]
+            if not self.last_fetched or last_info.timestamp > self.last_fetched:
+                self.last_fetched = last_info.timestamp
+        self.save()
+        
     def save_name(self):
         if not self.names.filter(name=self.name).exists():
             AuthorName.objects.create(author=self, name=self.name)
@@ -68,7 +93,7 @@ class Author(models.Model):
 
 class AuthorName(models.Model):
     author = models.ForeignKey(Author, related_name='names')
-    name = models.CharField(max_length=128)
+    name = models.CharField(max_length=128, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
     def __unicode__(self):

@@ -124,8 +124,8 @@ class XueqiuBaseCrawler(AbstractBaseCrawler):
         else:
             author = author_query[0]
             touched = False
-            if author.name != user_info.get('screen_name', ''):
-                author.name = user_info.get('screen_name', '')
+            if user_info.get('screen_name', '') and author.name != user_info.get('screen_name', ''):
+                author.name = user_info['screen_name']
                 author.raw = json.dumps(user_info)
                 author.save_name()
                 touched = True
@@ -321,7 +321,8 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                     info = info_query[0]
                     if not info.author:
                         author = self.save_author(post['user'], info)
-
+            user.last_fetched = timezone.now()
+            user.update_aggregate()
             time.sleep(3)
 
     def handle_post(self, post):
