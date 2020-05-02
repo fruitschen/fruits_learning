@@ -277,7 +277,6 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
         
         users = Author.objects.filter(following=True).order_by('id')
         for user in users:
-            print user.name
             page = 1
             json_url = 'https://xueqiu.com/v4/statuses/user_timeline.json?user_id={}&page={}&type=&_=1488637{}'.\
                 format(user.user_id, page, random.randint(1, 1000000))
@@ -336,7 +335,9 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
         if not title:
             title = u'[无标题]{}...'.format(strip_tags(text)[:64])
         created_at = int(post['created_at']) / 1000
-        created = datetime.utcfromtimestamp(created_at) + timedelta(minutes=60 * 8)
+        created = datetime.utcfromtimestamp(created_at)  # + timedelta(minutes=60*8)
+        created = timezone.datetime(created.year, created.month, created.day, created.hour, created.minute,
+                                    created.second, tzinfo=timezone.get_default_timezone())
         info_query = Info.objects.filter(info_source=self.info_source, identifier=identifier)
         if not info_query.exists():
             content = Content.objects.create(content=text)
@@ -386,7 +387,6 @@ class StocksCrawler(AbstractBaseCrawler):
             else:
                 stock = Stock.objects.get(code=code)
                 if stock.name != name:
-                    print stock.name
                     stock.name = name
                     stock.save()
 
@@ -414,7 +414,6 @@ class StocksCrawler(AbstractBaseCrawler):
             else:
                 stock = Stock.objects.get(code=code)
                 if stock.name != name:
-                    print stock.name
                     stock.name = name
                     stock.save()
 

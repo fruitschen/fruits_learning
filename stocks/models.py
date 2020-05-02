@@ -155,6 +155,8 @@ class StockPair(models.Model):
             query = self.transactions.all()
         if query:
             last_transaction = query.order_by('-id')[0]
+        else:
+            last_transaction = None
         return last_transaction
     
     @property
