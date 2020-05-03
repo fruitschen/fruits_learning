@@ -307,7 +307,7 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                         author = self.save_author(post['user'], info)
             user.last_fetched = timezone.now()
             user.update_aggregate()
-            time.sleep(3)
+            time.sleep(10)
 
     def handle_post(self, post):
         identifier = post['target']

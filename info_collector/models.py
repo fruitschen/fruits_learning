@@ -90,6 +90,9 @@ class Author(models.Model):
         # not within a day if there are fewer than 20 items last week
         if self.last_week_count < 20 and since_last_fetched < timedelta(days=1):
             return False
+        # not within 3 hours if there are fewer than 10 items last day
+        if self.last_day_count < 10 and since_last_fetched < timedelta(minutes=60*3):
+            return False
         return True
 
     def update_aggregate(self):
