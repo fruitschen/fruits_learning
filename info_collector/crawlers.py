@@ -116,7 +116,7 @@ class XueqiuBaseCrawler(AbstractBaseCrawler):
                 img = user_info.get('photo_domain', '') + img.split(',')[-1]
             author = Author.objects.create(
                 user_id=user_id,
-                name=user_info.get('screen_name', ''),
+                name=user_info.get('screen_name', '') or '',
                 avatar_url=img,
                 following=following,
                 raw=json.dumps(user_info),
