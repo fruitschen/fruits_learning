@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 from django.core.management.base import BaseCommand
+from django.utils import timezone
 
 from info_collector.models import InfoSource, Author, Info, Content
 from feedreader.models import Feed, Entry
@@ -81,3 +82,5 @@ class Command(BaseCommand):
                 )
                 entry.read_flag=True
                 entry.save()
+        rss_info_source.last_fetched = timezone.now()
+        rss_info_source.save()

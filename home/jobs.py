@@ -5,9 +5,13 @@ from django.utils import timezone
 from datetime import timedelta
 from home.utils import get_current_country
 from stocks.utils import trigger_snapshot
+from logging import getLogger
+
+jobs_logger = getLogger('jobs_logger')
 
 
 def poll_feeds():
+    jobs_logger.info('poll_feeds')
     call_command('poll_feeds')
     SYNCS = getattr(settings, 'SYNCS', None)
     if SYNCS and SYNCS.get('run_post_poll_feeds', False):
@@ -15,23 +19,28 @@ def poll_feeds():
 
 
 def delete_old_info():
+    jobs_logger.info('delete_old_info')
     call_command('delete_old_info')
 
 
 def run_backup():
+    jobs_logger.info('run_backup')
     """backup database with django-backup"""
     call_command('backup', compress=True, cleanlocaldb=True)
 
 
 def run_crawlers():
+    jobs_logger.info('run_crawlers')
     # 服务器上暂时不运行info crawlers
     if not settings.RUN_INFO_CRAWLERS:
+        jobs_logger.info('not running crawlers， settings.RUN_INFO_CRAWLERS==False')
         return
     # IP不对，暂时不运行
     # TODO: Display a notification at least
     try:
         country = get_current_country()
         if country != 'China':
+            jobs_logger.info('not running crawlers， region is {})'.format(country))
             return
     except:
         pass
@@ -44,11 +53,13 @@ def run_crawlers():
         # crawlers.StocksAnnouncementCrawler(),
     )
     for crawler in info_crawlers:
+        jobs_logger.info(crawler.info_source.name)
         if crawler.info_source.should_fetch():
             crawler.run()
 
 
 def auto_update_price():
+    jobs_logger.info('auto_update_price')
     now = timezone.now()
     trading_days = [0, 1, 2, 3, 4]
     # 9:15开始，每小时更新一次价格，15:15之后停止更新。
@@ -59,6 +70,7 @@ def auto_update_price():
 
 
 def pull_server_backups():
+    jobs_logger.info('pull_server_backups')
     SYNCS = getattr(settings, 'SYNCS', None)
     if SYNCS and SYNCS.get('pull_server_backups', False):
         cmd = SYNCS.get('pull_server_backups', False)
@@ -68,12 +80,14 @@ def pull_server_backups():
 
 
 def sync_info():
+    jobs_logger.info('sync_info')
     SYNCS = getattr(settings, 'SYNCS', None)
     if SYNCS and SYNCS.get('enable_push_info_items', False):
         call_command('sync_info')
 
 
 def pull_recent_read_info_items():
+    jobs_logger.info('pull_recent_read_info_items')
     """定期从服务器下载已读的info"""
     SYNCS = getattr(settings, 'SYNCS', None)
     if SYNCS and SYNCS.get('enable_pull_recent_read_info_items', False):

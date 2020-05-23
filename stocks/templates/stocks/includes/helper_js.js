@@ -59,17 +59,18 @@ window.update_pairs = function(){
 window.update_display = function(){
     $('.user__col--lf').hide();
     $('.home__col--rt').width(450);
+    $('.ad-right-aside').height(1).css('overflow', 'hidden');
     first_panel = $('.home__business')[0];
-    $(first_panel).html('').css('margin-top', '0');
+    $(first_panel).html('').css('margin-top', '0').css('font-size', '14px');
     n = new Date();
     $(first_panel).append('<li>' + n.toLocaleTimeString() + '</li>')
     for (i in pairs){
         pair = pairs[i];
-        content = '<strong>' + pair['name'] + '</strong> <br> <strong>' + pair['ratio'].toFixed(4) + '</strong>'
+        content = '<strong>' + pair['name'] + '</strong>  <strong>' + pair['ratio'].toFixed(4) + '</strong>'
         if(pair.transactions){
             for (j in pair.transactions){
                 transaction = pair.transactions[j];
-                var transaction_style = ''
+                var transaction_style = '';
                 trans_ratio = transaction.ratio;
                 fee = 0.002; // assume total fee is 0.2%
                 if(transaction.same_direction){
@@ -81,7 +82,7 @@ window.update_display = function(){
                     sign = '+'
                     color = 'red'
                     if(change > 1){
-                        transaction_style += 'border: 2px dashed red;;'
+                        transaction_style += 'border: 2px dashed red;'
                     }
                 }else{
                     sign = ''
@@ -94,7 +95,7 @@ window.update_display = function(){
                 content = content + '<br /><span style="' + transaction_style + '"> ' + trans_ratio.toFixed(4) + change_text + ' | ' + transaction.text + '</span>'
             }
         }
-        $(first_panel).append('<li style="padding:10px;">' + content + '</li>')
+        $(first_panel).append('<li style="padding-bottom:4px;">' + content + '</li>')
     }
 }
 
@@ -145,7 +146,7 @@ window.download_stocks = function(){
 
 function init(){
     global_interval = window.setInterval(update_all, 3000);
-    download_interval = window.setInterval(download_stocks, 60 * 1000);
+    //download_interval = window.setInterval(download_stocks, 60 * 1000);
 }
 
 init();
