@@ -186,7 +186,7 @@ def take_snapshot(request, account_slug):
 
 
 def get_pairs_context(request):
-    star_pairs = StockPair.objects.filter(star=True)
+    star_pairs = StockPair.objects.filter(star=True).order_by('order')
     ids = star_pairs.values_list('target_stock', 'started_stock')
     stock_ids = []
     for i in ids:

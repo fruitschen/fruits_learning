@@ -10,6 +10,7 @@ window.pairs = [
     {% for pair in pairs %}{
         'pair': ['{{ pair.started_stock.market.upper }}{{ pair.started_stock.code }}', '{{ pair.target_stock.market.upper }}{{ pair.target_stock.code }}'],
         'note': {{ pair.note }},
+        'unfinished_transactions': {{ pair.unfinished_transactions.count }},
         'transactions': [
         {% if pair.unfinished_transactions %}
             {% for t in pair.unfinished_transactions %}
@@ -95,7 +96,11 @@ window.update_display = function(){
                 content = content + '<br /><span style="' + transaction_style + '"> ' + trans_ratio.toFixed(4) + change_text + ' | ' + transaction.text + '</span>'
             }
         }
-        $(first_panel).append('<li style="padding-bottom:4px;">' + content + '</li>')
+        var pair_style = 'padding-bottom:4px;'
+        if(pair.unfinished_transactions == 0){
+            pair_style += 'background-color: #eee; color: #666;'
+        }
+        $(first_panel).append('<li style="' + pair_style + '">' + content + '</li>')
     }
 }
 

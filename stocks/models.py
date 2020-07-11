@@ -20,7 +20,7 @@ from stocks.utils import td_format
 '''
 分红处理代码
 from decimal import Decimal
-stock = Stock.objects.get(code='600816')
+stock = Stock.objects.get(code='600340')
 trans = PairTransaction.objects.filter(finished__isnull=True, bought_stock=stock)
 for transaction in trans:
     transaction.bought_price -= Decimal('0.5')
@@ -44,6 +44,13 @@ for transaction in sold_trans:
     transaction.sold_price /= Decimal('2.2')
     transaction.sold_amount *= Decimal('2.2')
     transaction.save()
+    
+
+from decimal import Decimal
+stock = Stock.objects.get(code='600340')
+bs_trans = BoughtSoldTransaction.objects.filter(finished__isnull=True, bought_stock=stock)
+
+
 
 '''
 
@@ -545,7 +552,7 @@ class BoughtSoldTransaction(models.Model):
     finished = models.DateTimeField(u'结束交易时间', null=True, blank=True)
     sold_price = models.DecimalField(u'卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
     profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
-    interest_rate = models.DecimalField(u'利率成本', max_digits=6, decimal_places=4, default='0.0835')
+    interest_rate = models.DecimalField(u'利率成本', max_digits=6, decimal_places=4, default='0.07')
     archived = models.BooleanField(u'存档-不再计算盈亏', default=False)
     transactions = models.ManyToManyField(Transaction, editable=False)
 
