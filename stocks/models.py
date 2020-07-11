@@ -1003,3 +1003,7 @@ class SnapshotStock(models.Model):
     def percent(self):
         """占快照当时持有股票的百分比"""
         return self.total / self.snapshot.stocks_asset * Decimal(100)
+
+    @property
+    def current_total(self):
+        return self.stock.price * self.amount
