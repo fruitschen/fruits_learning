@@ -15,7 +15,7 @@ window.pairs = [
         {% if pair.unfinished_transactions %}
             {% for t in pair.unfinished_transactions %}
                 {'ratio': {{ t.to_ratio_display }}, 'same_direction': {{ t.same_direction|lower }},
-                'text': '{{ t.bought_stock.name }} x {{ t.bought_amount }}. -> {{ t.sold_stock.name }} x {{ t.sold_amount }}', }{% if not forloop.last %},{% endif %}
+                'text': '{{ t.bought_stock.name }} x {{ t.bought_amount }}. -> {{ t.sold_stock.name }} x {{ t.sold_amount }}{% if t.account != account %}({{ t.account }}){% endif %}', }{% if not forloop.last %},{% endif %}
             {% endfor %}
         {% else %}
             {% for t in pair.recent_finished_transactions %}

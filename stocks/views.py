@@ -70,6 +70,7 @@ def account_details(request, account_slug):
         x_axis = [r[0].strftime('%Y-%m-%d') for r in raw_data]
         y_axis = [int(r[1]) for r in raw_data]
         # 对比上证指数
+        '''
         sh_index = []
         hs300_index = []
         for date in dates:
@@ -79,7 +80,8 @@ def account_details(request, account_slug):
         sh_index = [int(value * sh_rate) for value in sh_index]
         hs300_rate = y_axis[0] / hs300_index[0]
         hs300_index = [int(value * hs300_rate) for value in hs300_index]
-        snapshots_chart_data = {'x_axis': x_axis, 'y_axis': y_axis, 'sh_index': sh_index, 'hs300_index': hs300_index}
+        '''
+        snapshots_chart_data = {'x_axis': x_axis, 'y_axis': y_axis}
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
