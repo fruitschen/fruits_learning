@@ -29,7 +29,7 @@ sorl-thumbnail==12.3
 dj-pagination==2.3.0
 django-autocomplete-light==3.2.10
 -e git+https://github.com/django-backup/django-backup.git@develop#egg=django-backup
-Pygments==2.4.0
+Pygments==2.7.4
 geoip2==2.9.0
 python-geoip==1.2
 python-geoip-geolite2==2015.303
