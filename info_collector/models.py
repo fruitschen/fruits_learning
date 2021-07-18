@@ -116,7 +116,7 @@ class Author(models.Model):
         
 
 class AuthorName(models.Model):
-    author = models.ForeignKey(Author, related_name='names')
+    author = models.ForeignKey(Author, related_name='names', on_delete=models.CASCADE)
     name = models.CharField(max_length=128, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
@@ -140,7 +140,7 @@ class Info(models.Model):
     )
     objects = InfoManager()
 
-    info_source = models.ForeignKey(InfoSource, related_name='stories')
+    info_source = models.ForeignKey(InfoSource, related_name='stories', on_delete=models.CASCADE)
     title = models.CharField(max_length=500, null=True, blank=True)
     tags = models.CharField(max_length=256, blank=True)
     author = models.ForeignKey('Author', null=True, blank=True, on_delete=models.SET_NULL)

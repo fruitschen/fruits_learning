@@ -58,7 +58,7 @@ def get_diary_media_path(instance, filename):
 
 
 class DiaryContent(models.Model):
-    diary = models.ForeignKey('Diary', related_name='contents')
+    diary = models.ForeignKey('Diary', related_name='contents', on_delete=models.CASCADE)
     order = models.IntegerField(null=True)
     title = models.CharField(blank=True, max_length=128)
     content_attr = models.CharField(max_length=20)

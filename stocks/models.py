@@ -657,9 +657,9 @@ class BoughtSoldTransaction(models.Model):
 
 class AccountStock(models.Model):
     """账户当前持有的股票"""
-    stock = models.ForeignKey(Stock, limit_choices_to={'star': True})
+    stock = models.ForeignKey(Stock, limit_choices_to={'star': True}, on_delete=models.PROTECT)
     amount = models.IntegerField()
-    account = models.ForeignKey('Account', related_name='stocks')
+    account = models.ForeignKey('Account', related_name='stocks', on_delete=models.PROTECT)
 
     @property
     def total(self):
@@ -671,7 +671,7 @@ class AccountStock(models.Model):
 
 
 class AccountStocksRange(models.Model):
-    account = models.ForeignKey('Account', related_name='stocks_ranges')
+    account = models.ForeignKey('Account', related_name='stocks_ranges', on_delete=models.PROTECT)
     stocks = models.ManyToManyField('Stock', limit_choices_to={'star': True}, null=True, blank=True)
     low = models.DecimalField(default='20', max_digits=5, decimal_places=2, null=True, blank=True)
     high = models.DecimalField(default='20', max_digits=5, decimal_places=2, null=True, blank=True)
@@ -846,7 +846,7 @@ class Account(models.Model):
 
 
 class SubAccount(models.Model):
-    account = models.ForeignKey(Account)
+    account = models.ForeignKey(Account, on_delete=models.PROTECT)
     name = models.CharField(max_length=64)
     order = models.IntegerField(default=100)
     asset = models.PositiveIntegerField('资产', default=0)
@@ -1005,7 +1005,7 @@ class Snapshot(models.Model):
 
 class SnapshotStock(models.Model):
     """账户快照 当时持有的股票"""
-    snapshot = models.ForeignKey('Snapshot', related_name='stocks')
+    snapshot = models.ForeignKey('Snapshot', related_name='stocks', on_delete=models.CASCADE)
     stock = models.ForeignKey(Stock, on_delete=models.PROTECT, limit_choices_to={'star': True})
     amount = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)

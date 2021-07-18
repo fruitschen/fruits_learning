@@ -22,8 +22,8 @@ class Source(models.Model):
 class Tip(models.Model):
     content = models.CharField(max_length=1024)
     created = models.DateTimeField(auto_now_add=True)
-    category = models.ForeignKey('Category', null=True, blank=True)
-    source = models.ForeignKey('Source', null=True, blank=True)
+    category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.PROTECT)
+    source = models.ForeignKey('Source', null=True, blank=True, on_delete=models.PROTECT)
 
     def __unicode__(self):
         return self.content

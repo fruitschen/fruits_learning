@@ -6,7 +6,7 @@ from django.db import models
 
 class Read(models.Model):
     slug = models.SlugField(unique=True, db_index=True)
-    info = models.ForeignKey('info_collector.Info', limit_choices_to={'starred': True, }, null=True, blank=True)
+    info = models.ForeignKey('info_collector.Info', limit_choices_to={'starred': True, }, null=True, blank=True, on_delete=models.CASCADE)
     title = models.CharField('标题', max_length=128, blank=True)
     original_url = models.CharField('原文URL', max_length=128, blank=True)
     home = models.BooleanField('是否显示在主页', default=True)

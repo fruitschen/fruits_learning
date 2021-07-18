@@ -73,7 +73,7 @@ class Project(models.Model):
         
 
 class ProjectFile(models.Model):
-    project = models.ForeignKey('Project', related_name='files')
+    project = models.ForeignKey('Project', related_name='files', on_delete=models.CASCADE)
     filepath = models.CharField(max_length=256)
     filename = models.CharField(max_length=128)
     ext = models.CharField(max_length=5)
