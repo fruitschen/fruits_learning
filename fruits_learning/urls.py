@@ -30,7 +30,7 @@ urlpatterns = [
     url(r'^api/', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^info/', include('info_collector.urls')),
-    url(r'^code_reading/', include('code_reading.urls')),
+    #url(r'^code_reading/', include('code_reading.urls')),
     url(r'^stocks/', include('stocks.urls')),
     url(r'^investing/', include('investing.urls')),
     url(r'^reads/', include('reads.urls')),

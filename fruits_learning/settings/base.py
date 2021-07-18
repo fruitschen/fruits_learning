@@ -64,7 +64,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',  # Using WhiteNoise in development
     'django.contrib.staticfiles',
 
-    'code_reading',
+    #'code_reading',
     'feedreader',
     'info_collector',
     'investing',
