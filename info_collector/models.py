@@ -3,7 +3,7 @@
 from datetime import timedelta
 from django.utils import timezone
 from django.db import models
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 class InfoSource(models.Model):
@@ -146,7 +146,7 @@ class Info(models.Model):
     author = models.ForeignKey('Author', null=True, blank=True, on_delete=models.SET_NULL)
     identifier = models.CharField(max_length=255)
     url = models.URLField(max_length=2000, null=True, blank=True)
-    content = models.OneToOneField('Content', null=True, blank=True)
+    content = models.OneToOneField('Content', null=True, blank=True, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
     original_timestamp = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=1, default=NEW, choices=STATUS)

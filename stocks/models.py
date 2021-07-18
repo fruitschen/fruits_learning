@@ -7,7 +7,7 @@ from decimal import Decimal
 from datetime import timedelta, datetime
 from django.utils import timezone
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.conf import settings
 from django.db import models
 from django.db.models import Q, Sum

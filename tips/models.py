@@ -30,7 +30,7 @@ class Tip(models.Model):
 
 
 class LongTip(models.Model):
-    tip = models.OneToOneField('Tip', related_name='long_tip')
+    tip = models.OneToOneField('Tip', related_name='long_tip', on_delete=models.CASCADE)
     text = models.TextField()
 
 

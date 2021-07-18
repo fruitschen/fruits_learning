@@ -144,7 +144,7 @@ MIN_CHOICES = list(zip(MINS, MINS))
 
 
 class BaseEventTemplate(models.Model):
-    group = models.ForeignKey(EventGroup, null=True, blank=True)
+    group = models.ForeignKey(EventGroup, null=True, blank=True, on_delete=models.CASCADE)
     event = models.CharField('事件', max_length=128)
     is_task = models.BooleanField('是否是任务', default=False)
     priority = models.IntegerField(default=100)

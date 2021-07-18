@@ -23,25 +23,25 @@ router.register(r'entry', EntryViewSet)
 
 
 urlpatterns = [
-    url(r'^django-admin/', include(admin.site.urls)),
-    url(r'^admin/', include(wagtailadmin_urls)),
-    url(r'^documents/', include(wagtaildocs_urls)),
+    url(r'^django-admin/', path(admin.site.urls)),
+    url(r'^admin/', path(wagtailadmin_urls)),
+    url(r'^documents/', path(wagtaildocs_urls)),
     url(r'^search/$', search_views.search, name='search'),
-    url(r'^api/', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^info/', include('info_collector.urls')),
-    #url(r'^code_reading/', include('code_reading.urls')),
-    url(r'^stocks/', include('stocks.urls')),
-    url(r'^investing/', include('investing.urls')),
-    url(r'^reads/', include('reads.urls')),
-    url(r'^diary/', include('diary.urls')),
-    url(r'^contacts/', include('contacts.urls')),
+    url(r'^api/', path(router.urls)),
+    url(r'^api-auth/', path('rest_framework.urls', namespace='rest_framework')),
+    url(r'^info/', path('info_collector.urls')),
+    #url(r'^code_reading/', path('code_reading.urls')),
+    url(r'^stocks/', path('stocks.urls')),
+    url(r'^investing/', path('investing.urls')),
+    url(r'^reads/', path('reads.urls')),
+    url(r'^diary/', path('diary.urls')),
+    url(r'^contacts/', path('contacts.urls')),
     url(r'^tweets/$', weibo_backup.views.tweets, name='tweets'),
 
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),
-    url(r'^django-rq/', include('django_rq.urls')),
-    url(r'^markdownx/', include('markdownx.urls')),
-    url(r'', include(wagtail_urls)),
+    url(r'^django-rq/', path('django_rq.urls')),
+    url(r'^markdownx/', path('markdownx.urls')),
+    url(r'', path(wagtail_urls)),
 ]
 
 
@@ -55,5 +55,5 @@ if settings.DEBUG:
 
     import debug_toolbar
     urlpatterns = [
-        url(r'^__debug__/', include(debug_toolbar.urls)),
+        url(r'^__debug__/', path(debug_toolbar.urls)),
     ] + urlpatterns
