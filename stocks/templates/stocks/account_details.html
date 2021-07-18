@@ -125,7 +125,11 @@
             {% for stock_range in account.stocks_ranges.all %}
                 <tr>
                     <td>
-                        {% for stock in stock_range.stocks.all %}{{ stock.name }}{% if not forloop.last %}+{% endif %}{% endfor %}
+                        {% if stock_range.stocks.all %}
+                            {% for stock in stock_range.stocks.all %}{{ stock.name }}{% if not forloop.last %}+{% endif %}{% endfor %}
+                        {% else %}
+                            其它
+                        {% endif %}
                     </td>
                     <td>
                         {{ stock_range.current_values.status }}
@@ -212,6 +216,11 @@
         <h3>未结配对交易
             <a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-lg btn-primary btn-lg">添加</a>
             <a href="{% url 'account_pair_transactions' account.slug %}" target="_blank" class="btn btn-lg btn-lg btn-primary">全部配对交易</a>
+        </h3>
+        <h3>
+            总占用额: {{ pair_transactions_unfinished_total }} |
+            今年交易额: {{ account_pair_transactions_year_total }} |
+            累计交易额: {{ account_pair_transactions_total }}
         </h3>
         {% with pair_transactions_unfinished as pair_transactions %}
             {% include "stocks/includes/pair_transaction_list.html" %}

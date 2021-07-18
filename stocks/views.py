@@ -70,9 +70,9 @@ def account_details(request, account_slug):
         x_axis = [r[0].strftime('%Y-%m-%d') for r in raw_data]
         y_axis = [int(r[1]) for r in raw_data]
         # 对比上证指数
-        '''
         sh_index = []
         hs300_index = []
+        '''
         for date in dates:
             sh_index.append(sh.get_price_by_date(date))
             hs300_index.append(hs300.get_price_by_date(date))
@@ -81,7 +81,7 @@ def account_details(request, account_slug):
         hs300_rate = y_axis[0] / hs300_index[0]
         hs300_index = [int(value * hs300_rate) for value in hs300_index]
         '''
-        snapshots_chart_data = {'x_axis': x_axis, 'y_axis': y_axis}
+        snapshots_chart_data = {'x_axis': x_axis, 'y_axis': y_axis, 'sh_index': sh_index, 'hs300_index': hs300_index}
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
@@ -94,6 +94,10 @@ def account_details(request, account_slug):
         recent_pair_transactions = account_pair_transactions.filter(finished__isnull=False).order_by('-finished').\
             exclude(finished__lt=timezone.datetime(now.year, now.month, 1))
     pair_transactions_unfinished = account_pair_transactions.filter(finished__isnull=True)
+    account_pair_transactions_total = sum([p.total_finished for p in account_pair_transactions])
+    account_pair_transactions_this_year = account_pair_transactions.filter(started__gte=timezone.datetime(now.year, 1, 1))
+    account_pair_transactions_year_total = sum([p.total_finished for p in account_pair_transactions_this_year])
+    pair_transactions_unfinished_total = sum([p.sold_total for p in pair_transactions_unfinished])
     pair_virtual_profit = 0
     for p in pair_transactions_unfinished:
         pair_virtual_profit += p.get_profit()
@@ -164,6 +168,9 @@ def account_details(request, account_slug):
         'account_stocks': account_stocks,
         'recent_pair_transactions': recent_pair_transactions,
         'pair_transactions_unfinished': pair_transactions_unfinished,
+        'pair_transactions_unfinished_total': pair_transactions_unfinished_total,
+        'account_pair_transactions_total': account_pair_transactions_total,
+        'account_pair_transactions_year_total': account_pair_transactions_year_total,
         'pair_virtual_profit': pair_virtual_profit,
         'account_bs_transactions': account_bs_transactions,
         'bs_transactions_this_month': bs_transactions_this_month,

@@ -32,6 +32,12 @@ for transaction in sold_trans:
     transaction.save()
 
 
+bs_trans = BoughtSoldTransaction.objects.filter(finished__isnull=True, bought_stock=stock)
+for b in bs_trans:
+    b.bought_price -= Decimal('0.5')
+    b.save()
+
+
 trans = PairTransaction.objects.filter(finished__isnull=True, bought_stock=stock)
 for transaction in trans:
     transaction.bought_price /= Decimal('2.2')
@@ -45,12 +51,6 @@ for transaction in sold_trans:
     transaction.sold_amount *= Decimal('2.2')
     transaction.save()
     
-
-from decimal import Decimal
-stock = Stock.objects.get(code='600340')
-bs_trans = BoughtSoldTransaction.objects.filter(finished__isnull=True, bought_stock=stock)
-
-
 
 '''
 
@@ -80,7 +80,7 @@ class Transaction(models.Model):
     price = models.DecimalField(u'交易价格', max_digits=10, decimal_places=4, null=True, blank=True)
     amount = models.IntegerField(u'交易数量',)
     date = models.DateTimeField(u'交易时间', null=True, blank=True)
-    total_money = models.DecimalField(u'交易额', max_digits=10, decimal_places=4, null=True, blank=True)
+    total_money = models.DecimalField(u'交易额', max_digits=20, decimal_places=4, null=True, blank=True)
     has_updated_account = models.BooleanField(u'是否已经更新账户', default=False)
 
     def save(self, *args, **kwargs):
@@ -264,6 +264,14 @@ class PairTransaction(models.Model):
     def total(self):
         """四笔交易的总交易额"""
         total = self.sold_total + self.sold_bought_back_total + self.bought_sold_total + self.bought_total
+        return total
+
+    @property
+    def total_finished(self):
+        """已经发生的总交易额"""
+        total = self.sold_total + self.bought_total
+        if self.finished:
+            total += self.sold_bought_back_total + self.bought_sold_total
         return total
 
     @property
@@ -664,7 +672,7 @@ class AccountStock(models.Model):
 
 class AccountStocksRange(models.Model):
     account = models.ForeignKey('Account', related_name='stocks_ranges')
-    stocks = models.ManyToManyField('Stock', limit_choices_to={'star': True})
+    stocks = models.ManyToManyField('Stock', limit_choices_to={'star': True}, null=True, blank=True)
     low = models.DecimalField(default='20', max_digits=5, decimal_places=2, null=True, blank=True)
     high = models.DecimalField(default='20', max_digits=5, decimal_places=2, null=True, blank=True)
     
@@ -674,10 +682,20 @@ class AccountStocksRange(models.Model):
             return (self.high + self.low) / 2
     
     @property
+    def account_stocks(self):
+        if self.stocks.all():
+            account_stocks = self.account.stocks.filter(stock__in=self.stocks.all())
+        else:
+            stocks_in_ranges = self.account.stocks_ranges.exclude(stocks=None).values_list('stocks', flat=True)
+            account_stocks = self.account.stocks.exclude(stock__in=stocks_in_ranges)
+        return account_stocks
+        
+    @property
     def current_values(self):
         total = Decimal(0)
         percent = Decimal(0)
-        for account_stock in self.account.stocks.filter(stock__in=self.stocks.all()):
+        account_stocks = self.account_stocks
+        for account_stock in account_stocks:
             total += account_stock.total
             percent += account_stock.percent
         if percent > self.high:
