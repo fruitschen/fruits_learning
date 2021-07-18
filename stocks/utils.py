@@ -20,21 +20,21 @@ def update_stocks_prices(stocks, verbose=0):
         except requests.exceptions.ConnectTimeout:
             error += 1
             if verbose:
-                print 'retry'
+                print('retry')
 
     lines = content.splitlines()
     for i, line in enumerate(lines):
         try:
             stock = stocks[i]
             if verbose:
-                print line, stock, i
+                print(line, stock, i)
             price = line.split('~')[3]
             if Decimal(price) > 0:
                 stock.comment = line.decode('gb2312')
                 stock.update_price(price)
-        except Exception, e:
+        except Exception as e:
             if verbose:
-                print e
+                print(e)
     return True
 
 
@@ -52,8 +52,8 @@ def update_stocks_prices_url(stocks):
 def td_format(td_object):
     seconds = int(td_object.total_seconds())
     periods = [
-        (u'年', 60 * 60 * 24 * 365),
-        (u'个月', 60 * 60 * 24 * 30),
+        ('年', 60 * 60 * 24 * 365),
+        ('个月', 60 * 60 * 24 * 30),
     ]
 
     strings = []

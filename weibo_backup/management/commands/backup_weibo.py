@@ -13,15 +13,15 @@ from weibo_backup.models import Tweet
 
 
 class Command(BaseCommand):
-    help = u'备份微博账号内容'
+    help = '备份微博账号内容'
 
     def handle(self, *args, **options):
         binary = FirefoxBinary('/usr/bin/firefox')
         driver = webdriver.Firefox(firefox_binary=binary)
         driver.get('https://weibo.com/')
-        input = raw_input('login and go to the account page. Then enter anything to continue: ')
+        input = input('login and go to the account page. Then enter anything to continue: ')
         driver.get('https://m.weibo.cn/u/5578088290?uid=5578088290&luicode=10000011&lfid=231093_-_selfgroupfollow_-_201102030062389608')
-        input = raw_input('Remove header and scroll until all items to backup are shown. Click enter to continue: ')
+        input = input('Remove header and scroll until all items to backup are shown. Click enter to continue: ')
 
         items = driver.find_elements_by_class_name('card9')
         #  items.reverse()
@@ -73,9 +73,9 @@ class Command(BaseCommand):
                     if '-' in status_time:
                         # 12-27, {month}-{date} format
                         status_time = '{}-{}'.format(now.year, status_time)
-                    elif u'\u5c0f\u65f6\u524d' in status_time:
+                    elif '\u5c0f\u65f6\u524d' in status_time:
                         # 11小时前, 1小时前……
-                        status_time = status_time.replace(u'\u5c0f\u65f6\u524d', u'')
+                        status_time = status_time.replace('\u5c0f\u65f6\u524d', '')
                         status_time = now - timedelta(hours=int(status_time))
                         status_time = status_time.strftime('%Y-%m-%d')
                     else:
@@ -88,7 +88,7 @@ class Command(BaseCommand):
                         # Tweet.objects.filter(t_id=status_id).update(t_time=status_time)
                         pass
                     else:
-                        print 'record the id and save date, id, content, later'
+                        print('record the id and save date, id, content, later')
                         tweet = Tweet.objects.create(
                             t_id=status_id,
                             t_time=status_time,
@@ -98,7 +98,7 @@ class Command(BaseCommand):
                     if Tweet.objects.filter(t_time=status_time).exists():
                         tweet = Tweet.objects.filter(t_time=status_time)[0]
                     else:
-                        print 'Save the content and time'
+                        print('Save the content and time')
                         tweet = Tweet.objects.create(
                             t_id='',
                             t_time=status_time,
@@ -155,8 +155,8 @@ class Command(BaseCommand):
         except:
             import pdb; pdb.set_trace()
             raise
-        print 1
-        print 2
-        print 3
+        print(1)
+        print(2)
+        print(3)
         driver.quit()
 

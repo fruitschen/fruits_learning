@@ -1,4 +1,4 @@
-from __future__ import absolute_import, unicode_literals
+
 
 from django.conf import settings
 from django.conf.urls import include, url
@@ -8,9 +8,9 @@ import weibo_backup.views
 from search import views as search_views
 from investing import views as investing_views
 from my_feedreader.views import my_feedreader
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailcore import urls as wagtail_urls
-from wagtail.wagtaildocs import urls as wagtaildocs_urls
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.core import urls as wagtail_urls
+from wagtail.documents import urls as wagtaildocs_urls
 
 from rest_framework import routers
 from info_collector.urls import InfoViewSet, InfoSourceViewSet

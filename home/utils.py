@@ -1,11 +1,11 @@
-import urllib2
+import urllib3
 import re
 import geoip2.database
 from django.conf import settings
 
 
 def get_current_ip():
-    url = urllib2.urlopen("http://txt.go.sohu.com/ip/soip")
+    url = urllib3.urlopen("http://txt.go.sohu.com/ip/soip")
     text = url.read()
     res = re.findall(r'\d+.\d+.\d+.\d+',text)
     ip = res[0]

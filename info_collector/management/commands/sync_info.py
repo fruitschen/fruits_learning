@@ -1,7 +1,7 @@
 """
 This command sync the info data between desktop and server
 """
-from __future__ import absolute_import
+
 import os
 
 from django.core.management.base import BaseCommand
@@ -48,7 +48,7 @@ class Command(BaseCommand):
         recent_contents = Content.objects.filter(info__in=recent_items)
 
         if verbosity:
-            print('exporting %d items' % (recent_items.count()))
+            print(('exporting %d items' % (recent_items.count())))
         fields = [f.name for f in Info._meta.fields]
         data = serializers.serialize(
             "json", recent_items, indent=2, fields=fields
@@ -62,7 +62,7 @@ class Command(BaseCommand):
 
         reads_items = Read.objects.all()
         if verbosity:
-            print('exporting %d items' % (reads_items.count()))
+            print(('exporting %d items' % (reads_items.count())))
         fields = [f.name for f in Read._meta.fields]
         data = serializers.serialize(
             "json", reads_items, indent=2, fields=fields

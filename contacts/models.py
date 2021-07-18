@@ -10,7 +10,7 @@ class Contact(models.Model):
 
     @property
     def full_name(self):
-        return u'{} {}'.format(self.first_name, self.last_name)
+        return '{} {}'.format(self.first_name, self.last_name)
 
     def __unicode__(self):
         return self.full_name

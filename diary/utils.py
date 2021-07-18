@@ -67,7 +67,7 @@ def get_events_by_date(diary, tag='', commit=False, include_deleted=False):
     events = sorted(events, cmp=sort_events)
 
     if tag:
-        events = filter(lambda x: tag in x.tags, events)
+        events = [x for x in events if tag in x.tags]
     return events
 
 
@@ -88,7 +88,7 @@ def get_important_events_by_date(the_date):
     events = list(events_query) + rule_events_tpls
     event_templates = []
     for a_date in next_few_days:
-        print a_date
+        print(a_date)
         month_event_templates = MonthEventTemplate.objects.filter(day=a_date.day).filter(
             is_archived=False, is_important=True)
 
@@ -114,9 +114,9 @@ def is_end_of_month(the_date):
 def age_format(td_object):
     seconds = int(td_object.total_seconds())
     periods = [
-        (u'岁', 60 * 60 * 24 * 365),
-        (u'个月', 60 * 60 * 24 * 30),
-        (u'天', 60 * 60 * 24),
+        ('岁', 60 * 60 * 24 * 365),
+        ('个月', 60 * 60 * 24 * 30),
+        ('天', 60 * 60 * 24),
     ]
 
     strings = []

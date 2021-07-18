@@ -53,4 +53,4 @@ rules = [
 ]
 
 
-RULES_CHOICES = zip(rules, rules)
+RULES_CHOICES = list(zip(rules, rules))

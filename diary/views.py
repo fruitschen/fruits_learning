@@ -48,7 +48,7 @@ class DiaryList(View):
     def get(self, request):
         diary_items = Diary.objects.all().order_by('-date')
         context = {
-            'title': u'日记列表',
+            'title': '日记列表',
             'hide_header_footer': True,
             'diary_items': diary_items,
         }
@@ -60,14 +60,14 @@ def get_events_by_groups(events, is_today):
     events_by_groups = []
     event_groups = EventGroup.objects.all()
     for group in list(event_groups) + [None]:
-        group_events = filter(lambda e: e.group == group, events)
+        group_events = [e for e in events if e.group == group]
         if group_events:
             if not is_today:
                 group_all_tasks = False
                 group_all_done = False
             else:
-                group_all_tasks = len(filter(lambda e: e.is_task, group_events)) == len(group_events)
-                group_all_done = len(filter(lambda e: not e.is_done, group_events)) == 0
+                group_all_tasks = len([e for e in group_events if e.is_task]) == len(group_events)
+                group_all_done = len([e for e in group_events if not e.is_done]) == 0
 
             events_by_groups.append({
                 'group': group,
@@ -125,8 +125,8 @@ class DiaryDetails(View):
         else:
             events = get_events_by_date(diary, tag=tag, commit=commit)
             important_events = get_important_events_by_date(diary.date)
-        tasks = filter(lambda e: e.is_task, events)
-        tasks_all_done = is_today and not filter(lambda task: not task.is_done, tasks)
+        tasks = [e for e in events if e.is_task]
+        tasks_all_done = is_today and not [task for task in tasks if not task.is_done]
         now = datetime.now()
         for event in events:
             event.hidden = False
@@ -146,7 +146,7 @@ class DiaryDetails(View):
         if important_events:
             events_by_groups.append({
                 'is_important': True,
-                'group': u'最近重要事项',
+                'group': '最近重要事项',
                 'events': important_events
             })
         
@@ -165,9 +165,9 @@ class DiaryDetails(View):
 
         yesterday = today - timedelta(days=1)
         if not DiaryContent.objects.filter(diary__date=yesterday).exists():
-            warnings.append(u'昨天还没记日记!')
+            warnings.append('昨天还没记日记!')
         if now.hour > 19 and diary_date == today and not diary.contents.all().exists():
-            warnings.append(u'今天还没记日记!')
+            warnings.append('今天还没记日记!')
 
         tip = None
         if request.user.id == 1:
@@ -383,8 +383,8 @@ class DiaryEvents(View):
             end = default_end
     
         dates_shortcuts = [
-            [u'一周以前', today - timedelta(days=7), ],
-            [u'一月以前', today - timedelta(days=30), ],
+            ['一周以前', today - timedelta(days=7), ],
+            ['一月以前', today - timedelta(days=30), ],
         ]
     
         current_day = start
@@ -402,7 +402,7 @@ class DiaryEvents(View):
                 diary = Diary(date=day)
             events = get_events_by_date(diary)
             if selected_type:
-                events = filter(lambda event: event.event_type == selected_type, events)
+                events = [event for event in events if event.event_type == selected_type]
             events_by_groups = get_events_by_groups(events, is_today=False)
             if events:
                 days_and_events.append({
@@ -414,7 +414,7 @@ class DiaryEvents(View):
                 })
     
         context = {
-            'title': u'日记 - 事件列表',
+            'title': '日记 - 事件列表',
             'hide_header_footer': True,
             'days': days,
             'days_and_events': days_and_events,
@@ -450,7 +450,7 @@ class DiaryEventsTable(DiaryEvents):
         days = context['days']
         selected_type = context['selected_type']
         
-        header = [u'日期']
+        header = ['日期']
         rows = []
         table = {
             'header': header,
@@ -464,9 +464,9 @@ class DiaryEventsTable(DiaryEvents):
             else:
                 diary = Diary(date=day)
             events = get_events_by_date(diary)
-            events = filter(lambda event: event.is_task, events)
+            events = [event for event in events if event.is_task]
             if selected_type:
-                events = filter(lambda event: event.event_type == selected_type, events)
+                events = [event for event in events if event.event_type == selected_type]
             if events:
                 row = [diary.date]
                 for event in events:

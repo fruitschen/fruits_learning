@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-from __future__ import unicode_literals
+
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
@@ -139,14 +139,14 @@ class EventGroup(models.Model):
 
 HOURS = [str(i) for i in range(1, 25)]
 MINS = [str(i) for i in range(60)]
-HOUR_CHOICES = zip(HOURS, HOURS)
-MIN_CHOICES = zip(MINS, MINS)
+HOUR_CHOICES = list(zip(HOURS, HOURS))
+MIN_CHOICES = list(zip(MINS, MINS))
 
 
 class BaseEventTemplate(models.Model):
     group = models.ForeignKey(EventGroup, null=True, blank=True)
-    event = models.CharField(u'事件', max_length=128)
-    is_task = models.BooleanField(u'是否是任务', default=False)
+    event = models.CharField('事件', max_length=128)
+    is_task = models.BooleanField('是否是任务', default=False)
     priority = models.IntegerField(default=100)
     start_hour = models.CharField(max_length=2, choices=HOUR_CHOICES, blank=True)
     start_min = models.CharField(max_length=2, choices=MIN_CHOICES, blank=True)
@@ -155,7 +155,7 @@ class BaseEventTemplate(models.Model):
     memo = models.TextField(blank=True)
     tags = models.CharField(max_length=128, default='', blank=True)
     mandatory = models.BooleanField(
-        u'必须完成?', default=False, help_text=u'过去未完成的mandatory任务会继续显示在今日任务里。'
+        '必须完成?', default=False, help_text='过去未完成的mandatory任务会继续显示在今日任务里。'
     )
     events = GenericRelation('Event')
 
@@ -198,13 +198,13 @@ class BaseEventTemplate(models.Model):
 
 
 WEEKDAY_CHOICES = (
-    ('0', u'星期一'),
-    ('1', u'星期二'),
-    ('2', u'星期三'),
-    ('3', u'星期四'),
-    ('4', u'星期五'),
-    ('5', u'星期六'),
-    ('6', u'星期日'),
+    ('0', '星期一'),
+    ('1', '星期二'),
+    ('2', '星期三'),
+    ('3', '星期四'),
+    ('4', '星期五'),
+    ('5', '星期六'),
+    ('6', '星期日'),
 )
 WEEKDAY_DICT = dict(WEEKDAY_CHOICES)
 
@@ -224,7 +224,7 @@ class WeekdayEventTemplate(BaseEventTemplate):
     weekdays = models.ManyToManyField('Weekday', blank=True)
 
     def __unicode__(self):
-        return '{} {} (Weekday Event Template)'.format(self.event, u'、'.join(
+        return '{} {} (Weekday Event Template)'.format(self.event, '、'.join(
             [w.get_weekday_display() for w in self.weekdays.all()])
         )
 
@@ -233,7 +233,7 @@ class WeekdayEventTemplate(BaseEventTemplate):
 
 
 DAYS = [str(i) for i in range(1, 32)]
-DAY_CHOICES = zip(DAYS, DAYS)
+DAY_CHOICES = list(zip(DAYS, DAYS))
 
 
 class MonthEventTemplate(BaseEventTemplate):
@@ -241,14 +241,14 @@ class MonthEventTemplate(BaseEventTemplate):
     day = models.CharField('日', max_length=2, choices=DAY_CHOICES)  # 31日表示最后一天
 
     def __unicode__(self):
-        return u'{} {}日 (Month Event Template)'.format(self.event, self.day)
+        return '{} {}日 (Month Event Template)'.format(self.event, self.day)
 
     def get_admin_url(self):
         return reverse('admin:diary_montheventtemplate_change', args=(self.id,))
 
 
 MONTHS = [str(i) for i in range(1, 13)]
-MONTH_CHOICES = zip(MONTHS, MONTHS)
+MONTH_CHOICES = list(zip(MONTHS, MONTHS))
 
 
 class AnnualEventTemplate(BaseEventTemplate):
@@ -257,7 +257,7 @@ class AnnualEventTemplate(BaseEventTemplate):
     day = models.CharField('日', max_length=2, choices=DAY_CHOICES)
 
     def __unicode__(self):
-        return u'{} {}月{}日 (Annual Event Template)'.format(self.event, self.month, self.day)
+        return '{} {}月{}日 (Annual Event Template)'.format(self.event, self.month, self.day)
 
     def get_admin_url(self):
         return reverse('admin:diary_annualeventtemplate_change', args=(self.id,))
@@ -290,7 +290,7 @@ class RuleEventTemplate(BaseEventTemplate):
         return reverse('admin:diary_ruleeventtemplate_change', args=(self.id,))
 
     def __unicode__(self):
-        return u'{}'.format(self.event)
+        return '{}'.format(self.event)
 
     @property
     def event_template(self):
@@ -348,7 +348,7 @@ class Event(BaseEventTemplate):
 
 
 def generate_weekdays(**kwargs):
-    days = range(0, 7)
+    days = list(range(0, 7))
     for weekday in days:
         Weekday.objects.get_or_create(weekday=weekday)
 
@@ -366,7 +366,7 @@ EVENT_TYPES = AUTO_EVENT_TYPES + [
 
 
 class Exercise(models.Model):
-    name = models.CharField(u'事件', max_length=128)
+    name = models.CharField('事件', max_length=128)
     order = models.PositiveIntegerField(default=1)
 
     class Meta:
@@ -380,15 +380,15 @@ class ExerciseLog(models.Model):
 
     @property
     def range(self):
-        return range(self.times)
+        return list(range(self.times))
 
 
 def generate_exercises(**kwargs):
     default_exercises = [
-        u'平板支撑',
-        u'平躺抬腿',
-        u'深蹲',
-        u'跳绳100',
+        '平板支撑',
+        '平躺抬腿',
+        '深蹲',
+        '跳绳100',
     ]
     for ex in default_exercises:
         Exercise.objects.get_or_create(name=ex)
@@ -396,7 +396,7 @@ def generate_exercises(**kwargs):
 post_migrate.connect(generate_exercises, sender=Exercise._meta.app_config)
 
 
-for orientation in ExifTags.TAGS.keys():
+for orientation in list(ExifTags.TAGS.keys()):
     if ExifTags.TAGS[orientation] == 'Orientation':
         break
 
@@ -410,7 +410,7 @@ def resize_image(path):
         exif = img._getexif()
         if not exif:
             return
-        exif = dict(img._getexif().items())
+        exif = dict(list(img._getexif().items()))
         if exif[orientation] == 3:
             img = img.rotate(180, expand=True)
         elif exif[orientation] == 6:

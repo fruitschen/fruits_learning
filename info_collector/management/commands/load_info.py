@@ -1,7 +1,7 @@
 """
 This command load info from a json file produced by sync_info
 """
-from __future__ import absolute_import
+
 import os
 
 from django.core.management.base import BaseCommand

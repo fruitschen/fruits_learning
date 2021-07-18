@@ -62,21 +62,21 @@ class PairTransactionAdmin(admin.ModelAdmin):
         (None, {
             'fields': ('account', 'pair'),
         }),
-        (u'正向', {
+        ('正向', {
             'fields': (
                 ('sold_stock', 'sold_price', 'sold_amount'),
                 ('bought_stock', 'bought_price', 'bought_amount'),
                 ('started',),
             )
         }),
-        (u'反向', {
+        ('反向', {
             'fields': (
                 ('bought_sold_price',),
                 ('sold_bought_back_price', 'bought_back_amount', ),
                 ('finished',),
             )
         }),
-        (u'其它', {
+        ('其它', {
             'fields': (
                 ('profit',),
                 ('order',),

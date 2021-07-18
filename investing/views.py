@@ -7,7 +7,7 @@ from stocks.templatetags.money import money_display
 
 def compound_interest(request):
     cols = [8, 10, 15, 20, 25, 30]
-    years = range(1, 51)
+    years = list(range(1, 51))
     rows = []
     base = 1
     if request.GET.get('base', False):
@@ -21,7 +21,7 @@ def compound_interest(request):
             if year % skip != 0:
                 continue
         row = {
-            'title': u'{}年'.format(year),
+            'title': '{}年'.format(year),
             'result': [],
         }
         for rate in cols:
@@ -32,9 +32,9 @@ def compound_interest(request):
                  display = money_display(res)
                  display = '{}万'.format('%.2f' % (res / 10000))
              elif earning > 1:
-                 display = u'{}倍'.format('%.2f' % earning)
+                 display = '{}倍'.format('%.2f' % earning)
              else:
-                 display = u'{}%'.format('%.2f' % earning_percent)
+                 display = '{}%'.format('%.2f' % earning_percent)
              row['result'].append(display)
         rows.append(row)
     context = {
@@ -51,7 +51,7 @@ def fund_value_estimation(request, code='150292'):
             # 2019年末, 净值为0.85时候初始估值大概是0.8
             # 懒得计算PB
             'code': '150292',
-            'name': u'银行B份',
+            'name': '银行B份',
             'fund_value': Decimal('0.85'),
             'initial_pb': Decimal('0.85'),
             'fee': (Decimal('1') + Decimal('0.22')) / 100,
@@ -60,7 +60,7 @@ def fund_value_estimation(request, code='150292'):
         },
         {
             'code': '150118',
-            'name': u'房地产B',
+            'name': '房地产B',
             'fund_value': Decimal('0.9'),
             'initial_pb': Decimal('1.26'),
             'fee': (Decimal('1') + Decimal('0.2')) / 100,
@@ -69,7 +69,7 @@ def fund_value_estimation(request, code='150292'):
         },
         {
             'code': '150228',
-            'name': u'银行B',
+            'name': '银行B',
             'fund_value': Decimal('0.7'),
             'initial_pb': Decimal('0.708'),
             'fee': (Decimal('1') + Decimal('0.22')) / 100,

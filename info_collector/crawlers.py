@@ -6,7 +6,7 @@ import random
 import requests
 import time
 import xlrd
-from BeautifulSoup import BeautifulSoup as BS
+from bs4 import BeautifulSoup as BS
 from datetime import datetime, timedelta
 
 
@@ -36,7 +36,7 @@ class AbstractBaseCrawler(object):
             self.info_source.last_fetched = timezone.now()
             self.info_source.status = InfoSource.GOOD
             self.info_source.save()
-        except Exception, e:
+        except Exception as e:
             logging.error(e)
             try:
                 info_source = InfoSource.objects.get(slug=self.slug)
@@ -196,7 +196,7 @@ class XueqiuHomeCrawler(XueqiuBaseCrawler):
                 continue
             soup = BS(response.text)
             status_content = soup.find('div', {'class': 'status-content'})
-            status_content = unicode(status_content)
+            status_content = str(status_content)
             content = Content.objects.create(content=status_content)
             info.content = content
             info.status = Info.OK
@@ -282,7 +282,7 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
                 url = '{}{}'.format(self.info_source.url, target)
                 text = post['text']
                 if not title:
-                    title = u'[无标题]{}...'.format(strip_tags(text)[:64])
+                    title = '[无标题]{}...'.format(strip_tags(text)[:64])
                 created_at = int(post['created_at']) / 1000
                 created = datetime.utcfromtimestamp(created_at)  # + timedelta(minutes=60*8)
                 created = timezone.datetime(created.year, created.month, created.day, created.hour, created.minute,
@@ -318,7 +318,7 @@ class XueqiuPeopleCrawler(XueqiuBaseCrawler):
         url = '{}{}'.format(self.info_source.url, target)
         text = post['text']
         if not title:
-            title = u'[无标题]{}...'.format(strip_tags(text)[:64])
+            title = '[无标题]{}...'.format(strip_tags(text)[:64])
         created_at = int(post['created_at']) / 1000
         created = datetime.utcfromtimestamp(created_at)  # + timedelta(minutes=60*8)
         created = timezone.datetime(created.year, created.month, created.day, created.hour, created.minute,
@@ -425,11 +425,11 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
         while page < 5 and not we_shall_stop:
             json_response = get_response(session, sh_announcements_url, timeout=3, headers=self.headers, post_data={
                 'column': 'sse',
-                'columnTitle': u'沪市公告',
-                'pageNum': unicode(page),
-                'pageSize': u'30',
-                'tabName': u'latest',
-                'seDate': u'请选择日期',
+                'columnTitle': '沪市公告',
+                'pageNum': str(page),
+                'pageSize': '30',
+                'tabName': 'latest',
+                'seDate': '请选择日期',
             })
             json_result = json_response.json()
             for item_list in json_result['classifiedAnnouncements']:
@@ -480,11 +480,11 @@ class StocksAnnouncementCrawler(AbstractBaseCrawler):
         while page < 5 and not we_shall_stop:
             json_response = get_response(session, sz_announcements_url, timeout=3, headers=self.headers, post_data={
                 'column': 'szse',
-                'columnTitle': u'深市公告',
-                'pageNum': unicode(page),
-                'pageSize': u'30',
-                'tabName': u'latest',
-                'seDate': u'请选择日期',
+                'columnTitle': '深市公告',
+                'pageNum': str(page),
+                'pageSize': '30',
+                'tabName': 'latest',
+                'seDate': '请选择日期',
             })
             json_result = json_response.json()
             for item_list in json_result['classifiedAnnouncements']:

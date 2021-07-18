@@ -1,5 +1,5 @@
 # coding: utf-8
-from __future__ import unicode_literals
+
 from datetime import timedelta
 from django.utils import timezone
 from django.db import models
@@ -11,9 +11,9 @@ class InfoSource(models.Model):
     ERROR = 'E'
     CRAWLING = 'C'
     CURRENT_STATUS = (
-        (GOOD, u'✓ good'),
-        (ERROR, u'× error'),
-        (CRAWLING, u'~ running')
+        (GOOD, '✓ good'),
+        (ERROR, '× error'),
+        (CRAWLING, '~ running')
     )
 
     name = models.CharField(max_length=255)
@@ -21,7 +21,7 @@ class InfoSource(models.Model):
     url = models.URLField()
     last_fetched = models.DateTimeField(null=True, blank=True)
     last_error = models.DateTimeField(null=True, blank=True)
-    interval = models.IntegerField(u'抓取间隔(秒)', default=15*60)
+    interval = models.IntegerField('抓取间隔(秒)', default=15*60)
     status = models.CharField(max_length=1, default=GOOD, choices=CURRENT_STATUS)
     description = models.TextField()
     silence = models.BooleanField(default=False)
@@ -52,7 +52,7 @@ class Author(models.Model):
     url = models.CharField(max_length=1000, blank=True)
     avatar_url = models.CharField(max_length=1000, blank=True)
     following = models.BooleanField(default=False)
-    stop_fetching = models.BooleanField(u'停止抓取', default=False)
+    stop_fetching = models.BooleanField('停止抓取', default=False)
     last_fetched = models.DateTimeField(null=True, blank=True)
     last_day_count = models.IntegerField(default=0)
     last_week_count = models.IntegerField(default=0)
@@ -61,7 +61,7 @@ class Author(models.Model):
     raw = models.TextField(blank=True)
     
     def __unicode__(self):
-        return self.name or u'[no name]'
+        return self.name or '[no name]'
 
     def natural_key(self):
         return (self.user_id, self.name)

@@ -24,13 +24,13 @@ def test_stock(client):
     gree_stock = Stock.objects.create(
         code='000651',
         market='sz',
-        name=u'格力电器',
+        name='格力电器',
         price=40,
     )
     anxin_stock = Stock.objects.create(
         code='600816',
         market='sh',
-        name=u'安信信托',
+        name='安信信托',
         price=20,
     )
     assert (Stock.objects.all().count() == 2)

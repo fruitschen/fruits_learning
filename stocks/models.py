@@ -65,26 +65,26 @@ def ratio_display(ratio):
 
 class Transaction(models.Model):
     """一笔买入、卖出交易"""
-    BUY = u'买入'
-    SELL = u'卖出'
+    BUY = '买入'
+    SELL = '卖出'
     ACTION_CHOICES = (
         (BUY, BUY),
         (SELL, SELL),
     )
     account = models.ForeignKey('Account', blank=True, null=True, on_delete=models.PROTECT, related_name='transactions')
-    action = models.CharField(u'交易类型', max_length=16, blank=True, choices=ACTION_CHOICES)
+    action = models.CharField('交易类型', max_length=16, blank=True, choices=ACTION_CHOICES)
     stock = models.ForeignKey(
-        'Stock', verbose_name=u'股票', limit_choices_to={'star': True},
+        'Stock', verbose_name='股票', limit_choices_to={'star': True},
         related_name='transactions', on_delete=models.PROTECT
     )
-    price = models.DecimalField(u'交易价格', max_digits=10, decimal_places=4, null=True, blank=True)
-    amount = models.IntegerField(u'交易数量',)
-    date = models.DateTimeField(u'交易时间', null=True, blank=True)
-    total_money = models.DecimalField(u'交易额', max_digits=20, decimal_places=4, null=True, blank=True)
-    has_updated_account = models.BooleanField(u'是否已经更新账户', default=False)
+    price = models.DecimalField('交易价格', max_digits=10, decimal_places=4, null=True, blank=True)
+    amount = models.IntegerField('交易数量',)
+    date = models.DateTimeField('交易时间', null=True, blank=True)
+    total_money = models.DecimalField('交易额', max_digits=20, decimal_places=4, null=True, blank=True)
+    has_updated_account = models.BooleanField('是否已经更新账户', default=False)
 
     def save(self, *args, **kwargs):
-        u"""如果没有填交易额，在save之前自动计算。"""
+        """如果没有填交易额，在save之前自动计算。"""
         if not self.total_money:
             self.total_money = self.price * self.amount
         if not self.has_updated_account:
@@ -111,7 +111,7 @@ class Transaction(models.Model):
 
 
 class StockPair(models.Model):
-    u"""一组配对交易标的"""
+    """一组配对交易标的"""
     name = models.CharField(max_length=256, default='')
     started_stock = models.ForeignKey(
         'Stock', limit_choices_to={'star': True}, related_name='pairs', on_delete=models.PROTECT
@@ -130,7 +130,7 @@ class StockPair(models.Model):
 
     def __unicode__(self):
         if not self.name:
-            self.name = u'{}/{}'.format(self.started_stock.name, self.target_stock.name)
+            self.name = '{}/{}'.format(self.started_stock.name, self.target_stock.name)
             self.save()
         return self.name
 
@@ -200,37 +200,37 @@ class StockPair(models.Model):
 
 
 class PairTransaction(models.Model):
-    u"""一笔完整的配对交易"""
+    """一笔完整的配对交易"""
     account = models.ForeignKey('Account', on_delete=models.PROTECT, related_name='pair_transactions')
     pair = models.ForeignKey(
         StockPair, limit_choices_to={'star': True}, null=True, blank=True,
         related_name='transactions', on_delete=models.PROTECT
     )
     sold_stock = models.ForeignKey(
-        'Stock', verbose_name=u'卖出股票', limit_choices_to={'star': True},
+        'Stock', verbose_name='卖出股票', limit_choices_to={'star': True},
         related_name='sold_pair_transactions', on_delete=models.PROTECT
     )
-    sold_price = models.DecimalField(u'卖出价格', max_digits=10, decimal_places=4)
-    sold_amount = models.IntegerField(u'卖出数量',)
+    sold_price = models.DecimalField('卖出价格', max_digits=10, decimal_places=4)
+    sold_amount = models.IntegerField('卖出数量',)
     bought_stock = models.ForeignKey(
-        'Stock', verbose_name=u'买入股票', limit_choices_to={'star': True},
+        'Stock', verbose_name='买入股票', limit_choices_to={'star': True},
         related_name='bought_pair_transactions', on_delete=models.PROTECT
     )
-    bought_price = models.DecimalField(u'买入价格', max_digits=10, decimal_places=4)
-    bought_amount = models.IntegerField(u'买入数量',)
-    started = models.DateTimeField(u'交易时间', null=True, blank=True)
-    finished = models.DateTimeField(u'结束交易时间', null=True, blank=True)
+    bought_price = models.DecimalField('买入价格', max_digits=10, decimal_places=4)
+    bought_amount = models.IntegerField('买入数量',)
+    started = models.DateTimeField('交易时间', null=True, blank=True)
+    finished = models.DateTimeField('结束交易时间', null=True, blank=True)
     sold_bought_back_price = models.DecimalField(
-        u'卖出后买入价格', max_digits=10, decimal_places=4, null=True, blank=True
+        '卖出后买入价格', max_digits=10, decimal_places=4, null=True, blank=True
     )
     bought_back_amount = models.IntegerField(
-        u'实际买回数量', null=True, blank=True,
-        help_text=u'实际买回的数量可能和之前卖出的数量不一致，这个值用于显示Transaction的交易额，并不用于计算配对交易的利润。'
+        '实际买回数量', null=True, blank=True,
+        help_text='实际买回的数量可能和之前卖出的数量不一致，这个值用于显示Transaction的交易额，并不用于计算配对交易的利润。'
     )
-    bought_sold_price = models.DecimalField(u'买入后卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
-    profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
+    bought_sold_price = models.DecimalField('买入后卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
+    profit = models.DecimalField('利润', max_digits=10, decimal_places=4, null=True, blank=True)
     order = models.IntegerField(default=100)
-    archived = models.BooleanField(u'存档-不再计算盈亏', default=False)
+    archived = models.BooleanField('存档-不再计算盈亏', default=False)
 
     transactions = models.ManyToManyField(Transaction, editable=False)
 
@@ -238,7 +238,7 @@ class PairTransaction(models.Model):
         ordering = ['order', 'finished', '-started']
 
     def __unicode__(self):
-        return u'{} 配对交易'.format(self.pair)
+        return '{} 配对交易'.format(self.pair)
 
     @property
     def sold_total(self):
@@ -365,12 +365,12 @@ class PairTransaction(models.Model):
             # sold
             Transaction(
                 account=self.account,
-                date=self.started, action=u'卖出', stock=self.sold_stock, amount=self.sold_amount,
+                date=self.started, action='卖出', stock=self.sold_stock, amount=self.sold_amount,
                 price=self.sold_price, total_money=self.sold_total),
             # bought
             Transaction(
                 account=self.account,
-                date=self.started, action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
+                date=self.started, action='买入', stock=self.bought_stock, amount=self.bought_amount,
                 price=self.bought_price, total_money=self.bought_total),
         ]
         if self.transactions.all().count() < 2:
@@ -385,13 +385,13 @@ class PairTransaction(models.Model):
                 # sold the bought
                 Transaction(
                     account=self.account,
-                    date=self.finished, action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
+                    date=self.finished, action='卖出', stock=self.bought_stock, amount=self.bought_amount,
                     price=self.bought_sold_price, total_money=self.bought_sold_total
                 ),
                 # bought the sold
                 Transaction(
                     account=self.account,
-                    date=self.finished, action=u'买入', stock=self.sold_stock, amount=actual_bought_back_amount,
+                    date=self.finished, action='买入', stock=self.sold_stock, amount=actual_bought_back_amount,
                     price=self.sold_bought_back_price, total_money=actual__bought_back_total
                 ),
             ]
@@ -428,7 +428,7 @@ class Stock(models.Model):
         ordering = ['-star', ]
 
     def __unicode__(self):
-        return u'%s(%s%s)' % (self.name, self.market, self.code)
+        return '%s(%s%s)' % (self.name, self.market, self.code)
 
     def update_price(self, price):
         if self.market == 'hk':
@@ -551,21 +551,21 @@ class BoughtSoldTransaction(models.Model):
         'Account', blank=True, null=True, on_delete=models.PROTECT, related_name='bs_transactions'
     )
     bought_stock = models.ForeignKey(
-        'Stock', verbose_name=u'买入股票', limit_choices_to={'star': True},
+        'Stock', verbose_name='买入股票', limit_choices_to={'star': True},
         related_name='bs_transactions', on_delete=models.PROTECT
     )
-    bought_price = models.DecimalField(u'买入价格', max_digits=10, decimal_places=4, null=True, blank=True)
-    bought_amount = models.IntegerField(u'买入数量',)
-    started = models.DateTimeField(u'交易时间', null=True, blank=True)
-    finished = models.DateTimeField(u'结束交易时间', null=True, blank=True)
-    sold_price = models.DecimalField(u'卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
-    profit = models.DecimalField(u'利润', max_digits=10, decimal_places=4, null=True, blank=True)
-    interest_rate = models.DecimalField(u'利率成本', max_digits=6, decimal_places=4, default='0.07')
-    archived = models.BooleanField(u'存档-不再计算盈亏', default=False)
+    bought_price = models.DecimalField('买入价格', max_digits=10, decimal_places=4, null=True, blank=True)
+    bought_amount = models.IntegerField('买入数量',)
+    started = models.DateTimeField('交易时间', null=True, blank=True)
+    finished = models.DateTimeField('结束交易时间', null=True, blank=True)
+    sold_price = models.DecimalField('卖出价格', max_digits=10, decimal_places=4, null=True, blank=True)
+    profit = models.DecimalField('利润', max_digits=10, decimal_places=4, null=True, blank=True)
+    interest_rate = models.DecimalField('利率成本', max_digits=6, decimal_places=4, default='0.07')
+    archived = models.BooleanField('存档-不再计算盈亏', default=False)
     transactions = models.ManyToManyField(Transaction, editable=False)
 
     def __unicode__(self):
-        return u'{} 交易'.format(self.bought_stock)
+        return '{} 交易'.format(self.bought_stock)
 
     @property
     def sold_total(self):
@@ -631,7 +631,7 @@ class BoughtSoldTransaction(models.Model):
             # bought
             Transaction(
                 account=self.account,
-                date=self.started, action=u'买入', stock=self.bought_stock, amount=self.bought_amount,
+                date=self.started, action='买入', stock=self.bought_stock, amount=self.bought_amount,
                 price=self.bought_price, total_money=self.bought_total),
         ]
         if self.transactions.all().count() < 1:
@@ -644,7 +644,7 @@ class BoughtSoldTransaction(models.Model):
                 # sold
                 Transaction(
                     account=self.account,
-                    date=self.finished, action=u'卖出', stock=self.bought_stock, amount=self.bought_amount,
+                    date=self.finished, action='卖出', stock=self.bought_stock, amount=self.bought_amount,
                     price=self.sold_price, total_money=self.sold_total)
             ]
             if self.transactions.all().count() < 2:
@@ -699,13 +699,13 @@ class AccountStocksRange(models.Model):
             total += account_stock.total
             percent += account_stock.percent
         if percent > self.high:
-            status = u'超'
+            status = '超'
             status_amount = percent - self.high
         elif percent < self.low:
-            status = u'低'
+            status = '低'
             status_amount = self.low - percent
         else:
-            status = u'正常'
+            status = '正常'
             status_amount = 0
         return {
             'percent': percent,
@@ -718,13 +718,13 @@ class AccountStocksRange(models.Model):
 class Account(models.Model):
     name = models.CharField(max_length=32)
     slug = models.SlugField(unique=True, db_index=True)
-    main = models.BooleanField(u'是否主账户', default=False)
-    public = models.BooleanField(u'是否公开', default=False)
-    display_summary = models.BooleanField(u'是否默认显示概览', default=False)
-    initial_investment = models.DecimalField(u'初始投资', max_digits=14, decimal_places=2, null=True, blank=True)
-    cash = models.DecimalField(u'现金', max_digits=14, decimal_places=2, default=0)
-    initial_date = models.DateField(u'初始投资时间', )
-    debt = models.DecimalField(u'负债', max_digits=10, decimal_places=2, null=True, blank=True)
+    main = models.BooleanField('是否主账户', default=False)
+    public = models.BooleanField('是否公开', default=False)
+    display_summary = models.BooleanField('是否默认显示概览', default=False)
+    initial_investment = models.DecimalField('初始投资', max_digits=14, decimal_places=2, null=True, blank=True)
+    cash = models.DecimalField('现金', max_digits=14, decimal_places=2, default=0)
+    initial_date = models.DateField('初始投资时间', )
+    debt = models.DecimalField('负债', max_digits=10, decimal_places=2, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -849,14 +849,14 @@ class SubAccount(models.Model):
     account = models.ForeignKey(Account)
     name = models.CharField(max_length=64)
     order = models.IntegerField(default=100)
-    asset = models.PositiveIntegerField(u'资产', default=0)
-    debt = models.PositiveIntegerField(u'负债', default=0)
+    asset = models.PositiveIntegerField('资产', default=0)
+    debt = models.PositiveIntegerField('负债', default=0)
 
     def net_asset(self):
         return self.asset - self.debt
 
     def __unicode__(self):
-        return u'{} ({}子账户)'.format(self.name, self.account)
+        return '{} ({}子账户)'.format(self.name, self.account)
 
     class Meta:
         ordering = ['order']
@@ -865,29 +865,29 @@ class SubAccount(models.Model):
 class Snapshot(models.Model):
     """账户快照，保存一个账户在某个时间点的净资产，持有股票等等"""
     account = models.ForeignKey('Account', related_name='snapshots', on_delete=models.PROTECT)
-    date = models.DateField(u'时间', )
+    date = models.DateField('时间', )
     serial_number = models.PositiveIntegerField(null=True)
 
-    net_asset = models.DecimalField(u'净资产', max_digits=14, decimal_places=2, null=True, blank=True)
-    stocks_asset = models.DecimalField(u'股票市值', max_digits=14, decimal_places=2, null=True, blank=True)
-    sub_accounts_asset = models.DecimalField(u'子账户市值', max_digits=14, decimal_places=2, blank=True, default=0)
-    cash = models.DecimalField(u'现金', max_digits=14, decimal_places=2, null=True, blank=True)
-    debt = models.DecimalField(u'负债', max_digits=10, decimal_places=2, null=True, blank=True, default=0)
-    increase = models.DecimalField(u'涨幅', max_digits=8, decimal_places=4, null=True, blank=True)
-    has_transaction = models.BooleanField(u'是否有交易', default=False)
+    net_asset = models.DecimalField('净资产', max_digits=14, decimal_places=2, null=True, blank=True)
+    stocks_asset = models.DecimalField('股票市值', max_digits=14, decimal_places=2, null=True, blank=True)
+    sub_accounts_asset = models.DecimalField('子账户市值', max_digits=14, decimal_places=2, blank=True, default=0)
+    cash = models.DecimalField('现金', max_digits=14, decimal_places=2, null=True, blank=True)
+    debt = models.DecimalField('负债', max_digits=10, decimal_places=2, null=True, blank=True, default=0)
+    increase = models.DecimalField('涨幅', max_digits=8, decimal_places=4, null=True, blank=True)
+    has_transaction = models.BooleanField('是否有交易', default=False)
     transactions_count = models.IntegerField(default=0)
 
-    error = models.DecimalField(u'误差', max_digits=8, decimal_places=2, null=True, blank=True)
-    comment = models.TextField(u'备注', blank=True, default='')
+    error = models.DecimalField('误差', max_digits=8, decimal_places=2, null=True, blank=True)
+    comment = models.TextField('备注', blank=True, default='')
     status_image = models.ImageField(upload_to='snapshots', blank=True)
     change_image = models.ImageField(upload_to='snapshots', blank=True)
     xueqiu_url = models.URLField(null=True, blank=True)
-    extra_content = MarkdownxField(u'更多内容', blank=True, default='')
+    extra_content = MarkdownxField('更多内容', blank=True, default='')
 
     is_annual = models.BooleanField(default=False)
 
     def __unicode__(self):
-        return u'{} snapshot {} '.format(self.account, self.serial_number)
+        return '{} snapshot {} '.format(self.account, self.serial_number)
 
     @property
     def public(self):
@@ -1011,7 +1011,7 @@ class SnapshotStock(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
     name = models.CharField(max_length=16, blank=True)
     code = models.CharField(max_length=6, blank=True)
-    total = models.DecimalField(u'总价', max_digits=14, decimal_places=2, null=True, blank=True)
+    total = models.DecimalField('总价', max_digits=14, decimal_places=2, null=True, blank=True)
 
     @property
     def get_total(self):

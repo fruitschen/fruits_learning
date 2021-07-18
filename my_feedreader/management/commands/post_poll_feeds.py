@@ -1,4 +1,4 @@
-from __future__ import absolute_import
+
 
 from django.core.management.base import BaseCommand
 from django.utils import timezone
@@ -67,7 +67,7 @@ class Command(BaseCommand):
             unread_untries = Entry.objects.filter(read_flag=False, feed=feed)
             num_entries = len(unread_untries)
             if verbose:
-                print(u'%s %d entries to process' % (feed, num_entries))
+                print(('%s %d entries to process' % (feed, num_entries)))
             for entry in unread_untries:
                 Info.objects.create(
                     info_source=rss_info_source,

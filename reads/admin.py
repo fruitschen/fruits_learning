@@ -16,7 +16,7 @@ class ReadAdmin(admin.ModelAdmin):
             initial['slug'] = 'info-{}-{}'.format(info.original_timestamp.strftime('%Y-%m-%d'), info.id)
             title = info.title
             if info.author:
-                title = u'{}: {}'.format(info.author.name, title)
+                title = '{}: {}'.format(info.author.name, title)
             initial['title'] = title
 
             initial['original_url'] = info.url
