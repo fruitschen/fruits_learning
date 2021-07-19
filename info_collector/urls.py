@@ -2,7 +2,7 @@ from django.conf.urls import url, include
 from django.utils import timezone
 from django.shortcuts import redirect
 import django_filters
-from rest_framework.decorators import detail_route, list_route
+from rest_framework.decorators import action
 from rest_framework import serializers, viewsets, renderers
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -59,13 +59,13 @@ class InfoViewSet(viewsets.ModelViewSet):
             query = query.order_by(ordering)
         return query
 
-    @list_route(methods=['post'])
+    @action(detail=False, methods=['post'])
     def mark_all_as_read(self, request):
         info_items = Info.objects.filter(id__in=request.POST.getlist('ids[]', []))
         info_items.update(is_read=True, read_at=timezone.now())
         return Response({'status': 'OK'})
 
-    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer], url_path='mark-as-read',
+    @action(detail=True, renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer], url_path='mark-as-read',
                   methods=['post'])
     def mark_as_read(self, request, *args, **kwargs):
         info = self.get_object()
@@ -78,7 +78,7 @@ class InfoViewSet(viewsets.ModelViewSet):
         return redirect(detail_url)
         return Response(InfoSerializer(info, context={'request': request}).data)
 
-    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer],
+    @action(detail=True, renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer],
                   url_path='star',
                   methods=['post'])
     def star(self, request, *args, **kwargs):
@@ -92,7 +92,7 @@ class InfoViewSet(viewsets.ModelViewSet):
         return redirect(detail_url)
         return Response(InfoSerializer(info, context={'request': request}).data)
 
-    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer],
+    @action(detail=True, renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer],
                   url_path='unstar',
                   methods=['post'])
     def unstar(self, request, *args, **kwargs):

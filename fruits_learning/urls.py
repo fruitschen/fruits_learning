@@ -1,9 +1,21 @@
-
-
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
+from django.urls import path
 
+
+import info_collector
+import rest_framework
+import investing
+import reads
+import diary
+import contacts
+import django_rq
+import markdownx
+import stocks
+import weibo_backup.views
+
+import rest_framework
 import weibo_backup.views
 from search import views as search_views
 from investing import views as investing_views
@@ -16,32 +28,32 @@ from rest_framework import routers
 from info_collector.urls import InfoViewSet, InfoSourceViewSet
 from my_feedreader.api import FeedViewSet, EntryViewSet
 router = routers.DefaultRouter()
-router.register(r'info', InfoViewSet, base_name='info')
+router.register(r'info', InfoViewSet, basename='info')
 router.register(r'info-source', InfoSourceViewSet)
 router.register(r'feed', FeedViewSet)
 router.register(r'entry', EntryViewSet)
 
 
 urlpatterns = [
-    url(r'^django-admin/', path(admin.site.urls)),
-    url(r'^admin/', path(wagtailadmin_urls)),
-    url(r'^documents/', path(wagtaildocs_urls)),
+    path(r'^django-admin/', admin.site.urls),
+    path(r'^admin/', include(wagtailadmin_urls)),
+    path(r'^documents/', include(wagtaildocs_urls)),
     url(r'^search/$', search_views.search, name='search'),
-    url(r'^api/', path(router.urls)),
-    url(r'^api-auth/', path('rest_framework.urls', namespace='rest_framework')),
-    url(r'^info/', path('info_collector.urls')),
-    #url(r'^code_reading/', path('code_reading.urls')),
-    url(r'^stocks/', path('stocks.urls')),
-    url(r'^investing/', path('investing.urls')),
-    url(r'^reads/', path('reads.urls')),
-    url(r'^diary/', path('diary.urls')),
-    url(r'^contacts/', path('contacts.urls')),
+    path(r'^api/', include(router.urls)),
+    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    path(r'^info/', include(info_collector.urls)),
+    #url(r'^code_reading/', include('code_reading.urls')),
+    path(r'^stocks/', include('stocks.urls')),
+    path(r'^investing/', include('investing.urls')),
+    path(r'^reads/', include('reads.urls')),
+    path(r'^diary/', include('diary.urls')),
+    path(r'^contacts/', include('contacts.urls')),
     url(r'^tweets/$', weibo_backup.views.tweets, name='tweets'),
 
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),
-    url(r'^django-rq/', path('django_rq.urls')),
-    url(r'^markdownx/', path('markdownx.urls')),
-    url(r'', path(wagtail_urls)),
+    path(r'^django-rq/', include('django_rq.urls')),
+    path(r'^markdownx/', include('markdownx.urls')),
+    path(r'', include(wagtail_urls)),
 ]
 
 
@@ -55,5 +67,5 @@ if settings.DEBUG:
 
     import debug_toolbar
     urlpatterns = [
-        url(r'^__debug__/', path(debug_toolbar.urls)),
+        path(r'__debug__/', include(debug_toolbar.urls)),
     ] + urlpatterns
