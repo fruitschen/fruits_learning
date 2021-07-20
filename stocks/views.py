@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import functools
 from datetime import timedelta
 from decimal import Decimal
 
@@ -14,7 +15,7 @@ from stocks.jobs import get_price
 
 
 def stocks(request):
-    logged_in = request.user.is_authenticated()
+    logged_in = request.user.is_authenticated
     star_stocks = Stock.objects.all().filter(star=True)
     if logged_in:
         accounts = Account.objects.all()
@@ -30,8 +31,8 @@ def stocks(request):
 
 
 def account_pair_transactions(request, account_slug):
-    logged_in = request.user.is_authenticated()
-    if not request.user.is_authenticated():
+    logged_in = request.user.is_authenticated
+    if not request.user.is_authenticated:
         return HttpResponseForbidden('Oops')
 
     account = Account.objects.get(slug=account_slug)
@@ -50,14 +51,14 @@ def account_pair_transactions(request, account_slug):
 
 
 def account_details(request, account_slug):
-    logged_in = request.user.is_authenticated()
+    logged_in = request.user.is_authenticated
     get_price_job = None
     if logged_in and request.GET.get('update', False):
         get_price_job = get_price.delay()
     account = Account.objects.get(slug=account_slug)
     if account.slug == 'personal':
         assert account.public is False
-    if not account.public and not request.user.is_authenticated():
+    if not account.public and not request.user.is_authenticated:
         return HttpResponseForbidden('Oops')
     snapshots = account.snapshots.all().order_by('-id')
     snapshots_chart_data = None
@@ -85,7 +86,9 @@ def account_details(request, account_slug):
 
     now = timezone.now()
     star_stocks = Stock.objects.all().filter(star=True)
-    account_stocks = sorted(account.stocks.filter(amount__gt=0), lambda x, y: int(y.total - x.total))
+    def cmp_func(x, y):
+        return int(y.total - x.total)
+    account_stocks = sorted(account.stocks.filter(amount__gt=0), key=functools.cmp_to_key(cmp_func))
     all_account_pair_transactions = account.pair_transactions.all()
     account_pair_transactions = all_account_pair_transactions.exclude(archived=True)
     if account.public:
@@ -205,7 +208,10 @@ def get_pairs_context(request):
     pair_stocks = Stock.objects.filter(id__in=stock_ids)
     if request.GET.get('force_update', False):
         update_stocks_prices(pair_stocks)
-    star_pairs = sorted(star_pairs, lambda x, y: int( int(bool(y.unfinished_transactions)) - int(bool(x.unfinished_transactions))))
+    
+    def cmp_func(x, y):
+        return int(int(bool(y.unfinished_transactions)) - int(bool(x.unfinished_transactions)))
+    star_pairs = sorted(star_pairs, key=functools.cmp_to_key(cmp_func))
     return {"pairs": star_pairs, "update_stocks_prices_url": update_stocks_prices_url(pair_stocks)}
 
 
@@ -267,9 +273,9 @@ def pair_details(request, pair_id):
 
 
 def account_snapshot(request, account_slug, snapshot_number):
-    logged_in = request.user.is_authenticated()
+    logged_in = request.user.is_authenticated
     account = Account.objects.get(slug=account_slug)
-    if not account.public and not request.user.is_authenticated():
+    if not account.public and not request.user.is_authenticated:
         return HttpResponseForbidden('Oops')
     snapshot = account.snapshots.all().get(serial_number=snapshot_number)
     transactions = snapshot.find_transactions()

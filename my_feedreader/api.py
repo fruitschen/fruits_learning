@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 import django_filters
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 from rest_framework import serializers, viewsets, renderers
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -35,7 +35,7 @@ class EntryViewSet(viewsets.ModelViewSet):
     serializer_class = EntrySerializer
     filter_class = EntryFilter
 
-    @detail_route(renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer], url_path='mark-as-read',
+    @action(detail=True, renderer_classes=[renderers.BrowsableAPIRenderer, renderers.JSONRenderer], url_path='mark-as-read',
                   methods=['post'])
     def mark_as_read(self, request, *args, **kwargs):
         entry = self.get_object()

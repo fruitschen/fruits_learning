@@ -15,9 +15,6 @@ import wagtail.images.blocks
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('wagtaildocs', '0007_merge'),
-        ('wagtailimages', '0019_delete_filter'),
-        ('wagtailcore', '0040_page_draft_title'),
         ('pages', '0001_initial'),
     ]
 

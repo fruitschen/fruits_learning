@@ -2,6 +2,7 @@
 """
 券商有时候给出四舍五入的均价，自动计算交易额的时候，可能造成成交额有一点误差。
 """
+from __future__ import unicode_literals
 import os
 from decimal import Decimal
 from datetime import timedelta, datetime
