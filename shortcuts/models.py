@@ -9,7 +9,7 @@ class Shortcut(models.Model):
     order = models.IntegerField(default=1)
     memo = models.TextField(blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title
 
     class Meta:

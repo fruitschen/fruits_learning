@@ -133,7 +133,7 @@ class EventGroup(models.Model):
     class Meta:
         ordering = ['order', ]
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -212,7 +212,7 @@ WEEKDAY_DICT = dict(WEEKDAY_CHOICES)
 class Weekday(models.Model):
     weekday = models.CharField(choices=WEEKDAY_CHOICES, unique=True, max_length=1)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_weekday_display()
 
     class Meta:
@@ -223,7 +223,7 @@ class WeekdayEventTemplate(BaseEventTemplate):
     event_type = 'weekday_event'
     weekdays = models.ManyToManyField('Weekday', blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} {} (Weekday Event Template)'.format(self.event, '、'.join(
             [w.get_weekday_display() for w in self.weekdays.all()])
         )
@@ -240,7 +240,7 @@ class MonthEventTemplate(BaseEventTemplate):
     event_type = 'month_event'
     day = models.CharField('日', max_length=2, choices=DAY_CHOICES)  # 31日表示最后一天
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} {}日 (Month Event Template)'.format(self.event, self.day)
 
     def get_admin_url(self):
@@ -256,7 +256,7 @@ class AnnualEventTemplate(BaseEventTemplate):
     month = models.CharField('月', max_length=2, choices=MONTH_CHOICES)
     day = models.CharField('日', max_length=2, choices=DAY_CHOICES)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} {}月{}日 (Annual Event Template)'.format(self.event, self.month, self.day)
 
     def get_admin_url(self):
@@ -289,7 +289,7 @@ class RuleEventTemplate(BaseEventTemplate):
     def get_admin_url(self):
         return reverse('admin:diary_ruleeventtemplate_change', args=(self.id,))
 
-    def __unicode__(self):
+    def __str__(self):
         return '{}'.format(self.event)
 
     @property
@@ -312,7 +312,7 @@ class Event(BaseEventTemplate):
     def to_event(self):
         return self
 
-    def __unicode__(self):
+    def __str__(self):
         event = '{}'.format(self.event)
         if self.start_hour:
             event += ' {}:{}'.format(self.start_hour, self.start_min or 0)

@@ -12,7 +12,7 @@ class Contact(models.Model):
     def full_name(self):
         return '{} {}'.format(self.first_name, self.last_name)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.full_name
 
 
@@ -30,7 +30,7 @@ class Email(models.Model):
         emails = self.recipients.all().values_list('email', flat=True)
         return emails
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} to {} sent at {}'.format(self.subject, self.recipients_emails_list, self.mailed_at)
 
     def send(self):

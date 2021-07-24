@@ -25,7 +25,7 @@ class Project(models.Model):
     SKIP_PATHS = ['.git', 'migrations', '__pycache__']
     SKIP_EXTENSIONS = ['pyc', 'egg-info']
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     
     @property
@@ -84,7 +84,7 @@ class ProjectFile(models.Model):
 
     VALID_TYPES = ['py', 'js', 'css', 'html', ]
     
-    def __unicode__(self):
+    def __str__(self):
         return self.filename
 
     def analyse_file(self):

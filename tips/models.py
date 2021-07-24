@@ -15,7 +15,7 @@ class Category(models.Model):
 class Source(models.Model):
     name = models.CharField(max_length=128)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -25,7 +25,7 @@ class Tip(models.Model):
     category = models.ForeignKey('Category', null=True, blank=True, on_delete=models.PROTECT)
     source = models.ForeignKey('Source', null=True, blank=True, on_delete=models.PROTECT)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.content
 
 

@@ -8,7 +8,7 @@ class ContactAutocomplete(autocomplete.Select2QuerySetView):
     
     def get_queryset(self):
         
-        if not self.request.user.is_authenticated() and self.request.user.is_staff:
+        if not self.request.user.is_authenticated and self.request.user.is_staff:
             return Contact.objects.none()
 
         qs = Contact.objects.all()

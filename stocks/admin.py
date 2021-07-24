@@ -97,7 +97,7 @@ class TransactionAdmin(admin.ModelAdmin):
 
 
 class PairAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', 'current_value', 'order', 'star']
+    list_display = ['__str__', 'current_value', 'order', 'star']
     list_editable = ['order', ]
     list_filter = ['star', ]
     actions = [add_star]

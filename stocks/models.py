@@ -2,6 +2,7 @@
 """
 券商有时候给出四舍五入的均价，自动计算交易额的时候，可能造成成交额有一点误差。
 """
+from __future__ import unicode_literals
 import os
 from decimal import Decimal
 from datetime import timedelta, datetime
@@ -128,7 +129,7 @@ class StockPair(models.Model):
     class Meta:
         ordering = ['star', 'order']
 
-    def __unicode__(self):
+    def __str__(self):
         if not self.name:
             self.name = '{}/{}'.format(self.started_stock.name, self.target_stock.name)
             self.save()
@@ -237,7 +238,7 @@ class PairTransaction(models.Model):
     class Meta:
         ordering = ['order', 'finished', '-started']
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} 配对交易'.format(self.pair)
 
     @property
@@ -427,7 +428,7 @@ class Stock(models.Model):
     class Meta:
         ordering = ['-star', ]
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s(%s%s)' % (self.name, self.market, self.code)
 
     def update_price(self, price):
@@ -564,7 +565,7 @@ class BoughtSoldTransaction(models.Model):
     archived = models.BooleanField('存档-不再计算盈亏', default=False)
     transactions = models.ManyToManyField(Transaction, editable=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} 交易'.format(self.bought_stock)
 
     @property
@@ -726,7 +727,7 @@ class Account(models.Model):
     initial_date = models.DateField('初始投资时间', )
     debt = models.DecimalField('负债', max_digits=10, decimal_places=2, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -855,7 +856,7 @@ class SubAccount(models.Model):
     def net_asset(self):
         return self.asset - self.debt
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} ({}子账户)'.format(self.name, self.account)
 
     class Meta:
@@ -886,7 +887,7 @@ class Snapshot(models.Model):
 
     is_annual = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} snapshot {} '.format(self.account, self.serial_number)
 
     @property

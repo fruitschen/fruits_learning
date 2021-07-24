@@ -35,24 +35,24 @@ router.register(r'entry', EntryViewSet)
 
 
 urlpatterns = [
-    path(r'^django-admin/', admin.site.urls),
-    path(r'^admin/', include(wagtailadmin_urls)),
-    path(r'^documents/', include(wagtaildocs_urls)),
+    path(r'django-admin/', admin.site.urls),
+    path(r'admin/', include(wagtailadmin_urls)),
+    path(r'documents/', include(wagtaildocs_urls)),
     url(r'^search/$', search_views.search, name='search'),
-    path(r'^api/', include(router.urls)),
+    path(r'api/', include(router.urls)),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    path(r'^info/', include(info_collector.urls)),
-    #url(r'^code_reading/', include('code_reading.urls')),
-    path(r'^stocks/', include('stocks.urls')),
-    path(r'^investing/', include('investing.urls')),
-    path(r'^reads/', include('reads.urls')),
-    path(r'^diary/', include('diary.urls')),
-    path(r'^contacts/', include('contacts.urls')),
+    path(r'info/', include(info_collector.urls)),
+    #url(r'code_reading/', include('code_reading.urls')),
+    path(r'stocks/', include('stocks.urls')),
+    path(r'investing/', include('investing.urls')),
+    path(r'reads/', include('reads.urls')),
+    path(r'diary/', include('diary.urls')),
+    path(r'contacts/', include('contacts.urls')),
     url(r'^tweets/$', weibo_backup.views.tweets, name='tweets'),
 
     url(r'^my_feedreader/$', my_feedreader, name='my_feedreader'),
-    path(r'^django-rq/', include('django_rq.urls')),
-    path(r'^markdownx/', include('markdownx.urls')),
+    path(r'django-rq/', include('django_rq.urls')),
+    path(r'markdownx/', include('markdownx.urls')),
     path(r'', include(wagtail_urls)),
 ]
 

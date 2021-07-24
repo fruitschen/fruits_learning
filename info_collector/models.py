@@ -35,7 +35,7 @@ class InfoSource(models.Model):
         now = timezone.now()
         return self.last_fetched + timedelta(seconds=self.interval) < now
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -60,7 +60,7 @@ class Author(models.Model):
     last_year_count = models.IntegerField(default=0)
     raw = models.TextField(blank=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name or '[no name]'
 
     def natural_key(self):
@@ -120,7 +120,7 @@ class AuthorName(models.Model):
     name = models.CharField(max_length=128, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
     
-    def __unicode__(self):
+    def __str__(self):
         return self.name
     
 
@@ -162,7 +162,7 @@ class Info(models.Model):
         unique_together = (('info_source', 'identifier'),)
         ordering = ['-important', '-timestamp']
 
-    def __unicode__(self):
+    def __str__(self):
         return self.title or ''
 
     def natural_key(self):
@@ -197,7 +197,7 @@ class SyncLog(models.Model):
     action = models.CharField(max_length=64)
     timestamp = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '{} {}'.format(self.action, self.timestamp)
 
     class Meta:
