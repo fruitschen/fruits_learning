@@ -1,0 +1,270 @@
+{% extends "user_stocks/user_stocks_base.html" %}
+{% load static %}
+
+{% block stocks_content %}
+    <ol class="breadcrumb no-print">
+        <li><a href="{% url 'user_stocks' %}">股票</a></li>
+        <li><a href="">{{ account }} </a></li>
+    </ol>
+
+    <h1>
+        {{ account }}
+        {% if is_admin %}
+            <a href="{% url 'admin:user_stocks_useraccount_change' account.id %}" target="_blank" class="btn btn-lg btn-primary btn-lg">管理</a>
+        {% endif %}
+    </h1>
+    <h3>概览
+        <a class="btn btn-lg btn-primary" role="button" data-toggle="collapse" href="#summary" aria-expanded="true" aria-controls="summary">
+            显示/隐藏
+        </a>
+    </h3>
+    <div class="collapse in" id="summary">
+        <table class="table">
+            <tr>
+                <th>科目</th>
+                <th>数值</th>
+            </tr>
+            <tr>
+                <td>起始资金</td>
+                <td>{{ account.initial_investment }}</td>
+            </tr>
+            <tr>
+                <td>当前净资产</td>
+                <td>{{ account.net }}</td>
+            </tr>
+            {% if account.debt %}
+                <tr>
+                    <td>总资产</td>
+                    <td>{{ account.total }}</td>
+                </tr>
+                <tr>
+                    <td>---股票资产</td>
+                    <td>{{ account.stocks_total }}</td>
+                </tr>
+                <tr>
+                    <td>---子账户资产</td>
+                    <td>{{ account.sub_accounts_asset }}</td>
+                </tr>
+                <tr>
+                    <td>负债</td>
+                    <td>
+                        {{ account.debt }}
+                    </td>
+                </tr>
+                {% for sub in account.subaccount_set.all %}
+                    {%if sub.debt %}
+                    <tr class="no-input">
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.name }}</td>
+                        <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.debt }}</td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
+                <tr>
+                    <td>担保比</td>
+                    <td>{{ account.ratio|floatformat:2 }}%</td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>总收益率</td>
+                <td>{{ account.total_yield_percent|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td>年化收益率</td>
+                <td>{{ account.yearly_yield_percent|floatformat:2 }}%</td>
+            </tr>
+            <tr>
+                <td>账户年龄</td>
+                <td>{{ account.years|floatformat:2 }}年</td>
+            </tr>
+        </table>
+        <table class="table">
+            <tr>
+                <th>名称</th>
+                <th>价格</th>
+                <th>数量</th>
+                <th>总价</th>
+                <th>占比</th>
+            </tr>
+            {% for stock in account_stocks %}
+                <tr>
+                    <td>{{ stock.stock }}</td>
+                    <td>{{ stock.stock.price }}</td>
+                    <td>{{ stock.amount }}</td>
+                    <td>{{ stock.total }}</td>
+                    <td>{{ stock.percent|floatformat:2 }}%</td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+
+
+    <h3>构成
+        <a class="btn btn-lg btn-primary no-print" role="button" data-toggle="collapse" href="#account_chart_container" aria-expanded="true" aria-controls="account_chart_container">
+            显示/隐藏
+        </a>
+    </h3>
+    <div id="account_chart_container" class="collapse in">
+        <div id="account_chart"  style="width:100%;height:500px"></div>
+
+    </div>
+
+
+    {% if snapshots %}
+        <h3 class="no-print">快照
+            <a class="btn btn-lg btn-primary" id="account_snapshots_button" role="button" data-toggle="collapse" href="#account_snapshots_container" aria-expanded="true" aria-controls="account_snapshots_container">
+                显示/隐藏
+            </a>
+        </h3>
+        <div id="account_snapshots_container" class="collapse in">
+            {% include "user_stocks/includes/user_snapshot_list.html" %}
+
+            {% if snapshots_chart_data %}
+            <div id="snapshots_chart" style="width:100%;height:500px"></div>
+            {% endif %}
+        </div>
+    {% endif %}
+    {% if logged_in %}
+        <h3>
+            <form method="post" action="{% url 'user_take_snapshot' account.slug %}">
+                {% csrf_token %}
+                <button class="btn btn-lg btn-primary">
+                    Take Snapshot
+                </button>
+            </form>
+        </h3>
+    {% endif %}
+
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+  {{ block.super }}
+  <script src="{% static 'echarts-3.4/echarts.common.min.js' %}"></script>
+  <script type="text/javascript">
+      {% if logged_in and get_price_job %}
+          var seconds = 60
+          function reloadCountDown(){
+              seconds -= 1;
+              $('#refresh_seconds').html(seconds);
+              $('#refresh_seconds_count_down').css('visibility','visible');
+              if (seconds <= 0){
+                  location.reload()
+              }
+          }
+          $(function(){
+              setInterval('reloadCountDown()', 1000)
+          })
+      {% endif %}
+
+      // http://echarts.baidu.com/tutorial.html
+      var solid_style = {normal: {lineStyle:{type:'solid'}}}
+      var weak_style = {normal: {lineStyle:{color:'grey', width: 0.5}}}
+      /* -------------------------------- 账户图 --------------------------------------- */
+      var myChart = echarts.init(document.getElementById('account_chart'));
+      var names = []
+      var data = []
+      {% for stock in account_stocks %}
+          names.push('{{ stock.stock }}');
+          data.push({value: {{ stock.total }}, name:'{{ stock.stock }}'})
+      {% endfor %}
+      var option = {
+          tooltip : {
+              trigger: 'item',
+              formatter: "{a} <br/>{b} : {c} ({d}%)"
+          },
+          toolbox: {
+              show : true,
+              feature : {
+                  mark : {show: true},
+                  dataView : {show: true, readOnly: false},
+                  restore : {show: true},
+                  saveAsImage : {show: true}
+              }
+          },
+          calculable : true,
+          series : [
+              {
+                  name:'账户股票比例',
+                  type:'pie',
+                  radius : '65%',
+                  center: ['50%', '50%'],
+                  data: data
+              }
+          ]
+      };
+      myChart.setOption(option);
+      /* -------------------------------- 账户图结束 --------------------------------------- */
+
+      {% if snapshots_chart_data %}
+      /* -------------------------------- 账户历史净资产图 --------------------------------------- */
+      var snapshotsChart = echarts.init(document.getElementById('snapshots_chart'));
+      var names = {{ snapshots_chart_data.x_axis|safe }}
+      var data = {{ snapshots_chart_data.y_axis|safe }}
+      var option = {
+          toolbox: {
+              show : true,
+              feature : {
+                  mark : {show: true},
+                  dataView : {show: true, readOnly: false},
+                  restore : {show: true},
+                  saveAsImage : {show: true}
+              }
+          },
+          legend: {
+              left: 'left',
+              data: ['账户历史净资产', '同期上证指数', '同期沪深300指数']
+          },
+          xAxis : [
+              {
+                  type : 'category',
+                  boundaryGap : false,
+                  data : names
+              }
+          ],
+          yAxis : [
+              {
+                  type : 'value'
+              }
+          ],
+          tooltip: {
+              trigger: 'item',
+              formatter: function (params, ticket, callback) {
+                  if(params.seriesName == '账户历史净资产'){
+                      return params.name + ' : ' + params.data
+                  };
+              }
+          },
+          series : [
+              {
+                  name:'账户历史净资产',
+                  type:'line',
+                  data: data
+              }/*,
+              {
+                  name:'同期上证指数',
+                  type:'line',
+                  data: sh_index
+              },
+              {
+                  name:'同期沪深300指数',
+                  type:'line',
+                  data: hs300_index
+              }*/
+          ]
+      };
+      snapshotsChart.setOption(option);
+      /* -------------------------------- 账户历史净资产图结束 --------------------------------------- */
+
+          {% if logged_in %}
+          $(function(){
+              {% if not account.public %}
+                  $('#account_snapshots_button').click();
+              {% endif %}
+          })
+          {% endif %}
+
+      {% endif %}
+  </script>
+{% endblock %}

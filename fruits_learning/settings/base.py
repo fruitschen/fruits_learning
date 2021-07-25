@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'my_feedreader',
     'reads',
     'stocks',
+    'user_stocks',
     'diary',
     'tips',
     'contacts',

@@ -1,0 +1,34 @@
+<div id="account_snapshots" class="collapse in">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>编号</th>
+                <th>日期</th>
+                <th>净资产</th>
+                <th>比上期涨跌</th>
+                {% if is_admin %}
+                <th>管理</th>
+                {% endif %}
+            </tr>
+        </thead>
+    {% for s in snapshots %}
+        <tr class="{% if s.is_annual %}bg-info{% endif %}">
+            <td>
+                {% if snapshot and snapshot == s %}
+                    快照#{{ s.serial_number }}
+                {% else %}
+                    <a href="{% url 'user_account_snapshot' account.slug s.serial_number %}">快照#{{ s.serial_number }}</a>
+                {% endif %}
+            </td>
+            <td>{{ s.date|date:"Y-m-j" }}</td>
+            <td>{{ s.net_asset }}</td>
+            <td>{{ s.increase_percent|floatformat:2 }}%</td>
+            {% if is_admin %}
+                <td>
+                    <a href="{% url 'admin:user_stocks_useraccountsnapshot_change' s.id %}" target="_blank">管理</a>
+                </td>
+            {% endif %}
+        </tr>
+    {% endfor %}
+    </table>
+</div>
