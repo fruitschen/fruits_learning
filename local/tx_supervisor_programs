@@ -1,5 +1,5 @@
 [program:learning_uwsgi]
-command=/home/fruitschen/.virtualenvs/learning/bin/uwsgi --emperor /home/fruitschen/workspace/learning/fruits_learning/local/deploy/tx_uwsgi.ini  --logto /home/fruitschen/workspace/learning/fruits_learning/local/deploy/uwsgi.log
+command=/home/fruitschen/.virtualenvs/learning_py3/bin/uwsgi --emperor /home/fruitschen/workspace/learning/fruits_learning/local/deploy/tx_uwsgi.ini  --logto /home/fruitschen/workspace/learning/fruits_learning/local/deploy/uwsgi.log
 autostart=true
 autorestart=true
 stopsignal=QUIT
