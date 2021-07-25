@@ -85,6 +85,7 @@ class PairTransactionAdmin(admin.ModelAdmin):
         }),
     ]
 
+
 class BoughtSoldTransactionAdmin(admin.ModelAdmin):
     list_display = ['bought_stock', 'bought_price', 'profit', 'started', 'finished']
     list_filter = ['finished', 'account', 'archived', ]

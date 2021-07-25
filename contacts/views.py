@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.admin.views.decorators import staff_member_required
+from fruits_learning.decorators import staff_member_required
 from django.urls import reverse
 from django.shortcuts import render
 from django.shortcuts import redirect

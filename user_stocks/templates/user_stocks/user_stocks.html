@@ -1,0 +1,19 @@
+{% extends "user_stocks/user_stocks_base.html" %}
+{% load static %}
+
+{% block stocks_content %}
+    <ol class="breadcrumb">
+        <li>股票</li>
+    </ol>
+
+    <h1>股票</h1>
+
+    <h3>账户</h3>
+    <ul>
+        {% for account in accounts %}
+            <li><a href="{% url 'user_account_details' account.slug %}">{{ account }}</a></li>
+        {% endfor %}
+    </ul>
+
+{% endblock %}
+

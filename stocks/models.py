@@ -656,11 +656,7 @@ class BoughtSoldTransaction(models.Model):
         return transactions
 
 
-class AccountStock(models.Model):
-    """账户当前持有的股票"""
-    stock = models.ForeignKey(Stock, limit_choices_to={'star': True}, on_delete=models.PROTECT)
-    amount = models.IntegerField()
-    account = models.ForeignKey('Account', related_name='stocks', on_delete=models.PROTECT)
+class BaseAccountStock(models.Model):
 
     @property
     def total(self):
@@ -669,6 +665,16 @@ class AccountStock(models.Model):
     @property
     def percent(self):
         return self.total / self.account.stocks_total * Decimal(100)
+
+    class Meta:
+        abstract = True
+    
+
+class AccountStock(BaseAccountStock):
+    """账户当前持有的股票"""
+    stock = models.ForeignKey(Stock, limit_choices_to={'star': True}, on_delete=models.PROTECT)
+    amount = models.IntegerField()
+    account = models.ForeignKey('Account', related_name='stocks', on_delete=models.PROTECT)
 
 
 class AccountStocksRange(models.Model):
@@ -716,52 +722,20 @@ class AccountStocksRange(models.Model):
         }
 
 
-class Account(models.Model):
+class BaseAccount(models.Model):
     name = models.CharField(max_length=32)
     slug = models.SlugField(unique=True, db_index=True)
-    main = models.BooleanField('是否主账户', default=False)
-    public = models.BooleanField('是否公开', default=False)
-    display_summary = models.BooleanField('是否默认显示概览', default=False)
     initial_investment = models.DecimalField('初始投资', max_digits=14, decimal_places=2, null=True, blank=True)
     cash = models.DecimalField('现金', max_digits=14, decimal_places=2, default=0)
     initial_date = models.DateField('初始投资时间', )
-    debt = models.DecimalField('负债', max_digits=10, decimal_places=2, null=True, blank=True)
 
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if self.sub_accounts_debt and (self.debt != self.sub_accounts_debt):
-            self.debt = self.sub_accounts_debt
-        super(Account, self).save(*args, **kwargs)
-
-    @property
-    def sub_accounts_asset(self):
-        return self.subaccount_set.all().aggregate(Sum('asset'))['asset__sum'] or 0
-
-    @property
-    def sub_accounts_debt(self):
-        return self.subaccount_set.all().aggregate(Sum('debt'))['debt__sum'] or 0
+    class Meta:
+        abstract = True
 
     @property
     def stocks_total(self):
         """持有的股票的市值"""
         return sum([stock.total for stock in self.stocks.all()])
-
-    @property
-    def total(self):
-        """股票、子账户、现金合计"""
-        return self.stocks_total + self.sub_accounts_asset + self.cash
-
-    @property
-    def net(self):
-        """减去负债之后的净资产"""
-        return self.total - self.debt
-
-    @property
-    def ratio(self):
-        """担保比，不会翻译，暂时就写ratio吧"""
-        return self.total / self.debt * Decimal(100)
 
     @property
     def total_yield(self):
@@ -795,6 +769,44 @@ class Account(models.Model):
     def yearly_yield_percent(self):
         """年化收益率，百分比"""
         return self.yearly_yield * Decimal(100)
+
+    def __str__(self):
+        return self.name
+
+
+class Account(BaseAccount):
+    main = models.BooleanField('是否主账户', default=False)
+    public = models.BooleanField('是否公开', default=False)
+    display_summary = models.BooleanField('是否默认显示概览', default=False)
+    debt = models.DecimalField('负债', max_digits=10, decimal_places=2, null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.sub_accounts_debt and (self.debt != self.sub_accounts_debt):
+            self.debt = self.sub_accounts_debt
+        super(Account, self).save(*args, **kwargs)
+
+    @property
+    def sub_accounts_asset(self):
+        return self.subaccount_set.all().aggregate(Sum('asset'))['asset__sum'] or 0
+
+    @property
+    def sub_accounts_debt(self):
+        return self.subaccount_set.all().aggregate(Sum('debt'))['debt__sum'] or 0
+
+    @property
+    def total(self):
+        """股票、子账户、现金合计"""
+        return self.stocks_total + self.sub_accounts_asset + self.cash
+
+    @property
+    def net(self):
+        """减去负债之后的净资产"""
+        return self.total - self.debt
+
+    @property
+    def ratio(self):
+        """担保比，不会翻译，暂时就写ratio吧"""
+        return self.total / self.debt * Decimal(100)
 
     def take_snapshot(self):
         """制作一个账户快照account snapshot"""
@@ -863,36 +875,22 @@ class SubAccount(models.Model):
         ordering = ['order']
 
 
-class Snapshot(models.Model):
-    """账户快照，保存一个账户在某个时间点的净资产，持有股票等等"""
-    account = models.ForeignKey('Account', related_name='snapshots', on_delete=models.PROTECT)
+class BaseSnapshot(models.Model):
     date = models.DateField('时间', )
-    serial_number = models.PositiveIntegerField(null=True)
-
     net_asset = models.DecimalField('净资产', max_digits=14, decimal_places=2, null=True, blank=True)
     stocks_asset = models.DecimalField('股票市值', max_digits=14, decimal_places=2, null=True, blank=True)
-    sub_accounts_asset = models.DecimalField('子账户市值', max_digits=14, decimal_places=2, blank=True, default=0)
+    serial_number = models.PositiveIntegerField(null=True)
     cash = models.DecimalField('现金', max_digits=14, decimal_places=2, null=True, blank=True)
-    debt = models.DecimalField('负债', max_digits=10, decimal_places=2, null=True, blank=True, default=0)
     increase = models.DecimalField('涨幅', max_digits=8, decimal_places=4, null=True, blank=True)
-    has_transaction = models.BooleanField('是否有交易', default=False)
-    transactions_count = models.IntegerField(default=0)
-
-    error = models.DecimalField('误差', max_digits=8, decimal_places=2, null=True, blank=True)
-    comment = models.TextField('备注', blank=True, default='')
-    status_image = models.ImageField(upload_to='snapshots', blank=True)
-    change_image = models.ImageField(upload_to='snapshots', blank=True)
-    xueqiu_url = models.URLField(null=True, blank=True)
-    extra_content = MarkdownxField('更多内容', blank=True, default='')
-
     is_annual = models.BooleanField(default=False)
 
     def __str__(self):
         return '{} snapshot {} '.format(self.account, self.serial_number)
 
     @property
-    def public(self):
-        return self.account.public
+    def total(self):
+        """总资产"""
+        return self.stocks_asset + self.sub_accounts_asset + self.cash
 
     @property
     def previous_snapshot(self):
@@ -909,7 +907,7 @@ class Snapshot(models.Model):
         previous_snapshot = self.previous_snapshot
         if previous_snapshot:
             self.increase = self.net_asset / previous_snapshot.net_asset - 1
-
+            
     def calculate_net_asset(self):
         """计算净资产等等"""
         for stock in self.stocks.all():
@@ -920,7 +918,7 @@ class Snapshot(models.Model):
                 stock.save()
         self.stocks_asset = sum([stock.total for stock in self.stocks.all()])
         self.net_asset = self.total - (self.debt or 0)
-        if not self.transactions_count:
+        if not self.transactions_count and hasattr(self, 'find_transactions'):
             self.transactions_count = len(self.find_transactions())
         self.calculate_increase()
 
@@ -938,7 +936,10 @@ class Snapshot(models.Model):
     @property
     def increase_percent(self):
         """比上一个快照的净资产变动，百分比"""
-        return self.increase * 100
+        if self.increase:
+            return self.increase * 100
+        else:
+            return 0
 
     @property
     def all_time_increase(self):
@@ -949,20 +950,6 @@ class Snapshot(models.Model):
     def all_time_increase_percent(self):
         """比初始投资的净资产变动，百分比"""
         return self.all_time_increase * 100
-
-    @property
-    def total(self):
-        """总资产"""
-        return self.stocks_asset + self.sub_accounts_asset + self.cash
-
-    def find_transactions(self):
-        """找到当月1日到snapshot日期的交易"""
-        start = timezone.datetime(self.date.year, self.date.month, 1).date()
-        transactions = self.account.find_transactions(start, self.date)
-        return transactions
-
-    def formatted_extra_content(self):
-        return markdownify(self.extra_content)
 
     # 下面是年度snapshot用到的代码
 
@@ -1003,10 +990,41 @@ class Snapshot(models.Model):
     def stocks_ordered(self):
         return self.stocks.order_by('-total')
 
+    class Meta:
+        abstract = True
 
-class SnapshotStock(models.Model):
-    """账户快照 当时持有的股票"""
-    snapshot = models.ForeignKey('Snapshot', related_name='stocks', on_delete=models.CASCADE)
+
+class Snapshot(BaseSnapshot):
+    """账户快照，保存一个账户在某个时间点的净资产，持有股票等等"""
+    account = models.ForeignKey('Account', related_name='snapshots', on_delete=models.PROTECT)
+    sub_accounts_asset = models.DecimalField('子账户市值', max_digits=14, decimal_places=2, blank=True, default=0)
+    debt = models.DecimalField('负债', max_digits=10, decimal_places=2, null=True, blank=True, default=0)
+    has_transaction = models.BooleanField('是否有交易', default=False)
+    transactions_count = models.IntegerField(default=0)
+
+    error = models.DecimalField('误差', max_digits=8, decimal_places=2, null=True, blank=True)
+    comment = models.TextField('备注', blank=True, default='')
+    status_image = models.ImageField(upload_to='snapshots', blank=True)
+    change_image = models.ImageField(upload_to='snapshots', blank=True)
+    xueqiu_url = models.URLField(null=True, blank=True)
+    extra_content = MarkdownxField('更多内容', blank=True, default='')
+
+
+    @property
+    def public(self):
+        return self.account.public
+
+    def find_transactions(self):
+        """找到当月1日到snapshot日期的交易"""
+        start = timezone.datetime(self.date.year, self.date.month, 1).date()
+        transactions = self.account.find_transactions(start, self.date)
+        return transactions
+
+    def formatted_extra_content(self):
+        return markdownify(self.extra_content)
+
+
+class BaseSnapshotStock(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.PROTECT, limit_choices_to={'star': True})
     amount = models.IntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=3, null=True, blank=True)
@@ -1026,3 +1044,11 @@ class SnapshotStock(models.Model):
     @property
     def current_total(self):
         return self.stock.price * self.amount
+
+    class Meta:
+        abstract = True
+
+
+class SnapshotStock(BaseSnapshotStock):
+    """账户快照 当时持有的股票"""
+    snapshot = models.ForeignKey('Snapshot', related_name='stocks', on_delete=models.CASCADE)

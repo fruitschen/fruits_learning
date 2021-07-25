@@ -2,7 +2,7 @@
 import os
 from django.shortcuts import render
 from django.conf import settings
-from django.contrib.admin.views.decorators import staff_member_required
+from fruits_learning.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View

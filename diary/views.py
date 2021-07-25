@@ -2,7 +2,6 @@
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.shortcuts import redirect
-from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.utils import timezone
 from django.views import View
@@ -16,6 +15,7 @@ from diary.models import (
 )
 from diary.forms import DiaryTextForm, DiaryImageForm, DiaryAudioForm, EventsRangeForm, EventForm
 from diary.utils import get_events_by_date, get_important_events_by_date, age_format
+from fruits_learning.decorators import staff_member_required
 from tips.models import get_random_tip
 from info_collector.models import Info
 from shortcuts.models import Shortcut
