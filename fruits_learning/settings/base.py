@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'my_feedreader',
     'reads',
     'stocks',
-    'user_stocks',
+    'user_stocks.apps.UserStocksConfig',
     'diary',
     'tips',
     'contacts',
@@ -132,7 +132,7 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.10/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-Hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 

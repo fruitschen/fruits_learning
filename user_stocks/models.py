@@ -5,7 +5,7 @@ from stocks.models import BaseAccount, BaseAccountStock, BaseSnapshot, BaseSnaps
 
 
 class UserAccount(BaseAccount):
-    user = models.ForeignKey('auth.User', on_delete=models.PROTECT)
+    user = models.ForeignKey('auth.User', verbose_name='用户', on_delete=models.PROTECT)
     
     @property
     def net(self):
@@ -46,19 +46,27 @@ class UserAccount(BaseAccount):
         snapshot.calculate_net_asset()
         snapshot.save()
 
+    class Meta:
+        verbose_name = '账户'
+        verbose_name_plural = verbose_name
+        
 
 class UserAccountStock(BaseAccountStock):
     """账户当前持有的股票"""
-    stock = models.ForeignKey('stocks.Stock', on_delete=models.PROTECT)
-    amount = models.PositiveIntegerField()
-    account = models.ForeignKey('UserAccount', related_name='stocks', on_delete=models.CASCADE)
+    stock = models.ForeignKey('stocks.Stock', verbose_name='股票', on_delete=models.PROTECT)
+    amount = models.PositiveIntegerField(verbose_name='数量')
+    account = models.ForeignKey('UserAccount', verbose_name='账户', related_name='stocks', on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '账户股票'
+        verbose_name_plural = verbose_name
 
 
 class UserAccountSnapshot(BaseSnapshot):
     """账户快照，保存一个账户在某个时间点的净资产，持有股票等等"""
 
     sub_accounts_asset = 0
-    account = models.ForeignKey('UserAccount', related_name='snapshots', on_delete=models.PROTECT)
+    account = models.ForeignKey('UserAccount', verbose_name='账户', related_name='snapshots', on_delete=models.PROTECT)
 
     @property
     def transactions_count(self):
@@ -68,7 +76,17 @@ class UserAccountSnapshot(BaseSnapshot):
     def debt(self):
         return 0
 
+    class Meta:
+        verbose_name = '账户快照'
+        verbose_name_plural = verbose_name
+
 
 class UserAccountSnapshotStock(BaseSnapshotStock):
     """账户快照 当时持有的股票"""
-    snapshot = models.ForeignKey('UserAccountSnapshot', related_name='stocks', on_delete=models.CASCADE)
+    snapshot = models.ForeignKey('UserAccountSnapshot', related_name='stocks', verbose_name='快照',
+                                 on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = '账户快照股票'
+        verbose_name_plural = verbose_name
+

@@ -723,11 +723,11 @@ class AccountStocksRange(models.Model):
 
 
 class BaseAccount(models.Model):
-    name = models.CharField(max_length=32)
-    slug = models.SlugField(unique=True, db_index=True)
+    name = models.CharField(verbose_name='账户名称', max_length=32)
+    slug = models.SlugField(verbose_name='账户网址', unique=True, db_index=True)
     initial_investment = models.DecimalField('初始投资', max_digits=14, decimal_places=2, null=True, blank=True)
-    cash = models.DecimalField('现金', max_digits=14, decimal_places=2, default=0)
     initial_date = models.DateField('初始投资时间', )
+    cash = models.DecimalField('现金', max_digits=14, decimal_places=2, default=0)
 
     class Meta:
         abstract = True
@@ -879,10 +879,10 @@ class BaseSnapshot(models.Model):
     date = models.DateField('时间', )
     net_asset = models.DecimalField('净资产', max_digits=14, decimal_places=2, null=True, blank=True)
     stocks_asset = models.DecimalField('股票市值', max_digits=14, decimal_places=2, null=True, blank=True)
-    serial_number = models.PositiveIntegerField(null=True)
+    serial_number = models.PositiveIntegerField(verbose_name='序号', null=True)
     cash = models.DecimalField('现金', max_digits=14, decimal_places=2, null=True, blank=True)
     increase = models.DecimalField('涨幅', max_digits=8, decimal_places=4, null=True, blank=True)
-    is_annual = models.BooleanField(default=False)
+    is_annual = models.BooleanField(verbose_name='是否是年度快照', default=False)
 
     def __str__(self):
         return '{} snapshot {} '.format(self.account, self.serial_number)
