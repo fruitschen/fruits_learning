@@ -28,13 +28,13 @@ def update_stocks_prices(stocks, verbose=0):
             stock = stocks[i]
             if verbose:
                 print(line, stock, i)
+            line = str(line)
             price = line.split('~')[3]
             if Decimal(price) > 0:
-                stock.comment = line.decode('gb2312')
+                stock.comment = line
                 stock.update_price(price)
         except Exception as e:
-            if verbose:
-                print(e)
+            print(e)
     return True
 
 
