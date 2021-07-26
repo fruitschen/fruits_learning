@@ -1,6 +1,7 @@
 from decimal import Decimal
 from datetime import timedelta, datetime
 from django.db import models
+from django.urls import reverse
 from stocks.models import BaseAccount, BaseAccountStock, BaseSnapshot, BaseSnapshotStock
 
 
@@ -46,6 +47,9 @@ class UserAccount(BaseAccount):
         snapshot.calculate_net_asset()
         snapshot.save()
 
+    def get_absolute_url(self):
+        return reverse('user_account_details', args=(self.slug,))
+    
     class Meta:
         verbose_name = '账户'
         verbose_name_plural = verbose_name
