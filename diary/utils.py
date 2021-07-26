@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+import functools
 from diary.models import Diary, WeekdayEventTemplate, Weekday, MonthEventTemplate, Event, RuleEventTemplate, \
     AUTO_EVENT_TYPES, AnnualEventTemplate
 from datetime import timedelta, date
@@ -64,7 +65,7 @@ def get_events_by_date(diary, tag='', commit=False, include_deleted=False):
             unfinished_mandatory_events = unfinished_mandatory_events.filter(is_deleted=False)
         events += unfinished_mandatory_events
 
-    events = sorted(events, cmp=sort_events)
+    events = sorted(events, key=functools.cmp_to_key(sort_events))
 
     if tag:
         events = [x for x in events if tag in x.tags]
@@ -99,7 +100,7 @@ def get_important_events_by_date(the_date):
     for tpl in event_templates:
         events.append(tpl.to_event(the_date, commit=False))
     events.extend(rule_events_tpls)
-    events = sorted(events, cmp=sort_events)
+    events = sorted(events, key=functools.cmp_to_key(sort_events))
     return events
 
 
