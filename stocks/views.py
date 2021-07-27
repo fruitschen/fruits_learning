@@ -268,9 +268,13 @@ def pair_details(request, pair_id):
         })
         year_profits['pair_profit'] += pair_profit_by_month
         month -= 1
+        
+    pair_virtual_profit = 0
+    for p in unfinished_pair_transactions:
+        pair_virtual_profit += p.get_profit()
 
     aggregates_by_months.append(year_profits)
-    
+
     context = {
         'pair': pair,
         'pair_transactions': pair_transactions,
@@ -278,6 +282,7 @@ def pair_details(request, pair_id):
         'archived_pair_transactions': archived_pair_transactions,
         'aggregates_by_months': aggregates_by_months,
         'year_profits': year_profits,
+        'pair_virtual_profit': pair_virtual_profit,
     }
     return render(request, 'stocks/pair_details.html', context)
 
