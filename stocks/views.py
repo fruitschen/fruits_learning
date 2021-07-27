@@ -117,39 +117,49 @@ def account_details(request, account_slug):
         transaction_virtual_profit += t.get_profit()
 
     aggregates_by_months = []
-    year_profits = {
-        'time': '{} ~ '.format(now.year, 1, 1),
-        'pair_profit': 0,
-        'profit': 0,
-        'total': 0
-    }
-    month = now.month
-    while month != 0:
-        start = timezone.datetime(now.year, month, 1)
-        if month == 12:
-            end = timezone.datetime(now.year+1, 1, 1)
+    # This year and last year
+    year = request.GET.get('year', 1)
+    year_ends = []
+    for i in range(int(year)):
+        if i != 0:
+            year_end = timezone.datetime(now.year - i, 12, 31)
         else:
-            end = timezone.datetime(now.year, month+1, 1)
-        pair_transactions_by_month = account_pair_transactions.filter(finished__isnull=False)\
-            .filter(finished__gte=start, finished__lt=end)
-        transactions_by_month = account_bs_transactions.filter(finished__isnull=False)\
-            .filter(finished__gte=start, finished__lt=end)
-
-        pair_profit_by_month = pair_transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
-        profit_by_month = transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
-        aggregates_by_months.append({
-            'time': '{} ~ {}'.format(start.date(), (end-timedelta(days=1)).date()),
-            'pair_profit': pair_profit_by_month,
-            'profit': profit_by_month,
-            'total': pair_profit_by_month + profit_by_month
-        })
-        year_profits['pair_profit'] += pair_profit_by_month
-        year_profits['profit'] += profit_by_month
-        year_profits['total'] += pair_profit_by_month + profit_by_month
-        month -= 1
-
-    aggregates_by_months.append(year_profits)
-    recent_transactions = account.recent_transactions()
+            year_end = now
+        year_ends.append(year_end)
+    for year_end in year_ends:
+        year_profits = {
+            'time': '{} ~ '.format(year_end.year, 1, 1),
+            'pair_profit': 0,
+            'profit': 0,
+            'total': 0
+        }
+        month = year_end.month
+        while month != 0:
+            start = timezone.datetime(year_end.year, month, 1)
+            if month == 12:
+                end = timezone.datetime(year_end.year+1, 1, 1)
+            else:
+                end = timezone.datetime(year_end.year, month+1, 1)
+            pair_transactions_by_month = account_pair_transactions.filter(finished__isnull=False)\
+                .filter(finished__gte=start, finished__lt=end)
+            transactions_by_month = account_bs_transactions.filter(finished__isnull=False)\
+                .filter(finished__gte=start, finished__lt=end)
+    
+            pair_profit_by_month = pair_transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
+            profit_by_month = transactions_by_month.aggregate(Sum('profit'))['profit__sum'] or 0
+            aggregates_by_months.append({
+                'time': '{} ~ {}'.format(start.date(), (end-timedelta(days=1)).date()),
+                'pair_profit': pair_profit_by_month,
+                'profit': profit_by_month,
+                'total': pair_profit_by_month + profit_by_month
+            })
+            year_profits['pair_profit'] += pair_profit_by_month
+            year_profits['profit'] += profit_by_month
+            year_profits['total'] += pair_profit_by_month + profit_by_month
+            month -= 1
+    
+        aggregates_by_months.append(year_profits)
+        recent_transactions = account.recent_transactions()
 
     all_time_profits = {}
     all_time_profits['pair_finished'] = account_pair_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
