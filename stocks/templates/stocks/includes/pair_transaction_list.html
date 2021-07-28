@@ -5,6 +5,12 @@
                 <th style="width:60%">
                     <strong>
                         <a href="{% url 'pair_details' t.pair.id %}">{{ t.pair }}</a>
+                        <a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}&sold_stock={{ t.sold_stock.id }}&bought_stock={{ t.bought_stock.id }}"
+                           target="_blank" class="btn btn-primary btn-sm">添加
+                        </a>
+                        <a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}&bought_stock={{ t.sold_stock.id }}&sold_stock={{ t.bought_stock.id }}"
+                           target="_blank" class="btn btn-primary btn-sm">反向
+                        </a>
                         {{ t.started.date.year }}-{{ t.started.date.month }}-{{ t.started.date.day }}
                     </strong>
                     比例:{{ t.to_ratio_display }} -&gt; | &lt;- {% if t.finished %}{{ t.back_ratio_display }}{% else %}({{ t.pair.current_value_display }}){% endif %}
