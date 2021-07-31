@@ -6,9 +6,22 @@
     font-size: 18px;
 }
 
+.print-only {
+    display:none;
+}
+
 @media print {
+  .print-only {
+    display:block;
+  }
+
   #stock_container {
     margin: 0 auto;
+  }
+
+  #stock_container table .print-last-col{
+    padding-right: 3em;
+    overflow: display;
   }
 
 　h1#site_heading, #account_profit, .no-print, tr.no-input, th.no-input, h3.no-input, td.no-input, .breadcrumb,

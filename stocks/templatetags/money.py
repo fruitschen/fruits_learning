@@ -21,23 +21,23 @@ register = template.Library()
 #
 intword_converters = (
     (12, lambda number: (
-        ungettext('%(value).3f 万亿', '%(value).3f 万亿', number),
+        ungettext('%(value).2f 万亿', '%(value).2f 万亿', number),
         ungettext('%(value)s 万亿', '%(value)s 万亿', number),
     )),
     (8, lambda number: (
-        ungettext('%(value).3f 亿', '%(value).3f 亿', number),
+        ungettext('%(value).2f 亿', '%(value).2f 亿', number),
         ungettext('%(value)s 亿', '%(value)s 亿', number),
     )),
     (7, lambda number: (
-        ungettext('%(value).3f 千万', '%(value).3f 千万', number),
+        ungettext('%(value).2f 千万', '%(value).2f 千万', number),
         ungettext('%(value)s 千万', '%(value)s 千万', number),
     )),
     (6, lambda number: (
-        ungettext('%(value).3f 百万', '%(value).3f 百万', number),
+        ungettext('%(value).2f 百万', '%(value).2f 百万', number),
         ungettext('%(value)s 百万', '%(value)s 百万', number),
     )),
     (4, lambda number: (
-        ungettext('%(value).3f 万', '%(value).3f 万', number),
+        ungettext('%(value).2f 万', '%(value).2f 万', number),
         ungettext('%(value)s 万', '%(value)s 万', number),
     )),
 )
@@ -57,7 +57,7 @@ def money_display(value):
         value = Decimal(value)
         if abs_value < 10000:
             if '.' in str(value) and len(str(value).split('.')[-1]) > 3:
-                value = value.quantize(Decimal('0.001'))
+                value = value.quantize(Decimal('0.01'))
             return value
 
     try:
@@ -73,7 +73,7 @@ def money_display(value):
         Use the i18n enabled defaultfilters.floatformat if possible
         """
         if settings.USE_L10N:
-            value = defaultfilters.floatformat(value, 3)
+            value = defaultfilters.floatformat(value, 2)
             template = string_formatted
         else:
             template = float_formatted

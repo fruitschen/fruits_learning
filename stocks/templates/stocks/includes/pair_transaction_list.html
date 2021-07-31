@@ -1,8 +1,8 @@
 {% for t in pair_transactions %}
-    <table class="table small-print" style="margin:0;">
+    <table class="table {% if forloop.counter > 5 %}no-print{% else %}small-print{% endif %}" style="margin:0;">
         <thead>
             <tr>
-                <th style="width:60%">
+                <th style="width:55%">
                     <strong>
                         <a href="{% url 'pair_details' t.pair.id %}">{{ t.pair }}</a>
                         <a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}&sold_stock={{ t.sold_stock.id }}&bought_stock={{ t.bought_stock.id }}"
@@ -15,8 +15,8 @@
                     </strong>
                     比例:{{ t.to_ratio_display }} -&gt; | &lt;- {% if t.finished %}{{ t.back_ratio_display }}{% else %}({{ t.pair.current_value_display }}){% endif %}
                 </th>
-                <th style="width:28%">
-                    <strong style="color:red">{{ t.percent }} = {{ t.get_profit|floatformat:2 }} / {{ t.money_taken|floatformat:0 }}</strong>
+                <th style="width:33%" class="print-last-col">
+                    <strong style="color:red">{{ t.percent }} = {{ t.get_profit|floatformat:2 }} / {{ t.money_taken|floatformat:0 }}</strong>&nbsp;
                 </th>
                 <th style="width:12%" class="no-input">
                     <a href="{% url 'admin:stocks_pairtransaction_change' t.id %}" target="_blank" class="btn btn-primary btn-sm">Admin</a>
@@ -35,4 +35,5 @@
             <tr><th>利润</th><td colspan="2"> <strong style="color:red;">{{ t.get_profit|floatformat:3 }}</strong> = {{ t.profit_before_fee|floatformat:2 }} - {{ t.fee|floatformat:2 }}</td></tr>
         </tbody>
     </table>
+    {% if forloop.counter > 5 and forloop.last %}<div class="print-only">{{ forloop.counter }}...</div>{% endif %}
 {% endfor %}

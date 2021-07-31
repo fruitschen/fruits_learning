@@ -1,5 +1,6 @@
 {% extends "stocks/stocks_base.html" %}
 {% load static %}
+{% load money %}
 
 {% block stocks_content %}
     <ol class="breadcrumb no-print">
@@ -38,15 +39,13 @@
                     <td>总资产</td>
                     <td>{{ account.total }}</td>
                 </tr>
-                <tr>
-                    <td>---股票资产</td>
-                    <td>{{ account.stocks_total }}</td>
-                </tr>
-                <tr>
-                    <td>---子账户资产</td>
-                    <td>{{ account.sub_accounts_asset }}</td>
-                </tr>
-                <tr>
+                {% if account.sub_accounts_asset %}
+                    <tr>
+                        <td>---子账户资产</td>
+                        <td>{{ account.sub_accounts_asset }}</td>
+                    </tr>
+                {% endif %}
+                <tr class="no-print">
                     <td>负债</td>
                     <td>
                         {{ account.debt }}
@@ -92,7 +91,7 @@
                     <td>{{ stock.stock.price }}</td>
                     <td>{{ stock.amount }}</td>
                     <td>{{ stock.total }}</td>
-                    <td>{{ stock.percent|floatformat:2 }}%</td>
+                    <td class="print-last-col">{{ stock.percent|floatformat:2 }}%</td>
                 </tr>
             {% endfor %}
         </table>
@@ -217,10 +216,10 @@
             <a href="{% url 'admin:stocks_pairtransaction_add' %}?account={{ account.id }}" target="_blank" class="btn btn-lg btn-primary btn-lg">添加</a>
             <a href="{% url 'account_pair_transactions' account.slug %}" target="_blank" class="btn btn-lg btn-lg btn-primary">全部配对交易</a>
         </h3>
-        <h3>
-            总占用额: {{ pair_transactions_unfinished_total }} |
-            今年交易额: {{ account_pair_transactions_year_total }} |
-            累计交易额: {{ account_pair_transactions_total }}
+        <h3 class="no-print">
+            总占用额: {{ pair_transactions_unfinished_total|money_display }} |
+            今年交易额: {{ account_pair_transactions_year_total|money_display }} |
+            累计交易额: {{ account_pair_transactions_total|money_display }}
         </h3>
         {% with pair_transactions_unfinished as pair_transactions %}
             {% include "stocks/includes/pair_transaction_list.html" %}

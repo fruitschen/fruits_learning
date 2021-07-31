@@ -1,11 +1,11 @@
 {% for t in bs_transactions %}
-    <table class="table small-print" style="margin:0;">
+    <table class="table {% if forloop.counter > 5 %}no-print{% else %}small-print{% endif %}" style="margin:0;">
         <thead>
             <tr>
-                <th style="width:60%">
+                <th style="width:55%">
                     <strong>{{ t }} {{ t.started.date.year }}-{{ t.started.date.month }}-{{ t.started.date.day }}</strong>
                 </th>
-                <th style="width:28%">
+                <th style="width:33%" class="print-last-col">
                     <strong style="color:red;">{{ t.percent }} = {{ t.get_profit|floatformat:2 }} / {{ t.money_taken|floatformat }}</strong>
                 </th>
                 <th style="width:12%" class="no-input">
@@ -22,4 +22,5 @@
             <tr><th>利润</th><td colspan="2"> <strong style="color:red;">{{ t.get_profit|floatformat:2 }}</strong> = {{ t.profit_before_fee|floatformat:2 }} - {{ t.fee|floatformat:2 }} - {{ t.interest|floatformat:2 }}</td></tr>
         </tbody>
     </table>
+    {% if forloop.counter > 5 and forloop.last %}<div class="print-only">{{ forloop.counter }}...</div>{% endif %}
 {% endfor %}
