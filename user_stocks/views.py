@@ -36,7 +36,7 @@ def account_details(request, account_slug):
         return HttpResponseForbidden('Oops')
     snapshots = account.snapshots.all().order_by('-id')
     snapshots_chart_data = None
-    if snapshots.count() >= 3:
+    if snapshots.count():
         raw_data = snapshots.values_list('date', 'net_asset')
         raw_data = raw_data.reverse()
         dates = [r[0] for r in raw_data]
