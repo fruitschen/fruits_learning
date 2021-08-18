@@ -764,7 +764,7 @@ class BaseAccount(models.Model):
         """用总收益率和年龄计算年化收益率"""
         years = self.years
         if years == 0:
-            return None
+            return 0
         return (self.total_yield + 1) ** (Decimal('1')/Decimal(years)) - Decimal(1)
 
     @property
