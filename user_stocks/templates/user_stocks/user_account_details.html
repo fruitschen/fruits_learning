@@ -123,17 +123,6 @@
             {% endif %}
         </div>
     {% endif %}
-    {% if logged_in %}
-        <h3>
-            <form method="post" action="{% url 'user_take_snapshot' account.slug %}">
-                {% csrf_token %}
-                <button class="btn btn-lg btn-primary">
-                    Take Snapshot
-                </button>
-            </form>
-        </h3>
-    {% endif %}
-
 
 {% endblock %}
 
