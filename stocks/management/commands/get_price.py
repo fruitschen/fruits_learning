@@ -3,10 +3,11 @@ import os
 import json
 from decimal import Decimal
 from django.core.management.base import BaseCommand
-from django.utils import timezone
+from django.db.models import Q
 
 from stocks.models import Stock, StockPair
 from stocks.utils import update_stocks_prices
+from user_stocks.models import UserAccountStock
 
 
 class Command(BaseCommand):
@@ -54,7 +55,8 @@ class Command(BaseCommand):
                 pairs = StockPair.objects.all()
                 print('All Stocks')
             else:
-                stocks = stocks.filter(star=True)
+                user_stocks = UserAccountStock.objects.all().values_list('stock', flat=True).distinct()
+                stocks = stocks.filter(Q(star=True) | Q(id__in=user_stocks))
                 pairs = StockPair.objects.filter(star=True)
                 print('Used Stocks')
     
