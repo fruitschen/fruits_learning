@@ -45,7 +45,7 @@
                         <td>{{ account.sub_accounts_asset }}</td>
                     </tr>
                 {% endif %}
-                <tr class="no-print">
+                <tr >
                     <td>负债</td>
                     <td>
                         {{ account.debt }}
@@ -53,7 +53,7 @@
                 </tr>
                 {% for sub in account.subaccount_set.all %}
                     {%if sub.debt %}
-                    <tr class="no-input">
+                    <tr class="no-print">
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.name }}</td>
                         <td>&nbsp;&nbsp;&nbsp;&nbsp;{{ sub.debt }}</td>
                     </tr>
