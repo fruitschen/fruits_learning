@@ -256,15 +256,6 @@
       };
       snapshotsChart.setOption(option);
       /* -------------------------------- 账户历史净资产图结束 --------------------------------------- */
-
-          {% if logged_in %}
-          $(function(){
-              {% if not account.public %}
-                  $('#account_snapshots_button').click();
-              {% endif %}
-          })
-          {% endif %}
-
       {% endif %}
   </script>
 {% endblock %}
