@@ -2,7 +2,8 @@
 from django.contrib import admin
 
 from stocks.models import (Stock, StockPair, PairTransaction, BoughtSoldTransaction, Account, SubAccount,
-                           AccountStock, Snapshot, SnapshotStock, Transaction, AccountStocksRange)
+                           AccountStock, Snapshot, SnapshotStock, Transaction, AccountStocksRange, AccountStockGroup,
+                           AccountStockGroupStock)
 from markdownx.admin import MarkdownxModelAdmin
 
 
@@ -131,6 +132,18 @@ class SnapshotAdmin(MarkdownxModelAdmin):
     inlines = [SnapshotStockInline]
     list_display = ['account', 'serial_number', 'date']
     list_filter = ['account', ]
+
+
+class AccountStockGroupStockAdminInline(admin.TabularInline):
+    model = AccountStockGroupStock
+    autocomplete_fields = ['stock']
+    extra = 0
+
+
+@admin.register(AccountStockGroup)
+class AccountStockGroupAdmin(admin.ModelAdmin):
+    list_display = ['account', 'name']
+    inlines = [AccountStockGroupStockAdminInline, ]
 
 
 admin.site.register(Stock, StockAdmin)

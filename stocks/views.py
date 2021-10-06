@@ -164,8 +164,8 @@ def account_details(request, account_slug):
     all_time_profits = {}
     all_time_profits['pair_finished'] = account_pair_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
     all_time_profits['pair_unfinished'] = sum([pt.get_profit() for pt in account_pair_transactions.filter(finished__isnull=True)])
-    all_time_profits['bs_finished'] = all_account_bs_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
-    all_time_profits['bs_unfinished'] = sum([t.get_profit() for t in all_account_bs_transactions.filter(finished__isnull=True)])
+    all_time_profits['bs_finished'] = account_bs_transactions.aggregate(profit=Sum('profit'))['profit'] or 0
+    all_time_profits['bs_unfinished'] = sum([t.get_profit() for t in account_bs_transactions.filter(finished__isnull=True)])
     all_time_profits['pair'] = all_time_profits['pair_finished'] + all_time_profits['pair_unfinished']
     all_time_profits['bs'] = all_time_profits['bs_finished'] + all_time_profits['bs_unfinished']
     all_time_profits['total'] = all_time_profits['bs'] + all_time_profits['pair']

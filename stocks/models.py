@@ -1054,3 +1054,72 @@ class BaseSnapshotStock(models.Model):
 class SnapshotStock(BaseSnapshotStock):
     """账户快照 当时持有的股票"""
     snapshot = models.ForeignKey('Snapshot', related_name='stocks', on_delete=models.CASCADE)
+
+
+class AccountStockGroup(models.Model):
+    account = models.ForeignKey('Account', related_name='groups', on_delete=models.CASCADE)
+    name = models.CharField(max_length=128, )
+    color = models.CharField(max_length=32, default='#FFFFFF')
+    order = models.IntegerField(default=100)
+    
+    class Meta:
+        ordering = ['order', ]
+    
+    @property
+    def mid(self):
+        if self.high and self.low:
+            return (self.high + self.low) / 2
+    
+    @property
+    def stocks_and_info(self):
+        stocks_info = []
+        account_total = self.account.total
+        group_stocks = self.account.stocks.filter(stock__in=self.stocks.all().values_list('stock'))
+        group_total = sum([stock.total for stock in group_stocks])
+        
+        for stock in self.stocks.all():
+            account_stock = self.account.stocks.get(stock=stock.stock)
+            actual_percent = account_stock.total / group_total * 100
+            diff = account_stock.total - group_total * stock.percent / 100
+            diff_percent = actual_percent - stock.percent
+            diff_amount = diff / account_stock.stock.price
+            stocks_info.append({
+                'stock': account_stock.stock,
+                'total': account_stock.total,
+                'actual_percent': actual_percent,
+                'percent': stock.percent,
+                'diff_percent': diff_percent,
+                'diff': diff,
+                'diff_amount': diff_amount,
+            })
+        return stocks_info
+    
+    @property
+    def current_values(self):
+        total = Decimal(0)
+        percent = Decimal(0)
+        account_stocks = self.account_stocks
+        for account_stock in account_stocks:
+            total += account_stock.total
+            percent += account_stock.percent
+        if percent > self.high:
+            status = '超'
+            status_amount = percent - self.high
+        elif percent < self.low:
+            status = '低'
+            status_amount = self.low - percent
+        else:
+            status = '正常'
+            status_amount = 0
+        return {
+            'percent': percent,
+            'total': total,
+            'status': status,
+            'status_amount': status_amount,
+        }
+
+
+class AccountStockGroupStock(models.Model):
+    stock_group = models.ForeignKey(AccountStockGroup, related_name='stocks', on_delete=models.CASCADE)
+    stock = models.ForeignKey('Stock', limit_choices_to={'star': True}, on_delete=models.PROTECT)
+    percent = models.DecimalField(default='50', max_digits=5, decimal_places=2, null=True, blank=True)
