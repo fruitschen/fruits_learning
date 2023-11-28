@@ -30,3 +30,4 @@ python-geoip-geolite2
 
 git+https://github.com/fruitschen/django-feedreader.git#egg=django-feedreader
 -e git+https://github.com/django-backup/django-backup.git@develop#egg=django-backup
+aiohttp>=3.9.0 # not directly required, pinned by Snyk to avoid a vulnerability
